@@ -1,0 +1,37 @@
+procedura -> całk
+{
+    całk a,b,x,w;
+    zacznij proporcjonalna(a,x);
+    b=0;
+    zacznij liniowa(a,b,x);
+    w = a*x+b;
+    gdy(w<0)
+    {
+        pisz("Funkcja zwraca liczbe ujemną");
+    }
+    inaczej{piszf("Funkcja zwraca %d", w); zwróć(w);}
+    zwróć(w);
+}
+
+procedura
+{
+    rzeczyw tab[];
+    ref ta[];
+    ref tb[12];
+    ta=tb;
+    znak n1[] = "In";
+    znak n2[] = "principio";
+    ta[0] = n0;
+    znak napis[] = "Ala ma kota, a Ola chce go zjeść.";
+    piszf("napis:%s\ndługość napisu:%d", napis, #napis);/* # to operator podający długość tablicy*/
+}
+
+procedura
+{
+    zacznij program();
+    pisz("Witaj świecie");
+    proporcjonalna(1,2);
+    liniowa(1,2,3);
+    zwróć();
+}
+
