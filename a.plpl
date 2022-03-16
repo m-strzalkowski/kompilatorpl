@@ -2,7 +2,7 @@ procedura -> całk
 {
     całk a,b,x,w;
     zacznij proporcjonalna(a,x);
-    b=0;
+    całk b=0;
     zacznij liniowa(a,b,x);
     w = a*x+b;
     gdy(w<0)
@@ -12,6 +12,46 @@ procedura -> całk
     inaczej{piszf("Funkcja zwraca %d", w); zwróć(w);}
     zwróć(w);
 }
+
+procedura -> całk
+{
+    całk w;
+    zacznij proporcjonalna(całk a,całk x);
+    całk b=0;
+    zacznij liniowa(całk a, całk b, całk x);
+    w = a*x+b;
+    gdy(a<0)
+    {
+        pisz("Funkcja zwraca liczbe ujemną");
+    }
+    inaczej{piszf("Funkcja zwraca %d", w); zwróć(w);}
+    zwróć(w);
+}
+
+procedura f1(int a, int b)
+{
+    ....
+    entry-point f2(int c, int d);
+    print(coś)
+}
+struktura/typ{
+całk a; całk b;
+}
+procedura -> całk
+{
+    zacznij f1();
+    {
+
+        {
+
+        }
+    }
+    ...
+    zacznij f2();
+    print(coś)
+}
+
+f1(2,3); f2(2,3);
 
 procedura
 {
