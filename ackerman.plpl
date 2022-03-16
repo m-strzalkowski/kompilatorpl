@@ -1,9 +1,9 @@
-procedura ack -> całk
+procedura -> całk
 {
-    int m,n,odp;
-    zacznij ack(m,n);
-    gdy(m==0){odp = n+1;}
-    inaczej gdy(n==0){odp = ack(m-1, 1);}
+    całk odp;
+    zacznij ack(całk m, całk n);
+    jeśli(m==0){odp = n+1;}
+    inaczej jeśli(n==0){odp = ack(m-1, 1);}
     inaczej{odp = ack(m-1, ack(m,n-1));}
     zwróć(odp);
 }
@@ -13,7 +13,7 @@ procedura
     całk i,j;
     zacznij program();
     i=0;
-    dopóki( i<3)
+    dopóki(i<3)
     {
         j=0;
         dopóki(j<3)
