@@ -5,27 +5,36 @@ procedura -> całk
     całk b=0;
     zacznij liniowa(a,b,x);
     w = a*x+b;
-    gdy(w<0)
+    jeśli(w<0)
     {
         pisz("Funkcja zwraca liczbe ujemną");
+        zwróć(w);
     }
     inaczej{piszf("Funkcja zwraca %d", w); zwróć(w);}
-    zwróć(w);
 }
 
 procedura -> całk
 {
     całk w;
-    zacznij proporcjonalna(całk a,całk x);
+    zacznij proporcjonalna(całk a, całk x);
     całk b=0;
     zacznij liniowa(całk a, całk b, całk x);
     w = a*x+b;
-    gdy(a<0)
+    jeśli(a<0)
     {
         pisz("Funkcja zwraca liczbe ujemną");
+        zwróć(w);
     }
     inaczej{piszf("Funkcja zwraca %d", w); zwróć(w);}
-    zwróć(w);
+}
+
+procedura
+{
+    zacznij program();
+    pisz("Witaj świecie");
+    proporcjonalna(1,2);
+    liniowa(1,2,3);
+    zwróć();
 }
 
 procedura f1(int a, int b)
