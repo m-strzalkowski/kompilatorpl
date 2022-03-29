@@ -25,7 +25,7 @@ instrukcja   :   instrukcja_wyboru
              |   instrukcja_kontynuacji_petli
              |   instrukcja_powrotu
              |   deklaracja_atomiczna
-             |   deklaracja_atomiczna;
+             |   deklaracja_referencji;
 instrukcja_zlozona  : '{'  lista_instrukcji  '}';
 instrukcja_wyboru   : 'jeśli' '(' wyrazenie ')' instrukcja  'inaczej'  instrukcja;
 instrukcja_petli   : 'dopóki' '(' wyrazenie ')' instrukcja;
@@ -33,9 +33,9 @@ instrukcja_powrotu   : 'zwróć' '(' identyfikator ')' EOS;
 instrukcja_wkroczenia   : 'zacznij'  identyfikator '(' lista_parametrow_formalnych ')' EOS;
 instrukcja_przerwania_petli   : 'przerwij' EOS;
 instrukcja_kontynuacji_petli   : 'kontynuuj' EOS;
-instrukcja_prosta   :  wyrazenie EOS;//wywołanie ; |  przypisanie ;
- lista_parametrow_formalnych   :  deklaracja_parametru?
-                                |lista_parametrow_formalnych  ','  deklaracja_parametru;
+instrukcja_prosta   :  wyrazenie EOS |  przypisanie ; //wywołanie ; 
+ lista_parametrow_formalnych   :  deklaracja_parametru
+                                | lista_parametrow_formalnych  ','  deklaracja_parametru;
  deklaracja_parametru   :  nazwa_typu   identyfikator;
 /*
 expression
@@ -84,7 +84,7 @@ wyrazenie
  selektor_tablicowy   :  identyfikator  '['  wyrazenie  ']';
  selektor_typu_zlozonego   :  identyfikator  '.' ( identyfikator | selektor_typu_zlozonego );
  wywolanie_funkcji   :  identyfikator '(' lista_parametrow_aktualnych ')';
- lista_parametrow_aktualnych :  wyrazenie?
+ lista_parametrow_aktualnych :  wyrazenie
                              |  lista_parametrow_aktualnych  ','  wyrazenie;
 /*
  wiele cyfr   : 
