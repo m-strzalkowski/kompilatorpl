@@ -26,17 +26,19 @@ instrukcja   :   instrukcja_wyboru
              |   instrukcja_powrotu
              |   deklaracja_atomiczna
              |   deklaracja_referencji;
-instrukcja_zlozona  : '{'  lista_instrukcji  '}';
-instrukcja_wyboru   : 'jeśli' '(' wyrazenie ')' instrukcja  'inaczej'  instrukcja;
+instrukcja_zlozona  : '{'  lista_instrukcji?  '}';
+instrukcja_wyboru   : 'jeśli' '(' wyrazenie ')' instrukcja  ('inaczej'  instrukcja)?;
 instrukcja_petli   : 'dopóki' '(' wyrazenie ')' instrukcja;
-instrukcja_powrotu   : 'zwróć' '(' identyfikator ')' EOS;
+instrukcja_powrotu   : 'zwróć' '(' identyfikator? ')' EOS;
 instrukcja_wkroczenia   : 'zacznij'  identyfikator '(' lista_parametrow_formalnych ')' EOS;
 instrukcja_przerwania_petli   : 'przerwij' EOS;
 instrukcja_kontynuacji_petli   : 'kontynuuj' EOS;
-instrukcja_prosta   :  wyrazenie EOS |  przypisanie ; //wywołanie ; 
- lista_parametrow_formalnych   :  deklaracja_parametru
-                                | lista_parametrow_formalnych  ','  deklaracja_parametru;
- deklaracja_parametru   :  nazwa_typu   identyfikator;
+instrukcja_prosta   :  wyrazenie EOS |  przypisanie ; //wywołanie ;
+//konstrukcja poniżej spłaszcza drzewo (wzgledem poprzednie wersji) i prawdopodobnie usuwa koszmarek przy przegladaniu tegoż drzewa i generacji kodu
+lista_parametrow_formalnych : (deklaracja_parametru  (',' deklaracja_parametru)*)?;
+ //lista_parametrow_formalnych   :  deklaracja_parametru
+//                                | lista_parametrow_formalnych  ','  deklaracja_parametru;
+ deklaracja_parametru   :  nazwa_typu   identyfikator;//brakuje referencji...
 /*
 expression
     :   expression mult='*' expression          # expressionMultExpression
@@ -51,16 +53,17 @@ wyrazenie
           | selektor_typu_zlozonego                     #wyrazenieSelektorZl
           | neg='!' wyrazenie                           #wyrazenieNegacja
           | przec='-' wyrazenie                         #wyrazeniePrzeciwnosc
-          | wyrazenie '^'<assoc=right> wyrazenie        #wyrazeniePoteg
+          | <assoc=right> wyrazenie '^' wyrazenie       #wyrazeniePoteg
           | wyrazenie mult=('*' | '/' |'%') wyrazenie   #wyrazenieMult
           | wyrazenie addyt=('+' | '-') wyrazenie       #wyrazenieAddyt
           | wyrazenie logicz1=('&&' | '||')wyrazenie    #wyrazenieLogicz1
-          | wyrazenie logicz2=('==' | '!=')wyrazenie    #wyrazenieLogicz2
+          | wyrazenie logicz2=('==' | '!=' | '>' | '<' | '<=' | '>=')wyrazenie    #wyrazenieLogicz2
           | przypisanie                                 #wyrazeniePrzypisanie
           | stala_atomiczna                             #wyrazenieStala
           | wywolanie_funkcji                           #wyrazenieWywolanie
           | identyfikator                               #wyrazenieId
           ;
+
 /*
  wyrazenie : '(' wyrazenie ')'
            | przypisanie
@@ -74,18 +77,19 @@ wyrazenie
  //przypisanie   :  identyfikator   operator_przypisania   wyrazenie ;
  //operator_przypisania   :  '=' | '^=' | '*=' | '/=' | '%=' | '+=' | '-=';
  lwartosc: identyfikator | selektor_tablicowy | selektor_typu_zlozonego;
- przypisanie : lwartosc '=' wyrazenie                      #przypisanieZwykle
-             | lwartosc '^=' wyrazenie                     #przypisaniePoteg
-             | lwartosc mult=('*=' | '/=' | '%=') wyrazenie#przypisanieMult
-             | lwartosc addyt=('+=' | '-=') wyrazenie      #przypisanieAddyt
+ przypisanie : <assoc=right> lwartosc '=' wyrazenie                      #przypisanieZwykle
+             | <assoc=right> lwartosc '^=' wyrazenie                     #przypisaniePoteg
+             | <assoc=right> lwartosc mult=('*=' | '/=' | '%=') wyrazenie#przypisanieMult
+             | <assoc=right> lwartosc addyt=('+=' | '-=') wyrazenie      #przypisanieAddyt
              ;
  //operator_dwuargumentowy   :  '^' | '*' | '/' | '%' | '+' | '-' | '==' |  '|'   | '&&' | '||' | '!=' ;
  //operator_jednoargumentowy   : '-' | '!';
  selektor_tablicowy   :  identyfikator  '['  wyrazenie  ']';
  selektor_typu_zlozonego   :  identyfikator  '.' ( identyfikator | selektor_typu_zlozonego );
  wywolanie_funkcji   :  identyfikator '(' lista_parametrow_aktualnych ')';
- lista_parametrow_aktualnych :  wyrazenie
-                             |  lista_parametrow_aktualnych  ','  wyrazenie;
+ lista_parametrow_aktualnych : (wyrazenie  (',' wyrazenie)*)?;
+ //lista_parametrow_aktualnych :  wyrazenie
+ //                            |  lista_parametrow_aktualnych  ','  wyrazenie;
 /*
  wiele cyfr   : 
 { cyfra }+
