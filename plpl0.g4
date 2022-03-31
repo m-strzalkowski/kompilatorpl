@@ -9,8 +9,8 @@ deklaracja_typu   : 'typ'  identyfikator  '{' ( deklaracja_prosta )+ '}';
 deklaracja_prosta   :  deklaracja_atomiczna  |  deklaracja_referencji;
 
 deklaracja_referencji   :
-    identyfikator   identyfikator ('[' CALK ']')* EOS |
-    identyfikator   identyfikator   '='  (identyfikator | NAPIS_DOSL) EOS ;
+    (nazwa_typu | identyfikator )   identyfikator ('[' CALK ']')* EOS |
+    (nazwa_typu | identyfikator )   identyfikator   '='  (identyfikator | NAPIS_DOSL) EOS ;
 
 deklaracja_atomiczna   :  nazwa_typu   identyfikator ('[' CALK ']')* EOS
                 |  nazwa_typu   identyfikator  '='  (CALK | ZMIENN | ZNAK_DOSL) EOS ;
