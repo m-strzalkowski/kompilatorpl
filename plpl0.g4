@@ -5,7 +5,7 @@ byt_globalny: procedura | deklaracja_typu | deklaracja_prosta;
 
 procedura   :  'procedura' ('->' ( nazwa_typu  |  identyfikator ))? '{' lista_instrukcji  '}';
 
-deklaracja_typu   : nazwa_typu  identyfikator  '{' ( deklaracja_prosta )+ '}';
+deklaracja_typu   : 'typ'  identyfikator  '{' ( deklaracja_prosta )+ '}';
 deklaracja_prosta   :  deklaracja_atomiczna  |  deklaracja_referencji;
 
 deklaracja_referencji   :
