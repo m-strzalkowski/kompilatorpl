@@ -49,8 +49,10 @@ expression
     ;
 */
 wyrazenie
-          : selektor_tablicowy                          #wyrazenieSelektorTabl
+          : '(' wyrazenie ')'                           #wyrazenieNawiasy//nie wiem, czy nie powinny być pod koniec...
+          | selektor_tablicowy                          #wyrazenieSelektorTabl
           | selektor_typu_zlozonego                     #wyrazenieSelektorZl
+          | adr='@' lwartosc                            #wyrazenieAdres //funkcje rodem z C będą i tak potrzebować adresów....
           | neg='!' wyrazenie                           #wyrazenieNegacja
           | przec='-' wyrazenie                         #wyrazeniePrzeciwnosc
           | <assoc=right> wyrazenie '^' wyrazenie       #wyrazeniePoteg
