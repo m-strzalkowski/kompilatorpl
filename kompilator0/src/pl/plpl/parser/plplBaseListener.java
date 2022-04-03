@@ -232,6 +232,18 @@ public class plplBaseListener implements plplListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterWstawka_asemblerowa(plplParser.Wstawka_asemblerowaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWstawka_asemblerowa(plplParser.Wstawka_asemblerowaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterLista_parametrow_formalnych(plplParser.Lista_parametrow_formalnychContext ctx) { }
 	/**
 	 * {@inheritDoc}

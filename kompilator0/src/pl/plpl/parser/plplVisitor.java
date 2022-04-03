@@ -119,6 +119,12 @@ public interface plplVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitInstrukcja_prosta(plplParser.Instrukcja_prostaContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link plplParser#wstawka_asemblerowa}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWstawka_asemblerowa(plplParser.Wstawka_asemblerowaContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link plplParser#lista_parametrow_formalnych}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

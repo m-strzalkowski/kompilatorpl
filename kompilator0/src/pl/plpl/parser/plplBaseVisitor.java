@@ -143,6 +143,13 @@ public class plplBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements p
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitWstawka_asemblerowa(plplParser.Wstawka_asemblerowaContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitLista_parametrow_formalnych(plplParser.Lista_parametrow_formalnychContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

@@ -8,6 +8,9 @@ import java.util.List;
 import static java.lang.System.exit;
 
 public class Tablice {
+    public static String inputFilePath;
+    public static String outputFilePath;
+
     static List<Typ> typy;
     public static Typ typPoNazwie(String nazwa)
     {

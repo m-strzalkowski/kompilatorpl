@@ -188,6 +188,16 @@ public interface plplListener extends ParseTreeListener {
 	 */
 	void exitInstrukcja_prosta(plplParser.Instrukcja_prostaContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link plplParser#wstawka_asemblerowa}.
+	 * @param ctx the parse tree
+	 */
+	void enterWstawka_asemblerowa(plplParser.Wstawka_asemblerowaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link plplParser#wstawka_asemblerowa}.
+	 * @param ctx the parse tree
+	 */
+	void exitWstawka_asemblerowa(plplParser.Wstawka_asemblerowaContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link plplParser#lista_parametrow_formalnych}.
 	 * @param ctx the parse tree
 	 */

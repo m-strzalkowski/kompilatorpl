@@ -13,7 +13,7 @@ deklaracja_referencji   :
     pelny_typ  ID   '='  (ID | NAPIS_DOSL) EOS ;
 
 deklaracja_atomiczna   :  nazwa_typu_atom   ID (',' ID)*  EOS
-                |  nazwa_typu_atom   ID  '='  (CALK | ZMIENN | ZNAK_DOSL) (ID  '='  (CALK | ZMIENN | ZNAK_DOSL))* EOS ;
+                |  nazwa_typu_atom   ID  '='  (CALK | ZMIENN | ZNAK_DOSL) (',' ID  '='  (CALK | ZMIENN | ZNAK_DOSL))* EOS ;
 
 lista_instrukcji   : instrukcja+;
 instrukcja   :   instrukcja_wyboru
@@ -26,7 +26,8 @@ instrukcja   :   instrukcja_wyboru
              |   instrukcja_powrotu
              |   instrukcja_zakonczenia
              |   deklaracja_atomiczna
-             |   deklaracja_referencji;
+             |   deklaracja_referencji
+             |   wstawka_asemblerowa;
 instrukcja_zlozona  : '{'  lista_instrukcji?  '}';
 instrukcja_wyboru   : 'jeśli' '(' wyrazenie ')' instrukcja  ('inaczej'  instrukcja)?;
 instrukcja_petli   : 'dopóki' '(' wyrazenie ')' instrukcja;
@@ -36,6 +37,7 @@ instrukcja_zakonczenia : 'skończ' '(' wyrazenie ')' EOS;
 instrukcja_przerwania_petli   : 'przerwij' EOS;
 instrukcja_kontynuacji_petli   : 'kontynuuj' EOS;
 instrukcja_prosta  :   wyrazenie EOS;
+wstawka_asemblerowa : LINIA_ASEMBLERA;//przede wszystkim dla celów testowych, realnie wklejanie bezpośrednio kodu będzie mało przydatne.
 
 lista_parametrow_formalnych : (deklaracja_parametru  (',' deklaracja_parametru)*)?;
 deklaracja_parametru   :  pelny_typ   ID;

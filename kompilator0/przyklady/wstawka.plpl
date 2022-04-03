@@ -1,0 +1,13 @@
+typ z {całk a; całk b;}
+procedura -> z
+{
+    zacznij program();
+    z zz = nowy;
+    #push b'a' chyba nie zadziała
+    #mov eax, 4; sys_write
+    #mov ebx, 1;stdout
+    #mov ecx, esp-1
+    #mov edx, 1
+    #int 0x80
+    zwróć(z);
+}

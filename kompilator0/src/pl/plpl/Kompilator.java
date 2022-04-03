@@ -1,37 +1,73 @@
 package pl.plpl;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
+import org.apache.commons.cli.*;
 import pl.plpl.bledy.SyntaxErrorListener;
-import pl.plpl.generatory.GeneratorVisitor;
-import pl.plpl.generatory.Tablice;
-import pl.plpl.generatory.UstalaczStruktur;
-import pl.plpl.generatory.ZbieraczNowychTypow;
+import pl.plpl.generatory.*;
 import pl.plpl.parser.plplLexer;
 import pl.plpl.parser.plplParser;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 import static java.lang.System.exit;
+import static pl.plpl.generatory.Tablice.inputFilePath;
+import static pl.plpl.generatory.Tablice.outputFilePath;
 
 
 public class Kompilator {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args)  {
+        //Opcje z terminala (apache.commons.cli)
+        Options options = new Options();
+
+        Option optinput = new Option("i", "we", true, "Plik wejściowy");
+        optinput.setRequired(true);
+        options.addOption(optinput);
+
+        Option optoutput = new Option("o", "wy", true, "Plik wynikowy");
+        optoutput.setRequired(false);
+        options.addOption(optoutput);
+
+        String header = "Kompilator języka PL/PL\n\n";
+        String footer = "\nRepozytorium projektu: https://gitlab.com/Strzalkowski/kompilatorpl";
+        CommandLineParser optparser = new DefaultParser();
+        HelpFormatter optformatter = new HelpFormatter();
+        CommandLine cmd = null;//not a good practice, it serves it purpose
+
+        try {
+            cmd = optparser.parse(options, args);
+        } catch (ParseException e) {
+            //trzeba by przetłumaczyć komunikaty o błędach (załączając zmienione źródła...)
+            System.out.println(e.getMessage());
+
+            optformatter.setSyntaxPrefix("użycie:");
+            optformatter.printHelp("java pl.plpl.Kompilator", header, options, footer, true);
+
+            System.exit(1);
+        }
+
+        inputFilePath = cmd.getOptionValue("we");
+        outputFilePath = cmd.getOptionValue("wy");
+        System.out.println("Pierwszy (i zapewne jedyny) Kompilator języka PL/PL.");
+        System.out.println("Plik wejściowy:"+inputFilePath);
+        System.out.println("Plik wynikowy:"+outputFilePath);
+
+        //Inicjalizacja globalnych tablic kompilatora
         Tablice.inicjalizuj();
         //String inputFile = "C:\\Users\\mastr\\Documents\\MS\\STUDIA\\kompilatory\\kompilatorpl\\kompilator0\\przyklady\\a.plpl";
-        String inputFile = "C:\\Users\\mastr\\Documents\\MS\\STUDIA\\kompilatory\\kompilatorpl\\kompilator0\\przyklady\\deklaracje_typow.plpl";
-        if ( args.length>0 ) inputFile = args[0];
-        if(inputFile == null) {
-            System.err.println("Nie podano pliku wejścowego");
-            exit(1);
-        }
+        //String inputFile = "C:\\Users\\mastr\\Documents\\MS\\STUDIA\\kompilatory\\kompilatorpl\\kompilator0\\przyklady\\deklaracje_typow.plpl";
+
         //otwarcie pliku wejściowego
-        CharStream input = CharStreams.fromPath(Paths.get(inputFile), StandardCharsets.UTF_8);
+        CharStream input = null;
+        try {
+            input = CharStreams.fromPath(Paths.get(inputFilePath), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            System.err.println("Nie udało się otworzyć pliku wejściowego. Kończenie");
+            System.exit(1);
+        }
         //1.analiza leksykalna
         plplLexer lexer = new plplLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -55,6 +91,6 @@ public class Kompilator {
         GeneratorVisitor generator = new GeneratorVisitor();
         generator.visit(tree);
         //6.Składanie kodu?
-
+        new SkladaczKoduAsemblera().uruchom();
     }
 }
