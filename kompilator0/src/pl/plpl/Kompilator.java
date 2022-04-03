@@ -23,8 +23,8 @@ public class Kompilator {
 
     public static void main(String[] args) throws Exception {
         Tablice.inicjalizuj();
-        String inputFile = "C:\\Users\\mastr\\Documents\\MS\\STUDIA\\kompilatory\\kompilatorpl\\kompilator0\\przyklady\\a.plpl";
-        //String inputFile = "C:\\Users\\mastr\\Documents\\MS\\STUDIA\\kompilatory\\kompilatorpl\\kompilator0\\przyklady\\deklaracje_typow.plpl";
+        //String inputFile = "C:\\Users\\mastr\\Documents\\MS\\STUDIA\\kompilatory\\kompilatorpl\\kompilator0\\przyklady\\a.plpl";
+        String inputFile = "C:\\Users\\mastr\\Documents\\MS\\STUDIA\\kompilatory\\kompilatorpl\\kompilator0\\przyklady\\deklaracje_typow.plpl";
         if ( args.length>0 ) inputFile = args[0];
         if(inputFile == null) {
             System.err.println("Nie podano pliku wejścowego");
@@ -54,8 +54,7 @@ public class Kompilator {
         //5.Generacja kodu
         GeneratorVisitor generator = new GeneratorVisitor();
         generator.visit(tree);
-
-
+        //6.Składanie kodu?
 
     }
 }

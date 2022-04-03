@@ -80,6 +80,10 @@ procedura
 typ nowytyp {całk pole1; znak pole2;}
 procedura
 {
+    całk a;
+    {
+    całk a;
+    }
     zacznij program();
     //pisz("Witaj świecie");
     proporcjonalna(1,2);
