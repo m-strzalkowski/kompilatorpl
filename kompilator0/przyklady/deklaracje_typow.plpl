@@ -1,0 +1,18 @@
+typ zesp {rzeczyw rzecz; rzeczyw uroj;}
+typ vec3 {całk x; całk y; całk z;}
+typ Kot {
+    Głowa głowa;
+    Ogon ogon;
+    Śródkocie środek;
+    rzeczyw wiek;
+    znak[] imie;
+}
+typ Głowa {całk id;}
+typ Ogon {całk id;}
+typ Śródkocie {całk id; rzeczyw spłaszczenie;}
+
+procedura
+{
+    zacznij program();
+    zwróć();
+}

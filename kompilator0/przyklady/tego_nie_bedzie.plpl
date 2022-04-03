@@ -1,0 +1,17 @@
+importuj "macierze.hplpl";
+wklej "miscellanea.plpl";
+
+procedura
+{
+    zacznij program(całk argc, znak[][] argv);
+    macierz a = nowa macierz({{1,2},{3,4}});
+    macierz b = nowa macierz({{5,6},{3,4}});
+    macierz c = a `*` b;
+    macierz d = a•b;
+    wektor v = nowy wektor({2,3,4});
+    wektor u = nowy wektor({5,6,7});
+    wektor w = 2`*`v + u•v;
+    wektor V = u×v;
+    macierz A = nowa automatyczna macierz(V);//przeładowanie konstruktora i konwersja typów w ten sposób
+    zwróć();
+}

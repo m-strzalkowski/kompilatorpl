@@ -1,0 +1,9 @@
+procedura
+{
+    zacznij program();
+    //całk i = czytaj_znak();
+    pisz_znak('H');
+    pisz_znak('E');
+    //skończ(17);
+    zwróć();
+}
