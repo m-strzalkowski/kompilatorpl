@@ -1,5 +1,13 @@
 lexer grammar Lekserpl; // note "lexer grammar"
 NIC : 'nic' | 'NIC' | 'Nic';
+STATYCZN: 'statyczn'[yea];
+AUTOMATYCZN : 'automatyczn'[yea];
+STAL : 'sta'[\u0142][yea];
+TCALK: 'ca'[\u0142]'k';
+TRZECZYW: 'rzeczyw';
+TZNAK: 'znak';
+TREF: 'ref';
+
 ZMIENN : CALK'.'CALK; //zmiennoprzecinkowa liczba
 CALK :   [0-9]+ ;   //zwykła liczba
 ZNAK_DOSL

@@ -41,17 +41,29 @@ public interface plplVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDeklaracja_prosta(plplParser.Deklaracja_prostaContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link plplParser#deklaracja_referencji}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitDeklaracja_referencji(plplParser.Deklaracja_referencjiContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link plplParser#deklaracja_atomiczna}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitDeklaracja_atomiczna(plplParser.Deklaracja_atomicznaContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link plplParser#deklarator_bez_przypisania}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDeklarator_bez_przypisania(plplParser.Deklarator_bez_przypisaniaContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link plplParser#deklarator_atomiczny_z_przypisaniem}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDeklarator_atomiczny_z_przypisaniem(plplParser.Deklarator_atomiczny_z_przypisaniemContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link plplParser#deklaracja_referencji}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDeklaracja_referencji(plplParser.Deklaracja_referencjiContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link plplParser#lista_instrukcji}.
 	 * @param ctx the parse tree
@@ -304,6 +316,18 @@ public interface plplVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitPelny_typ(plplParser.Pelny_typContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link plplParser#przydomki}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPrzydomki(plplParser.PrzydomkiContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link plplParser#przydomek}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPrzydomek(plplParser.PrzydomekContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link plplParser#nazwa_typu_atom}.
 	 * @param ctx the parse tree

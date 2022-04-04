@@ -1,0 +1,31 @@
+statyczne stałe ref[][][6] r;
+całk R=2567;
+statyczna całk b;
+//statyczna stała całk c;
+automatyczna rzeczyw w;
+typ Zupa{całk ztrupa;}
+typ Zżółkłozwierzyniec {całk dziwność;}
+statyczna stała zupa wystygła;
+//automatyczne i;
+automatyczne całk i;
+statyczny Kot zdechły;
+automatyczny Kot zpiekłarodem;
+
+procedura -> całk
+{
+    stała całk A = 1;
+    automatyczne całk j,m=3;
+    znak[] napis = "Ala ma kota";
+    stały znak[] niepis = "A Ola psa";
+    całk k,l;
+    całk a;
+    zacznij f(całk a, całk b, rzeczyw r);
+    zacznij g(całk b, całk a);
+    statyczny znak z='z';
+    znak s;
+    statyczny rzeczyw x=3.0;
+    zwróć(0);
+}
+
+procedura{{}}
+procedura -> całk {{}}

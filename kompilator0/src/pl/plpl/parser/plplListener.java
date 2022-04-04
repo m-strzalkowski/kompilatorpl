@@ -58,16 +58,6 @@ public interface plplListener extends ParseTreeListener {
 	 */
 	void exitDeklaracja_prosta(plplParser.Deklaracja_prostaContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link plplParser#deklaracja_referencji}.
-	 * @param ctx the parse tree
-	 */
-	void enterDeklaracja_referencji(plplParser.Deklaracja_referencjiContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link plplParser#deklaracja_referencji}.
-	 * @param ctx the parse tree
-	 */
-	void exitDeklaracja_referencji(plplParser.Deklaracja_referencjiContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link plplParser#deklaracja_atomiczna}.
 	 * @param ctx the parse tree
 	 */
@@ -77,6 +67,36 @@ public interface plplListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitDeklaracja_atomiczna(plplParser.Deklaracja_atomicznaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link plplParser#deklarator_bez_przypisania}.
+	 * @param ctx the parse tree
+	 */
+	void enterDeklarator_bez_przypisania(plplParser.Deklarator_bez_przypisaniaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link plplParser#deklarator_bez_przypisania}.
+	 * @param ctx the parse tree
+	 */
+	void exitDeklarator_bez_przypisania(plplParser.Deklarator_bez_przypisaniaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link plplParser#deklarator_atomiczny_z_przypisaniem}.
+	 * @param ctx the parse tree
+	 */
+	void enterDeklarator_atomiczny_z_przypisaniem(plplParser.Deklarator_atomiczny_z_przypisaniemContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link plplParser#deklarator_atomiczny_z_przypisaniem}.
+	 * @param ctx the parse tree
+	 */
+	void exitDeklarator_atomiczny_z_przypisaniem(plplParser.Deklarator_atomiczny_z_przypisaniemContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link plplParser#deklaracja_referencji}.
+	 * @param ctx the parse tree
+	 */
+	void enterDeklaracja_referencji(plplParser.Deklaracja_referencjiContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link plplParser#deklaracja_referencji}.
+	 * @param ctx the parse tree
+	 */
+	void exitDeklaracja_referencji(plplParser.Deklaracja_referencjiContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link plplParser#lista_instrukcji}.
 	 * @param ctx the parse tree
@@ -503,6 +523,26 @@ public interface plplListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitPelny_typ(plplParser.Pelny_typContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link plplParser#przydomki}.
+	 * @param ctx the parse tree
+	 */
+	void enterPrzydomki(plplParser.PrzydomkiContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link plplParser#przydomki}.
+	 * @param ctx the parse tree
+	 */
+	void exitPrzydomki(plplParser.PrzydomkiContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link plplParser#przydomek}.
+	 * @param ctx the parse tree
+	 */
+	void enterPrzydomek(plplParser.PrzydomekContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link plplParser#przydomek}.
+	 * @param ctx the parse tree
+	 */
+	void exitPrzydomek(plplParser.PrzydomekContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link plplParser#nazwa_typu_atom}.
 	 * @param ctx the parse tree

@@ -2,6 +2,7 @@ package pl.plpl;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import org.apache.commons.cli.*;
+import pl.plpl.bledy.SemanticOccurence;
 import pl.plpl.bledy.SyntaxErrorListener;
 import pl.plpl.generatory.*;
 import pl.plpl.parser.plplLexer;
@@ -31,6 +32,10 @@ public class Kompilator {
         optoutput.setRequired(false);
         options.addOption(optoutput);
 
+        Option stopstate = new Option("s", "stop", true, "Jak poważny błąd zatrzyma kompilację: ostrzezenie/blad/fatalny, fatalny błąd domyślnie");
+        stopstate.setRequired(false);
+        options.addOption(stopstate);
+
         String header = "Kompilator języka PL/PL\n\n";
         String footer = "\nRepozytorium projektu: https://gitlab.com/Strzalkowski/kompilatorpl";
         CommandLineParser optparser = new DefaultParser();
@@ -48,7 +53,7 @@ public class Kompilator {
 
             System.exit(1);
         }
-
+        //pliki we/wy
         inputFilePath = cmd.getOptionValue("we");
         outputFilePath = cmd.getOptionValue("wy");
         System.out.println("Pierwszy (i zapewne jedyny) Kompilator języka PL/PL.");
@@ -57,6 +62,16 @@ public class Kompilator {
 
         //Inicjalizacja globalnych tablic kompilatora
         Tablice.inicjalizuj();
+        //tolerancja błędów ostrzezenie/blad/fatalny
+        String stopst = cmd.getOptionValue(stopstate);
+        if(stopst != null)
+        {
+            Tablice.podsystem_bledow.setStop_at_severity(switch (cmd.getOptionValue(stopstate)) {
+                case "ostrzezenie" -> SemanticOccurence.Level.WARN;
+                case "blad" -> SemanticOccurence.Level.ERROR;
+                default -> SemanticOccurence.Level.FATAL;
+            });
+        }
         //String inputFile = "C:\\Users\\mastr\\Documents\\MS\\STUDIA\\kompilatory\\kompilatorpl\\kompilator0\\przyklady\\a.plpl";
         //String inputFile = "C:\\Users\\mastr\\Documents\\MS\\STUDIA\\kompilatory\\kompilatorpl\\kompilator0\\przyklady\\deklaracje_typow.plpl";
 
@@ -85,8 +100,10 @@ public class Kompilator {
         //3.Zebranie nowych nazw typów
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk( new ZbieraczNowychTypow(parser), tree );
+        System.out.println(Tablice.wypisz());
         //4.Czytanie deklaracji i tworzenie struktur pamięci (typy i ramki stosu procedur)
         walker.walk(new UstalaczStruktur(parser), tree);
+        System.out.println(Tablice.wypisz());
         //5.Generacja kodu
         GeneratorVisitor generator = new GeneratorVisitor();
         generator.visit(tree);

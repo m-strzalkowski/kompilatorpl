@@ -8,12 +8,16 @@ procedura   :  'procedura' ('->' pelny_typ)? '{' lista_instrukcji  '}';
 deklaracja_typu   : 'typ'  ID  '{' ( deklaracja_prosta )+ '}';//użytkownik wprowadza nowy typ
 deklaracja_prosta   :  deklaracja_atomiczna  |  deklaracja_referencji;//użytkownik deklarje obiekt istniejącego już typu (atomicznego, bądź zdefiniowanego)
 
-deklaracja_referencji   :
-    pelny_typ ID  EOS |//pełny typ to np. całk[][]
-    pelny_typ  ID   '='  (ID | NAPIS_DOSL) EOS ;
 
-deklaracja_atomiczna   :  nazwa_typu_atom   ID (',' ID)*  EOS
-                |  nazwa_typu_atom   ID  '='  (CALK | ZMIENN | ZNAK_DOSL) (',' ID  '='  (CALK | ZMIENN | ZNAK_DOSL))* EOS ;
+//deklaracja_atomiczna   : przydomki nazwa_typu_atom   ID (',' ID)*  EOS
+//                |   przydomki nazwa_typu_atom   ID  '='  (CALK | ZMIENN | ZNAK_DOSL) (',' ID  '='  (CALK | ZMIENN | ZNAK_DOSL))* EOS ;
+deklaracja_atomiczna
+                :   przydomki nazwa_typu_atom   (deklarator_atomiczny_z_przypisaniem | deklarator_bez_przypisania) (',' (deklarator_atomiczny_z_przypisaniem | deklarator_bez_przypisania))* EOS ;
+deklarator_bez_przypisania : ID;
+deklarator_atomiczny_z_przypisaniem : ID  '='  (CALK | ZMIENN | ZNAK_DOSL);
+deklaracja_referencji   :
+     przydomki pelny_typ ID  EOS |//pełny typ to np. całk[][]
+     przydomki pelny_typ  ID   '='  (ID | NAPIS_DOSL) EOS ;
 
 lista_instrukcji   : instrukcja+;
 instrukcja   :   instrukcja_wyboru
@@ -83,5 +87,9 @@ wyrazenie
 
  stala_atomiczna   :  CALK  |  ZMIENN  |  ZNAK_DOSL ;
 
+//pelny_typ : ((nazwa_typu_atom ('[]')* ('[' CALK ']')+ ) | ID (('[]')* ('[' CALK ']')*) ) ;
 pelny_typ : (nazwa_typu_atom | ID ) ('[]')* ('[' CALK ']')*;
-nazwa_typu_atom   : 'całk' | 'rzeczyw' | 'znak';
+przydomki : ((STATYCZN|AUTOMATYCZN)? STAL?) | (STAL? (STATYCZN|AUTOMATYCZN)?);
+przydomek: STATYCZN | AUTOMATYCZN | STAL;
+//nazwa_typu_atom   : 'całk' | 'rzeczyw' | 'znak';
+nazwa_typu_atom : TCALK | TRZECZYW | TZNAK | TREF;

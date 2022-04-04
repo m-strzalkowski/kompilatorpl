@@ -76,18 +76,6 @@ public class plplBaseListener implements plplListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDeklaracja_referencji(plplParser.Deklaracja_referencjiContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitDeklaracja_referencji(plplParser.Deklaracja_referencjiContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterDeklaracja_atomiczna(plplParser.Deklaracja_atomicznaContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -95,6 +83,42 @@ public class plplBaseListener implements plplListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitDeklaracja_atomiczna(plplParser.Deklaracja_atomicznaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterDeklarator_bez_przypisania(plplParser.Deklarator_bez_przypisaniaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDeklarator_bez_przypisania(plplParser.Deklarator_bez_przypisaniaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterDeklarator_atomiczny_z_przypisaniem(plplParser.Deklarator_atomiczny_z_przypisaniemContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDeklarator_atomiczny_z_przypisaniem(plplParser.Deklarator_atomiczny_z_przypisaniemContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterDeklaracja_referencji(plplParser.Deklaracja_referencjiContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDeklaracja_referencji(plplParser.Deklaracja_referencjiContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -563,6 +587,30 @@ public class plplBaseListener implements plplListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitPelny_typ(plplParser.Pelny_typContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPrzydomki(plplParser.PrzydomkiContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPrzydomki(plplParser.PrzydomkiContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPrzydomek(plplParser.PrzydomekContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPrzydomek(plplParser.PrzydomekContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

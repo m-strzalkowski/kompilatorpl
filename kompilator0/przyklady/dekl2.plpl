@@ -1,0 +1,13 @@
+całk i=1, j, k=2;
+stała automatyczna rzeczyw pi=3.14;
+procedura -> całk
+{
+    zacznij program();
+    znak z = 'H';
+    automatyczny znak z2 = 'E';
+    stały statyczny znak z3 = 'Z';
+    stały automatyczny znak z4='x';
+    stały statyczny znak z3 = 'Q';
+    pisz_znak('H');
+    zwróć(0);
+}

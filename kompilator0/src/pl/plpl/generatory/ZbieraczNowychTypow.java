@@ -21,7 +21,7 @@ public class ZbieraczNowychTypow extends plplBaseListener {
         typy.add(new Typ(ctx.ID().getText(), Typ.Ref.dlugosc_B, false, null));
     }
     @Override public void exitProgram(plplParser.ProgramContext ctx) {
-        System.out.println(Tablice.wypisz());
+
     }
 
 }
