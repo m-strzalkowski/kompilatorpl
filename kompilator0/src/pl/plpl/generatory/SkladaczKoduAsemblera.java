@@ -11,17 +11,30 @@ import java.io.*;
 
 public class SkladaczKoduAsemblera {
 
-    public String nazwaPlikuAssemblera;
+    private String nazwaPlikuAssemblera;
     private String nazwaPlikuZRozszerzeniem;
+    private int system;
+
+    public static int WIN32 = 1;
+    public static int linux = 2;
 
     public SkladaczKoduAsemblera() {
-        nazwaPlikuAssemblera = "out";
-        nazwaPlikuZRozszerzeniem = nazwaPlikuAssemblera + ".asm";
+        SkladaczKoduAsemblera("out");
     }
 
     public SkladaczKoduAsemblera(String nazwaPliku) {
         nazwaPlikuAssemblera = nazwaPliku;
         nazwaPlikuZRozszerzeniem = nazwaPlikuAssemblera + ".asm";
+    }
+
+    public SkladaczKoduAsemblera(int system) {
+        this.system = system;
+        SkladaczKoduAsemblera("out");
+    }
+
+    public SkladaczKoduAsemblera(String nazwaPliku, int sytem) {
+        this.system = system;
+        SkladaczKoduAsemblera(nazwaPliku);
     }
 
     public void stworzPlikWynikowy() {
@@ -76,8 +89,11 @@ public class SkladaczKoduAsemblera {
 
     public void uruchom()
     {
-        wydajKomendeCmd("nasm -fwin32 " + nazwaPlikuAssemblera);
-        wydajKomendeCmd("gcc " + nazwaPlikuAssemblera + ".obj " + nazwaPlikuAssemblera);
-        wydajKomendeCmd(nazwaPlikuAssemblera);
+        if(system == WIN32)
+        {
+            wydajKomendeCmd("nasm -fwin32 " + nazwaPlikuAssemblera);
+            wydajKomendeCmd("gcc " + nazwaPlikuAssemblera + ".obj " + nazwaPlikuAssemblera);
+            wydajKomendeCmd(nazwaPlikuAssemblera);
+        }
     }
 }
