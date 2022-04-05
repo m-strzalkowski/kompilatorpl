@@ -24,6 +24,7 @@ public class Zakres {
         sym_po_nazwie.put(s.identyfikator, s);
     }
 
+    //Znajduje symbol w PRZESTREZNI NAZW - czyli danym zakresie i nadrzędnych
     public Symbol poNazwie(String identyfikator)
     {
         if(sym_po_nazwie.containsKey(identyfikator)){return sym_po_nazwie.get(identyfikator);}
@@ -34,6 +35,11 @@ public class Zakres {
             }
             else{return null;}
         }
+    }
+    //Znajduje symbol tylko w danym zakresie, nie przeszukuje w nadrzędnych
+    public Symbol poNazwie_bez_nadrzednych(String identyfikator)
+    {
+        return sym_po_nazwie.getOrDefault(identyfikator, null);
     }
 
     @Override

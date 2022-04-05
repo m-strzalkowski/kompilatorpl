@@ -69,6 +69,7 @@ wyrazenie
           | przypisanie                                 #wyrazeniePrzypisanie
           | stala_atomiczna                             #wyrazenieStala
           | ID                                          #wyrazenieId
+          //NAPIS_DOSL //??
           | '(' wyrazenie ')'                           #wyrazenieNawiasy
           ;
 

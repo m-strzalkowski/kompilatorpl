@@ -18,10 +18,10 @@ Jednak żeby to uzyskać, trzeba najpierw przetworzyć wszystkie deklaracje i po
                                               *deklaracji typu? zrobić nowy zakres mający za rodzica aktualny
  + wychodząc z powyższych przestawić aktualny zakres na wyższy
                                                *wychodznie z deklaracji typu
- * Wchodząc do deklaracji w procedurze przetworzyć ją: dodać symbol do zakresu, kod do bss, jakiś global; ewentualnie zainicjalizować, ustawić etykietę, dodać kod do data/rodata.
+ + Wchodząc do deklaracji w procedurze przetworzyć ją: dodać symbol do zakresu, kod do bss, * jakiś global; +ewentualnie zainicjalizować, ustawić etykietę, dodać kod do data/ *rodata.
  * Wchodząc do instrukcji wkroczenia przetworzyć liste parametrów
- * Sygalizować podwójną deklarację
- * Przetworzyc deklarację w deklaracji nowego typu
+ + Sygalizować podwójną deklarację
+ * Przetworzyc deklarację w deklaracji nowego typu, przetwarzać je inaczej niż w procedurach, zmienić gramatykę?
  * Wychodząc z deklaracji nowego typu podliczyć przesunięcia adresów dla składowych i zapisać
  * Wychodząc z deklaracji procedury przetrawić argumenty i zmienne lokalne i ustalić ramkę stosu.
  */
@@ -54,6 +54,7 @@ public class UstalaczStruktur extends plplBaseListener {
         Tablice.procedury.add(p);
         aktualnyZakres = new Zakres(aktualnyZakres, p);
         Tablice.zakresy.add(aktualnyZakres);
+        p.najogolniejszy_zakres = aktualnyZakres;
         System.out.println("dodano procedurę "+p.nr+" i zakres "+ aktualnyZakres.nr);
     }
     /*
@@ -201,7 +202,8 @@ public class UstalaczStruktur extends plplBaseListener {
     }
 
     private void sprawdzanie_redeklaracji_w_kodzie(String id, PelnyTyp t, ParserRuleContext ctx) {
-        if(aktualnyZakres.poNazwie(id) != null){
+
+        if(aktualnyZakres.poNazwie_bez_nadrzednych(id) != null){//całk a; {całk a;} ma wyprodukować dwie zmienne a
             Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.ERROR, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
                     "Redeklaracja identyfikatora '"+id+"' poza listą parametrów formalnych"
             ));
@@ -213,6 +215,13 @@ public class UstalaczStruktur extends plplBaseListener {
             else {Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
                     "Redeklaracja identyfikatora:"+id+"typ się nie zgadza z poprzednim, nie można kontynuować"+"typy:\n"+ aktualnyZakres.poNazwie(id).pelnyTyp.toString() + "\n"+t.toString()
             ));
+                Symbol ewentualny_parametr = aktualnyZakres.procedura.najogolniejszy_zakres.poNazwie_bez_nadrzednych(id);//coś w zakresie całej procedury...
+                if(ewentualny_parametr.pelnyTyp.parametr_formalny)//...co jest parametrem formalnym
+                {
+                    Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.WARN, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                            "Redeklaracja identyfikatora '"+id+"': Istnieje już w tej procedurze parametr formalny o tej nazwie. Dodanie do podrzędnego zakresu symbolu o tej samej nazwie spowoduje zasłonięcie parametru formalnego, czy o to Ci chodziło?"
+                    ));
+                }
 
             }
         }

@@ -1,0 +1,7 @@
+procedura -> całk
+{
+     całk a;
+    {
+         całk a;
+    }
+}

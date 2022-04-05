@@ -55,7 +55,7 @@ public class Tablice {
 
         sb.append("\nKOD GLOBALNY:\n");
         sb.append(kod_globalny.toString());
-        sb.append("\nPROCEDURY:\n");
+        sb.append("\nPROCEDURY:"+procedury.size()+"\n");
         for(var p:procedury)
         {
             sb.append(p.toString());

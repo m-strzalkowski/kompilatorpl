@@ -15,6 +15,7 @@ public class Procedura {
     public List<Pair<String,PelnyTyp>> pelnaListaArgumentow = new ArrayList<Pair<String,PelnyTyp>>();//nazwa - typ
     public List<PunktWejsciowy> wejscia = new ArrayList<>();
     public List<Zakres> zakresy = new ArrayList<>();
+    //najogólniejszy zakres?
     public Map<Symbol, Boolean> zmapowane_w_pamiec_symbole = new HashMap<Symbol,Boolean>();//te, które maja odpowiadające obiekty pamięci
 
     public List<ObiektStatyczny> statyczne = new ArrayList<ObiektStatyczny>();
@@ -25,6 +26,7 @@ public class Procedura {
     public StringBuilder bss = new StringBuilder();
     public StringBuilder rodata = new StringBuilder();
     public StringBuilder text = new StringBuilder();
+    public Zakres najogolniejszy_zakres=null;//zakres odpowiadający nawiasom klamrowym procedury, potrzebny bo w nim mają być parametry formalne
     //public StringBuilder prolog_text = new StringBuilder();
 
     public Procedura() {
@@ -45,6 +47,6 @@ public class Procedura {
                 ", bss=" + bss +
                 ", rodata=" + rodata +
                 ", text=" + text +
-                '}';
+                "}\n";
     }
 }
