@@ -31,6 +31,15 @@ public class Procedura {
         nr = licznik++;
     }
 
+    public String zamienNaAssembler()
+    {
+        if(str != null && !str.isEmpty())
+        {
+            return "section .data\n" + data + "\n" + bss + "\n" + rodata + "\n" + text + "\n";
+        }
+        return bss+ "\n" + rodata + "\n" + text + "\n";
+    }
+
 
     @Override
     public String toString() {
