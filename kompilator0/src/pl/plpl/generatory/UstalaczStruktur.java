@@ -8,6 +8,8 @@ import pl.plpl.generatory.klasyDanych.pamiec.ObiektStatyczny;
 import pl.plpl.parser.plplBaseListener;
 import pl.plpl.parser.plplParser;
 
+import java.util.Objects;
+
 import static pl.plpl.generatory.Tablice.typy;
 
 /*
@@ -34,8 +36,8 @@ public class UstalaczStruktur extends plplBaseListener {
         aktualnyZakres = Tablice.zakres_globalny;
     }
     @Override public void enterInstrukcja_zlozona(plplParser.Instrukcja_zlozonaContext ctx) {
-        aktualnyZakres = new Zakres(aktualnyZakres, aktualnyZakres.procedura);
-        Tablice.zakresy.add(aktualnyZakres);
+        aktualnyZakres = new Zakres(aktualnyZakres, aktualnyZakres.procedura, ctx.getStart());
+        Tablice.dodajZakres(aktualnyZakres);
         System.out.println("dodano zakres"+aktualnyZakres.toString());
     }
     @Override public void exitInstrukcja_zlozona(plplParser.Instrukcja_zlozonaContext ctx) {
@@ -50,10 +52,10 @@ public class UstalaczStruktur extends plplBaseListener {
     }
 
     @Override public void enterProcedura(plplParser.ProceduraContext ctx) {
-        Procedura p = new Procedura();
+        Procedura p = new Procedura(ctx.getStart());
         Tablice.procedury.add(p);
-        aktualnyZakres = new Zakres(aktualnyZakres, p);
-        Tablice.zakresy.add(aktualnyZakres);
+        aktualnyZakres = new Zakres(aktualnyZakres, p, ctx.getStart());
+        Tablice.dodajZakres(aktualnyZakres);
         p.najogolniejszy_zakres = aktualnyZakres;
         System.out.println("dodano procedurę "+p.nr+" i zakres "+ aktualnyZakres.nr);
     }
@@ -226,6 +228,56 @@ public class UstalaczStruktur extends plplBaseListener {
             }
         }
     }
+    //deklaracje na listach parametrów
+    @Override public void enterInstrukcja_wkroczenia(plplParser.Instrukcja_wkroczeniaContext ctx) {
+        //rozpoznawanie początkowaej procedury....
+        if(Objects.equals(ctx.ID().getText(), Tablice.WEJSCIE_PROG))
+        {
+            System.out.println("Znaleziono punkt wejściowy programu");
+            if(Tablice.znaleziono_pkt_we_programu)//nie może być dwóch mainów!
+            {
+                Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                        "Duplikat punktu wejściowego do programu ('zacznij program')"
+                ));
+            }
+            Tablice.znaleziono_pkt_we_programu = true;
+            aktualnyZakres.procedura.poczatkowa = true;
+        }
+        //dla wejść w procedurze startowej trzeba sprawdzić, czy argumenty są puste/ TODO argc argv
+        if(aktualnyZakres.procedura.poczatkowa == true)
+        {
+            if(ctx.lista_parametrow_formalnych().deklaracja_parametru().size() > 0)
+            {
+                Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                        "Na razie program/punkt wejściowy procedury startowej nie może mieć argumentów ('zacznij program')"
+                ));
+            }
+        }
+        //dodawanie punktu wejściowego
+        sprawdzanie_redeklaracji_punktu_we(ctx.getText(), ctx);
+        PunktWejsciowy pkt = new PunktWejsciowy(ctx.ID().getText());
+        aktualnyZakres.procedura.wejscia.add(pkt);
+        aktualnyZakres.procedura.zamknieta_zwroc=false;
+        //dodawanie symbolu
+        PelnyTyp t = new PelnyTyp();
+        t.typ = Typ.Pkt;
+        Symbol symPunktu = new Symbol(ctx.ID().getText(), Tablice.zakres_globalny, t);
+        symPunktu.pktWe = pkt;
+        Tablice.zakres_globalny.dodajSymbol(symPunktu);
+    }
+
+    private void sprawdzanie_redeklaracji_punktu_we(String id, ParserRuleContext ctx) {
+
+        if(Tablice.zakres_globalny.poNazwie_bez_nadrzednych(id) != null){//całk a; {całk a;} ma wyprodukować dwie zmienne a
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                    "Redeklaracja identyfikatora '"+id+"' jako punktu wejściowego"
+            ));
+            //TODO lokalne punkty wejściowe?
+        }
+    }
+    @Override public void enterInstrukcja_powrotu(plplParser.Instrukcja_powrotuContext ctx) {
+        aktualnyZakres.procedura.zamknieta_zwroc=true;
+    }
 
     /**
      *
@@ -240,10 +292,54 @@ public class UstalaczStruktur extends plplBaseListener {
                 ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
                 "Analizator semantyczny rozpozanł wyjście do wyższego zakresu, a jest już w globalnym"
         ));}
+        //procedura musi sobie ustawić wszyskie deklaracje
+        //aktualnyZakres.procedura.przeliczStruktury()
+        //co jeśli nie ma wejśc do procedury?
+        if(aktualnyZakres.procedura.wejscia.size() < 1)
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                "Procedura bez punktów wejściowych, co to ma znaczyć?"
+        ));
+
+        //wyjście do wyższego zakresu
         aktualnyZakres = aktualnyZakres.nadrzedny;
     }
 
+
+    /** Stałe typu "string" {1,2,3}, na które będą wskazywać pary symbol-obiekt pamięci typu referenyjnego, muszą odpowiadać jakimś rzeczywistym obiektom, które trzeba zrobić...
+     *
+     */
+    @Override public void enterStala_tablicowa(plplParser.Stala_tablicowaContext ctx) {
+        if(ctx.NAPIS_DOSL() != null)
+        {
+            if(aktualnyZakres.poTokenie(ctx.NAPIS_DOSL().getSymbol()) != null){return;}//coś już symbol z tego tokenu, może deklaracja stałej
+            ctx.NAPIS_DOSL().getText();
+            ctx.NAPIS_DOSL().getSymbol();
+            PelnyTyp t = new PelnyTyp();
+            t.inicjalizowana = true;
+            t.parametr_formalny = false;
+            t.rodzaj_pamieci = PelnyTyp.RodzajPam.STATYCZNA;
+            t.krotnosc_tablicowa = -1;//?? jako faktyczny obiekt??, nie referencja
+            t.modyfikowalonosc = PelnyTyp.Mod.ZMIENNA;//??
+            t.dlugosc_tablicy = ctx.NAPIS_DOSL().getText().length()-2+1;//cudzysłowy, null
+            t.typ = Typ.Znak;
+            //zawsze dodanie nowego tokena...
+            Symbol sym = new Symbol(ctx.NAPIS_DOSL().getSymbol(), aktualnyZakres, t);
+            aktualnyZakres.dodajSymbol(sym);
+
+            //...i obiektu pamięci z nim powiązanego
+            new ObiektStatyczny(sym);
+            String wartosc = ctx.NAPIS_DOSL().getText().replaceAll("^\"|\"$", "");//usuwamy cudzysłowy z końca i początku
+            //@ASM
+            //dodaj zainicjalizowany string, zamknięty w kopniętych apostrofach `` (obsługuje \n\t itd) i z nullem (zerem) na końcu
+            aktualnyZakres.procedura.data.append(sym.etykieta()).append(":   db    `").append(wartosc).append("`, 0  ;z linii ").append(ctx.NAPIS_DOSL().getSymbol().getLine()).append("\n");
+        }
+    }
+
     @Override public void exitProgram(plplParser.ProgramContext ctx) {
+        if(Tablice.znaleziono_pkt_we_programu == false)
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.INFO, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                "Nie znaleziono punktu wejściowego do programu ('zacznij program')"
+        ));
         System.out.println("KONIEC USTALANIA STRUKTUR");
     }
 }

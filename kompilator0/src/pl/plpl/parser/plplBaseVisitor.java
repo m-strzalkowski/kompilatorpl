@@ -150,6 +150,13 @@ public class plplBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements p
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitWypisanie(plplParser.WypisanieContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitInstrukcja_prosta(plplParser.Instrukcja_prostaContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -340,6 +347,13 @@ public class plplBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements p
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitStala_atomiczna(plplParser.Stala_atomicznaContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitStala_tablicowa(plplParser.Stala_tablicowaContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

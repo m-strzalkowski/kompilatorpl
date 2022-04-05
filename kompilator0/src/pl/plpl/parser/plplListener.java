@@ -198,6 +198,16 @@ public interface plplListener extends ParseTreeListener {
 	 */
 	void exitInstrukcja_kontynuacji_petli(plplParser.Instrukcja_kontynuacji_petliContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link plplParser#wypisanie}.
+	 * @param ctx the parse tree
+	 */
+	void enterWypisanie(plplParser.WypisanieContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link plplParser#wypisanie}.
+	 * @param ctx the parse tree
+	 */
+	void exitWypisanie(plplParser.WypisanieContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link plplParser#instrukcja_prosta}.
 	 * @param ctx the parse tree
 	 */
@@ -513,6 +523,16 @@ public interface plplListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitStala_atomiczna(plplParser.Stala_atomicznaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link plplParser#stala_tablicowa}.
+	 * @param ctx the parse tree
+	 */
+	void enterStala_tablicowa(plplParser.Stala_tablicowaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link plplParser#stala_tablicowa}.
+	 * @param ctx the parse tree
+	 */
+	void exitStala_tablicowa(plplParser.Stala_tablicowaContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link plplParser#pelny_typ}.
 	 * @param ctx the parse tree

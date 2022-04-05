@@ -1,0 +1,9 @@
+procedura
+{
+    zacznij program();
+    $$;dupa
+    wypisz("Hello world!");
+    wypisz("Ala ma kota");
+    wypisz("Hello world!");
+    zwróć();
+}

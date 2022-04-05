@@ -1,0 +1,15 @@
+procedura
+{
+    zacznij program();
+    $$push dword 0
+    $$.przed:
+    wypisz("Hello world!");
+    wypisz("Ala ma kota");
+    wypisz("Hello world!");
+    $$mov eax [esp]
+    $$inc eax
+    $$mov [esp] eax
+    $$cmp eax 7
+    $$jge .przed
+    zwróć();
+}

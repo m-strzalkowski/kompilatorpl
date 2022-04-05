@@ -35,6 +35,7 @@ public class Typ {
     public static final Typ Rzeczyw = new Typ("rzeczyw", 4, true, null);
     public static final Typ Znak = new Typ("znak", 1, true, null);
     public static final Typ Ref = new Typ("ref", 4, true, null);
+    public static final Typ Pkt = new Typ("pkt", 4, true, null);//punkt wejściowy
     public static Typ zTokena(Token token)
     {
         switch (token.getType())

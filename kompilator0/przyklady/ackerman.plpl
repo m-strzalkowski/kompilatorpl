@@ -24,5 +24,6 @@ procedura
         }
         i+=1;
     }
+    zwróć();
 }
 

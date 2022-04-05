@@ -1,10 +1,13 @@
 package pl.plpl.generatory;
 
+import org.antlr.v4.runtime.Token;
 import pl.plpl.bledy.Błędnik;
 import pl.plpl.generatory.klasyDanych.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.System.exit;
 
@@ -19,6 +22,19 @@ public class Tablice {
     public static Procedura kod_globalny;
     public static List<Zakres> zakresy = new ArrayList<>();
     public static List<Procedura> procedury = new ArrayList<>();
+    public static Map<Token, Zakres> zakresy_po_pierwszym_tokenie = new HashMap<>();
+
+    public static boolean znaleziono_pkt_we_programu=false;//czy znaleziono program/main
+    public static String PODKRESLNIK = "_";//zamienić na "", jeśli w tym srodowisku nie życzą sobie podkreśnika przed np. main
+    public static String WEJSCIE_PROG = "program";//nazwa stojąca za main
+
+    public static void dodajZakres(Zakres z)
+    {
+        zakresy.add(z); zakresy_po_pierwszym_tokenie.put(z.startToken, z);
+    }
+    public static Zakres zakresPoPierwszymTokenie(Token t){
+        return zakresy_po_pierwszym_tokenie.getOrDefault(t, null);
+    }
     public static Typ typPoNazwie(String nazwa)
     {
         for (var t:typy) {if(t.nazwa.equals(nazwa))return t;} return null;
@@ -31,8 +47,8 @@ public class Tablice {
         typy.add(Typ.Znak);
         typy.add(Typ.Ref);
 
-        kod_globalny = new Procedura();
-        zakres_globalny = new Zakres(null, kod_globalny);
+        kod_globalny = new Procedura(null);
+        zakres_globalny = new Zakres(null, kod_globalny, null);
     }
 
 

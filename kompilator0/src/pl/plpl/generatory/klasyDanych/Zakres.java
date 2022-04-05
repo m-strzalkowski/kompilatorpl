@@ -1,5 +1,7 @@
 package pl.plpl.generatory.klasyDanych;
 
+import org.antlr.v4.runtime.Token;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,20 +10,25 @@ import java.util.Map;
 public class Zakres {
     static int licznik=0;
     public int nr;
+    public Token startToken;
     public Zakres nadrzedny;
     public Procedura procedura=null;
     public List<Symbol> symbole=new ArrayList<>();
     public Map<String, Symbol> sym_po_nazwie = new HashMap<String,Symbol>();
-    public Zakres(Zakres nadrzedny, Procedura procedura) {
+    public Map<Token, Symbol> sym_po_tokenie = new HashMap<Token,Symbol>();
+    public Zakres(Zakres nadrzedny, Procedura procedura, Token startToken) {
         nr = licznik++;
         this.nadrzedny = nadrzedny;
         this.procedura = procedura;
+        this.startToken = startToken;
     }
+
 
     public void dodajSymbol(Symbol s)
     {
         symbole.add(s);
-        sym_po_nazwie.put(s.identyfikator, s);
+        if(s.token != null){sym_po_tokenie.put(s.token, s);}
+        else if(s.identyfikator != null){sym_po_nazwie.put(s.identyfikator, s);}
     }
 
     //Znajduje symbol w PRZESTREZNI NAZW - czyli danym zakresie i nadrzędnych
@@ -40,6 +47,18 @@ public class Zakres {
     public Symbol poNazwie_bez_nadrzednych(String identyfikator)
     {
         return sym_po_nazwie.getOrDefault(identyfikator, null);
+    }
+
+    public Symbol poTokenie(Token token)
+    {
+        if(sym_po_tokenie.containsKey(token)){return sym_po_tokenie.get(token);}
+        else{
+            if(nadrzedny != null)
+            {
+                return nadrzedny.poTokenie(token);
+            }
+            else{return null;}
+        }
     }
 
     @Override

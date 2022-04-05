@@ -31,7 +31,8 @@ instrukcja   :   instrukcja_wyboru
              |   instrukcja_zakonczenia
              |   deklaracja_atomiczna
              |   deklaracja_referencji
-             |   wstawka_asemblerowa;
+             |   wstawka_asemblerowa
+             |   wypisanie;
 instrukcja_zlozona  : '{'  lista_instrukcji?  '}';
 instrukcja_wyboru   : 'jeśli' '(' wyrazenie ')' instrukcja  ('inaczej'  instrukcja)?;
 instrukcja_petli   : 'dopóki' '(' wyrazenie ')' instrukcja;
@@ -40,6 +41,7 @@ instrukcja_wkroczenia   : 'zacznij'  ID '(' lista_parametrow_formalnych ')' EOS;
 instrukcja_zakonczenia : 'skończ' '(' wyrazenie ')' EOS;
 instrukcja_przerwania_petli   : 'przerwij' EOS;
 instrukcja_kontynuacji_petli   : 'kontynuuj' EOS;
+wypisanie : 'wypisz' '(' stala_tablicowa ')'EOS;//dla celów testowych
 instrukcja_prosta  :   wyrazenie EOS;
 wstawka_asemblerowa : LINIA_ASEMBLERA;//przede wszystkim dla celów testowych, realnie wklejanie bezpośrednio kodu będzie mało przydatne.
 
@@ -87,7 +89,7 @@ wyrazenie
  lista_parametrow_aktualnych : (wyrazenie  (',' wyrazenie)*)?;
 
  stala_atomiczna   :  CALK  |  ZMIENN  |  ZNAK_DOSL ;
-
+ stala_tablicowa   : NAPIS_DOSL;
 //pelny_typ : ((nazwa_typu_atom ('[]')* ('[' CALK ']')+ ) | ID (('[]')* ('[' CALK ']')*) ) ;
 pelny_typ : (nazwa_typu_atom | ID ) ('[]')* ('[' CALK ']')*;
 przydomki : ((STATYCZN|AUTOMATYCZN)? STAL?) | (STAL? (STATYCZN|AUTOMATYCZN)?);

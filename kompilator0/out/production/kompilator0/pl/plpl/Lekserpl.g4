@@ -17,7 +17,7 @@ ZNAK_DOSL
 NAPIS_DOSL
     :  '"' ( EscapeSequence | ~('\\'|'"') )* '"'
     ;
-LINIA_ASEMBLERA : '#' .*? '\r'? '\n';
+LINIA_ASEMBLERA : '$$' .*? '\r'? '\n';
 fragment
 EscapeSequence
     :   '\\' ('b'|'t'|'n'|'f'|'r'|'\''|'\\');

@@ -1,0 +1,4 @@
+Węzły tworzące nowy zakres:
++ procedury
++ instrukcje_zlozone
+* deklaracje_typow

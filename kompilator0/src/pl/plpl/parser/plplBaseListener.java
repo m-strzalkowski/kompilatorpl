@@ -244,6 +244,18 @@ public class plplBaseListener implements plplListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterWypisanie(plplParser.WypisanieContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWypisanie(plplParser.WypisanieContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterInstrukcja_prosta(plplParser.Instrukcja_prostaContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -575,6 +587,18 @@ public class plplBaseListener implements plplListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitStala_atomiczna(plplParser.Stala_atomicznaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterStala_tablicowa(plplParser.Stala_tablicowaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitStala_tablicowa(plplParser.Stala_tablicowaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

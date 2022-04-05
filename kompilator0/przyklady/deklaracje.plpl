@@ -2,17 +2,18 @@ statyczne stałe ref[][][6] r;
 całk R=2567;
 statyczna całk b;
 //statyczna stała całk c;
-automatyczna rzeczyw w;
+//automatyczna rzeczyw w;
 typ Zupa{całk ztrupa;}
 typ Zżółkłozwierzyniec {całk dziwność;}
 statyczna stała zupa wystygła;
 //automatyczne i;
-automatyczne całk i;
+//automatyczne całk i;
 statyczny Kot zdechły;
 automatyczny Kot zpiekłarodem;
 
 procedura -> całk
 {
+    wypisz("ala ma kota");
     stała całk A = 1;
     automatyczne całk j,m=3;
     znak[] napis = "Ala ma kota";

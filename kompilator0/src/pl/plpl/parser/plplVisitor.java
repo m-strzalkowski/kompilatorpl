@@ -125,6 +125,12 @@ public interface plplVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitInstrukcja_kontynuacji_petli(plplParser.Instrukcja_kontynuacji_petliContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link plplParser#wypisanie}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWypisanie(plplParser.WypisanieContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link plplParser#instrukcja_prosta}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -310,6 +316,12 @@ public interface plplVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitStala_atomiczna(plplParser.Stala_atomicznaContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link plplParser#stala_tablicowa}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStala_tablicowa(plplParser.Stala_tablicowaContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link plplParser#pelny_typ}.
 	 * @param ctx the parse tree

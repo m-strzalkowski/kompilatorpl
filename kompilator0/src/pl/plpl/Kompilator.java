@@ -107,6 +107,7 @@ public class Kompilator {
         //5.Generacja kodu
         GeneratorVisitor generator = new GeneratorVisitor();
         generator.visit(tree);
+        System.out.println(Tablice.wypisz());
         //6.Składanie kodu?
         new SkladaczKoduAsemblera().uruchom();
     }
