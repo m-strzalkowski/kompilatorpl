@@ -77,7 +77,7 @@ public class SkladaczKoduAsemblera {
     public void uruchom()
     {
         wydajKomendeCmd("nasm -fwin32 " + nazwaPlikuAssemblera);
-        wydajKomendeCmd("gcc " + nazwaPlikuAssemblera + ".obj");
+        wydajKomendeCmd("gcc " + nazwaPlikuAssemblera + ".obj " + nazwaPlikuAssemblera);
         wydajKomendeCmd(nazwaPlikuAssemblera);
     }
 }
