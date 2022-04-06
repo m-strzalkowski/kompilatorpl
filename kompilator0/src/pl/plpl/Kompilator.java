@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.Objects;
 
 import static java.lang.System.exit;
+import static pl.plpl.generatory.Tablice.Srodowisko.*;
 import static pl.plpl.generatory.Tablice.inputFilePath;
 import static pl.plpl.generatory.Tablice.outputFilePath;
 
@@ -35,6 +36,10 @@ public class Kompilator {
         Option stopstate = new Option("s", "stop", true, "Jak poważny błąd zatrzyma kompilację: ostrzezenie/blad/fatalny, fatalny błąd domyślnie");
         stopstate.setRequired(false);
         options.addOption(stopstate);
+
+        Option format = new Option("f", "format", true, "Format wynikowy: nasm-win32/nasm-linux32 - asembler na daną platformę, win32/elf32 - wygenerowania obrazu wykonywalnego");
+        format.setRequired(false);
+        options.addOption(format);
 
         String header = "Kompilator języka PL/PL\n\n";
         String footer = "\nRepozytorium projektu: https://gitlab.com/Strzalkowski/kompilatorpl";
@@ -71,6 +76,19 @@ public class Kompilator {
                 case "blad" -> SemanticOccurence.Level.ERROR;
                 default -> SemanticOccurence.Level.FATAL;
             });
+        }
+        String fmt = cmd.getOptionValue(format);
+        Tablice.SRODOWISKO=WIN32; Tablice.generacja_binarnego_obrazu = true;
+        if(fmt != null)
+        {
+            switch(fmt)
+            {
+                case "win32": Tablice.SRODOWISKO=WIN32; Tablice.generacja_binarnego_obrazu = true; break;
+                case "elf32": Tablice.SRODOWISKO=LINUX32; Tablice.generacja_binarnego_obrazu = true; break;
+                case "nasm-win32": Tablice.SRODOWISKO=WIN32; Tablice.generacja_binarnego_obrazu = false; break;
+                case "nasm-linux32": Tablice.SRODOWISKO=LINUX32; Tablice.generacja_binarnego_obrazu = false; break;
+                default: Tablice.SRODOWISKO=WIN32; Tablice.generacja_binarnego_obrazu = true;
+            }
         }
         //String inputFile = "C:\\Users\\mastr\\Documents\\MS\\STUDIA\\kompilatory\\kompilatorpl\\kompilator0\\przyklady\\a.plpl";
         //String inputFile = "C:\\Users\\mastr\\Documents\\MS\\STUDIA\\kompilatory\\kompilatorpl\\kompilator0\\przyklady\\deklaracje_typow.plpl";
@@ -109,6 +127,11 @@ public class Kompilator {
         generator.visit(tree);
         System.out.println(Tablice.wypisz());
         //6.Składanie kodu?
-        new SkladaczKoduAsemblera().uruchom();
+        SkladaczKoduAsemblera skladacz = new SkladaczKoduAsemblera(inputFilePath, Tablice.SRODOWISKO);
+        skladacz.zapiszKodAssembleraDoPliku();
+        if(Tablice.generacja_binarnego_obrazu)
+        {
+            skladacz.uruchom();
+        }
     }
 }

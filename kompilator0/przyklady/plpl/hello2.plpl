@@ -1,0 +1,14 @@
+procedura
+{
+    zacznij program();
+    $$mov ecx, 0    ; number of iterations
+    $$.przed:nop
+    $$push ecx
+    wypisz("A to jest ");
+    wypisz("iteracja %d\n");
+    $$pop ecx
+    $$inc ecx       ; ecx += 1
+    $$cmp ecx, 10    ; compare ecx with 0
+    $$jl .przed      ; jump to label if lesser
+    zwróć();
+}

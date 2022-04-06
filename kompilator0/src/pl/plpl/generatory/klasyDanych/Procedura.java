@@ -51,6 +51,33 @@ public class Procedura {
         return "P"+ wejscia.get(0).etykieta();
     }
 
+    public StringBuilder zamienNaAssembler()
+    {
+        StringBuilder sb = new StringBuilder();
+        if(!data.isEmpty())
+        {
+            sb.append("section .data\n");
+            sb.append(data);
+        }
+        if(!bss.isEmpty())
+        {
+            sb.append("section .bss\n");
+            sb.append(bss);
+        }
+        if(!text.isEmpty())
+        {
+            sb.append("section .text\n");
+            sb.append(text);
+        }
+        if(!rodata.isEmpty())
+        {
+            sb.append("section .rodata\n");
+            sb.append(rodata);
+        }
+
+        return sb;
+    }
+
     @Override
     public String toString() {
         return "Procedura{początkowa:" + poczatkowa +

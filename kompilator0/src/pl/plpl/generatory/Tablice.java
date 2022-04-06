@@ -12,6 +12,9 @@ import java.util.Map;
 import static java.lang.System.exit;
 
 public class Tablice {
+    public enum Srodowisko{WIN32, LINUX32};
+    public static Srodowisko SRODOWISKO;
+    public static boolean generacja_binarnego_obrazu = false;//czy generować asm, czy próbować uruchomić nasm i potem gcc/ld
     public static String inputFilePath;
     public static String outputFilePath;
 
