@@ -24,6 +24,7 @@ procedura
         }
         i+=1;
     }
+    wypisz("Jestem strasznie szybkim komputerem.");
     zwróć();
 }
 
