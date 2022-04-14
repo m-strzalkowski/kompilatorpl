@@ -2,9 +2,15 @@ global _main
 extern _printf
 
 section .data
-Sznak_1_1:   db    `Program z pętlą:\n`, 0  ;z linii 4
-Sznak_1_2:   db    `To jest `, 0  ;z linii 8
-Sznak_1_3:   db    `iteracja %d\n`, 0  ;z linii 9
+Scak_0_0:   dd    2567;R
+section .bss
+Scak_0_1:   resb    4;b
+Scak_0_2:   resb    4;ztrupa
+Scak_0_3:   resb    4;dziwność
+section .data
+Sznak_1_5:   db    `ala ma kota`, 0  ;z linii 17
+Sznak_1_12:   db    'z';z
+Srzeczyw_1_14:   dd    3.0;x
 section .text
 P_main_prolog:
 ;coś tu może być...
@@ -22,28 +28,11 @@ _main:
               ;tu coś może być
               after_main:
 ;wypisanie
-                push dword Sznak_1_1
+                push dword Sznak_1_5
                 call _printf
                 add esp, byte 4
 ;koniec wypisania
-mov ecx, 0    ; number of iterations
-.przed:nop
-push ecx
-;wypisanie
-                push dword Sznak_1_2
-                call _printf
-                add esp, byte 4
-;koniec wypisania
-;wypisanie
-                push dword Sznak_1_3
-                call _printf
-                add esp, byte 4
-;koniec wypisania
-pop ecx
-inc ecx       ; ecx += 1
-cmp ecx, 10    ; compare ecx with 0
-jl .przed      ; jump to label if lesser
-;instrukcja zwróć() w globalnej procedurze
+nullnullnullnullnullnullnullnullnull;instrukcja zwróć() w globalnej procedurze
               call P_main_epilog
                 ;niszczenie ramki
                 mov esp, ebp

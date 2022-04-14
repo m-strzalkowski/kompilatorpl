@@ -1,10 +1,11 @@
 procedura
 {
     zacznij program();
+    wypisz("Program z pętlą:\n");
     $$mov ecx, 0    ; number of iterations
     $$.przed:nop
     $$push ecx
-    wypisz("A to jest ");
+    wypisz("To jest ");
     wypisz("iteracja %d\n");
     $$pop ecx
     $$inc ecx       ; ecx += 1

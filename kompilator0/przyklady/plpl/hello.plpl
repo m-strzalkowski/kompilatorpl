@@ -1,6 +1,8 @@
 procedura
 {
+    statyczny znak z = 1234;
     zacznij program();
+    //zacznij program(całk i);
     //całk i = czytaj_znak();
     pisz_znak('H');
     pisz_znak('E');

@@ -54,6 +54,7 @@ public class SkladaczKoduAsemblera {
 
         gotowyKod.append("global _main\nextern _printf\n\n");
 
+        gotowyKod.append(Tablice.kod_globalny.zamienNaAssembler());
         for (Procedura p : Tablice.procedury) {
             gotowyKod.append(p.zamienNaAssembler());
         }

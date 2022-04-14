@@ -3,6 +3,6 @@ procedura
     zacznij program();
     wypisz("Hello world!\n");
     wypisz("Witaj świecie!\n");
-    wypisz("Salve orbi!!\n");
+    wypisz("Salve orbi!\n");
     zwróć();
 }

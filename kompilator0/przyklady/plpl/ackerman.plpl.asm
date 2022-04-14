@@ -1,16 +1,30 @@
 global _main
 extern _printf
 
+section .text
+Pack_prolog:
+;coś tu może być...
+ret
+;mid
+null;instrukcja zwróć() w globalnej procedurze
+              call Pack_epilog
+                ;niszczenie ramki
+                mov esp, ebp
+                pop ebp
+                ;^niszczenie ramki stosu procedury
+                ret; wyjście z procedury
+;/mid
+Pack_epilog:
+;coś tu może być...
+ret
 section .data
-Sznak_1_1:   db    `Program z pętlą:\n`, 0  ;z linii 4
-Sznak_1_2:   db    `To jest `, 0  ;z linii 8
-Sznak_1_3:   db    `iteracja %d\n`, 0  ;z linii 9
+Sznak_5_5:   db    `Jestem strasznie szybkim komputerem.`, 0  ;z linii 27
 section .text
 P_main_prolog:
 ;coś tu może być...
 ret
 ;mid
-;punkt wejsciowy program
+nullnull;punkt wejsciowy program
               jmp after_main; jeśli sterowanie trafia na wkroczenie, ma go przeskoczyć
 _main:
 ;robienie ramki
@@ -22,27 +36,10 @@ _main:
               ;tu coś może być
               after_main:
 ;wypisanie
-                push dword Sznak_1_1
+                push dword Sznak_5_5
                 call _printf
                 add esp, byte 4
 ;koniec wypisania
-mov ecx, 0    ; number of iterations
-.przed:nop
-push ecx
-;wypisanie
-                push dword Sznak_1_2
-                call _printf
-                add esp, byte 4
-;koniec wypisania
-;wypisanie
-                push dword Sznak_1_3
-                call _printf
-                add esp, byte 4
-;koniec wypisania
-pop ecx
-inc ecx       ; ecx += 1
-cmp ecx, 10    ; compare ecx with 0
-jl .przed      ; jump to label if lesser
 ;instrukcja zwróć() w globalnej procedurze
               call P_main_epilog
                 ;niszczenie ramki
