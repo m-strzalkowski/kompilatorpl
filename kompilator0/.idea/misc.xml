@@ -23,6 +23,66 @@
           <option name="language" value="" />
           <option name="generateVisitor" value="true" />
         </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/src/pl/plpl/Debugger/kompilatoraDebugger.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="C:\Users\mastr\Documents\MS\STUDIA\kompilatory\kompilatorpl\kompilator0\src" />
+          <option name="libDir" value="C:\Users\mastr\Documents\MS\STUDIA\kompilatory\kompilatorpl\kompilator0\src" />
+          <option name="encoding" value="utf-8" />
+          <option name="pkg" value="pl.plpl.Debugger.wygenerowane" />
+          <option name="language" value="" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/src/pl/plpl/Debugger/lekserDebuggerakompilatora.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="C:\Users\mastr\Documents\MS\STUDIA\kompilatory\kompilatorpl\kompilator0\src" />
+          <option name="libDir" value="" />
+          <option name="encoding" value="utf-8" />
+          <option name="pkg" value="pl.plpl.Debugger.wygenerowane" />
+          <option name="language" value="" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/src/pl/plpl/Debugger/lekserDebugera.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="C:\Users\mastr\Documents\MS\STUDIA\kompilatory\kompilatorpl\kompilator0\src" />
+          <option name="libDir" value="C:\Users\mastr\Documents\MS\STUDIA\kompilatory\kompilatorpl\kompilator0\src" />
+          <option name="encoding" value="utf-8" />
+          <option name="pkg" value="pl.plpl.Debugger" />
+          <option name="language" value="" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/src/pl/plpl/Debugger/parserDebugera.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="" />
+          <option name="libDir" value="" />
+          <option name="encoding" value="utf-8" />
+          <option name="pkg" value="" />
+          <option name="language" value="" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/src/pl/plpl/Debuger/lekserDebugera.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="C:\Users\mastr\Documents\MS\STUDIA\kompilatory\kompilatorpl\kompilator0\src" />
+          <option name="libDir" value="C:\Users\mastr\Documents\MS\STUDIA\kompilatory\kompilatorpl\kompilator0\src" />
+          <option name="encoding" value="utf-8" />
+          <option name="pkg" value="pl.plpl.Debuger.wygenerowane" />
+          <option name="language" value="" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/src/pl/plpl/Debuger/parserDebugera.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="C:\Users\mastr\Documents\MS\STUDIA\kompilatory\kompilatorpl\kompilator0\src" />
+          <option name="libDir" value="C:\Users\mastr\Documents\MS\STUDIA\kompilatory\kompilatorpl\kompilator0\src" />
+          <option name="encoding" value="utf-8" />
+          <option name="pkg" value="pl.plpl.Debuger.wygenerowane" />
+          <option name="language" value="" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
       </list>
     </option>
   </component>

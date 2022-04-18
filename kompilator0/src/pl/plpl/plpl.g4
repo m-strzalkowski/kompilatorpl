@@ -41,7 +41,7 @@ instrukcja_wkroczenia   : 'zacznij'  ID '(' lista_parametrow_formalnych ')' EOS;
 instrukcja_zakonczenia : 'skończ' '(' wyrazenie ')' EOS;
 instrukcja_przerwania_petli   : 'przerwij' EOS;
 instrukcja_kontynuacji_petli   : 'kontynuuj' EOS;
-wypisanie : 'wypisz' '(' stala_tablicowa ')'EOS;//dla celów testowych
+wypisanie : 'wypisz' '(' (stala_tablicowa | ID)  ')'EOS;//dla celów testowych
 instrukcja_prosta  :   wyrazenie EOS;
 wstawka_asemblerowa : LINIA_ASEMBLERA;//przede wszystkim dla celów testowych, realnie wklejanie bezpośrednio kodu będzie mało przydatne.
 
@@ -70,7 +70,7 @@ wyrazenie
           | wyrazenie porownanie=('==' | '!=' | '>' | '<' | '<=' | '>=')wyrazenie    #wyrazeniePorownanie
           | przypisanie                                 #wyrazeniePrzypisanie
           | stala_atomiczna                             #wyrazenieStala
-          | ID                                          #wyrazenieId
+          //| ID                                          #wyrazenieId//wystarczy sama lwartość, której ID jest szczególnym przypadkiem
           //NAPIS_DOSL //??
           | '(' wyrazenie ')'                           #wyrazenieNawiasy
           ;
@@ -79,6 +79,7 @@ wyrazenie
  selektor_tablicowy   :  '['  wyrazenie  ']';
  selektor_typu_zlozonego   :  '.' ID ;
 
+//W przypisaniu lwartość ma zmodyfikowane znaczenie: jest to ADRES elementu, do którego trzeba wpisać WARTOść (która też może być adresem)
  przypisanie : <assoc=right> lwartosc '=' wyrazenie                      #przypisanieZwykle
              | <assoc=right> lwartosc '^=' wyrazenie                     #przypisaniePoteg
              | <assoc=right> lwartosc mult=('*=' | '/=' | '%=') wyrazenie#przypisanieMult

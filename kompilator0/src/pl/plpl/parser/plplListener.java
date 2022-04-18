@@ -308,18 +308,6 @@ public interface plplListener extends ParseTreeListener {
 	 */
 	void exitWyrazeniePoteg(plplParser.WyrazeniePotegContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code wyrazenieId}
-	 * labeled alternative in {@link plplParser#wyrazenie}.
-	 * @param ctx the parse tree
-	 */
-	void enterWyrazenieId(plplParser.WyrazenieIdContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code wyrazenieId}
-	 * labeled alternative in {@link plplParser#wyrazenie}.
-	 * @param ctx the parse tree
-	 */
-	void exitWyrazenieId(plplParser.WyrazenieIdContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code wyrazenieLogicz}
 	 * labeled alternative in {@link plplParser#wyrazenie}.
 	 * @param ctx the parse tree

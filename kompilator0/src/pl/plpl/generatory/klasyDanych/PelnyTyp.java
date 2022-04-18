@@ -35,6 +35,10 @@ public class PelnyTyp implements Cloneable{
                 )
                 :(Typ.Ref.dlugosc_B);
     }
+    public boolean czyAtomiczny()
+    {
+        return this.typ.atomiczny && (this.krotnosc_tablicowa == 0);
+    }
 
     @Override
     public boolean equals(Object o) {

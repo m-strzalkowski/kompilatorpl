@@ -1,15 +1,17 @@
+<GEN SEM TYP>
 procedura
 {
     zacznij program();
-    wypisz("Program z pętlą:\n");
+    wypisz("Program z pętlą:\n");<G><T>
     $$mov ecx, 0    ; number of iterations
     $$.przed:nop
     $$push ecx
-    wypisz("To jest ");
-    wypisz("iteracja %d\n");
+    wypisz("To jest ");<SEM:cd proc 0>
+    wypisz("iteracja %d!\n");
     $$pop ecx
     $$inc ecx       ; ecx += 1
     $$cmp ecx, 10    ; compare ecx with 0
     $$jl .przed      ; jump to label if lesser
     zwróć();
 }
+<TG>

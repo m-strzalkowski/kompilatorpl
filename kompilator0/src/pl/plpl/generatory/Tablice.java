@@ -1,6 +1,7 @@
 package pl.plpl.generatory;
 
 import org.antlr.v4.runtime.Token;
+import pl.plpl.Debuger.DebugerKompilatora;
 import pl.plpl.bledy.Błędnik;
 import pl.plpl.generatory.klasyDanych.*;
 
@@ -9,14 +10,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.System.exit;
-
 public class Tablice {
     public enum Srodowisko{WIN32, LINUX32};
     public static Srodowisko SRODOWISKO;
     public static boolean generacja_binarnego_obrazu = false;//czy generować asm, czy próbować uruchomić nasm i potem gcc/ld
     public static String inputFilePath;
     public static String outputFilePath;
+    public static DebugerKompilatora debuger_kompilatora=null;
 
     public static Błędnik podsystem_bledow = new Błędnik();
 
@@ -82,4 +82,15 @@ public class Tablice {
         sb.append("\nKONIEC TABLIC KOMPILATORA:\n");
         return sb.toString();
     }
+    public static String listingProcedur()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\nPROCEDURY:"+procedury.size()+"\n");
+        for(var p:procedury)
+        {
+            sb.append(p.toString());
+        }
+        return sb.toString();
+    }
+
 }

@@ -6,7 +6,7 @@ import pl.plpl.generatory.klasyDanych.Symbol;
  * Reprezentuje obiekt w ramce stosu procedury (patrz komentarz do klasy nadrzędnej)
  */
 public class ObiektAutomatyczny extends ObiektPamieci{
-    int offset;//od ebp (rejestru dna stosu)
+    public int offset;//od ebp (rejestru dna stosu)
 
     public ObiektAutomatyczny(Symbol symbol) {
         this.symbol = symbol;

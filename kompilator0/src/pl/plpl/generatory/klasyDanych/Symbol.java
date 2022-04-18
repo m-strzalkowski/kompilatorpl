@@ -1,6 +1,9 @@
 package pl.plpl.generatory.klasyDanych;
 
 import org.antlr.v4.runtime.Token;
+import pl.plpl.generatory.klasyDanych.pamiec.ObiektAutomatyczny;
+import pl.plpl.generatory.klasyDanych.pamiec.ObiektPamieci;
+import pl.plpl.generatory.klasyDanych.pamiec.ObiektStatyczny;
 
 import java.text.Normalizer;
 import java.util.Map;
@@ -14,6 +17,7 @@ public class Symbol {
     public PunktWejsciowy pktWe;//dla punktów wejściowych
     public Zakres zakres;
     public PelnyTyp pelnyTyp;
+    public ObiektPamieci obiektPamieci;
 
     @Override
     public String toString() {
@@ -31,6 +35,8 @@ public class Symbol {
         this.token = null;
         this.zakres = zakres;
         this.pelnyTyp = pelnyTyp;
+        this.obiektPamieci = (pelnyTyp.rodzaj_pamieci == PelnyTyp.RodzajPam.AUTOMATYCZNA)?(new ObiektAutomatyczny(this)):(new ObiektStatyczny(this));
+
     }
     public Symbol(Token token, Zakres zakres, PelnyTyp pelnyTyp) {
         this.nr = licznik++;
@@ -38,11 +44,17 @@ public class Symbol {
         this.identyfikator = null;
         this.zakres = zakres;
         this.pelnyTyp = pelnyTyp;
+        this.obiektPamieci = (pelnyTyp.rodzaj_pamieci == PelnyTyp.RodzajPam.AUTOMATYCZNA)?(new ObiektAutomatyczny(this)):(new ObiektStatyczny(this));
     }
     public String etykieta()
     {
         //Normalizer.normalize(pelnyTyp.typ.nazwa, Normalizer.Form.NFD)NFKD
-        if(pelnyTyp.rodzaj_pamieci == PelnyTyp.RodzajPam.AUTOMATYCZNA){return "RUNTIME_ERROR_HANDLER";}
+        if(pelnyTyp.rodzaj_pamieci == PelnyTyp.RodzajPam.AUTOMATYCZNA){
+            var obp = (ObiektAutomatyczny)obiektPamieci;
+            String zn = (obp.offset<0)?(""):("+");
+            return "ebp"+zn+obp.offset;
+        }
         return "S"+Normalizer.normalize(pelnyTyp.typ.nazwa, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")+"_"+zakres.nr+"_"+nr;
     }
+
 }

@@ -30,6 +30,7 @@ Jednak żeby to uzyskać, trzeba najpierw przetworzyć wszystkie deklaracje i po
 public class UstalaczStruktur extends plplBaseListener {
     plplParser parser;
     private Zakres aktualnyZakres;
+    public Zakres getAktualnyZakres() {return aktualnyZakres;}
     public UstalaczStruktur(plplParser parser) {this.parser = parser;}
     @Override public void enterProgram(plplParser.ProgramContext ctx) {
         System.out.println("USTALANIE STRUKTUR\n");
@@ -111,12 +112,12 @@ public class UstalaczStruktur extends plplBaseListener {
                 //dodj niezainicjalizowane miejsce długie na ileś bajtów opatrzone etykietą
                 aktualnyZakres.procedura.bss.append(sym.etykieta()).append(":   resb    ").append(t.typ.dlugosc_B).append(";").append(sym.identyfikator).append("\n");
                 //dodanie obiektu pamięci
-                new ObiektStatyczny(sym);
+                //new ObiektStatyczny(sym);
             }
             else{//automatyczna
                 //nie następuje emisja żadnego kodu
                 //dodanie obiektu pamięci
-                new ObiektAutomatyczny(sym);
+                //new ObiektAutomatyczny(sym);
             }
 
 
@@ -165,7 +166,7 @@ public class UstalaczStruktur extends plplBaseListener {
                     catch (NumberFormatException e)
                     {
                         Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                                "Nieprawidłowa liczba zmiennopozycyjna:"+d.CALK().getText()));
+                                "Nieprawidłowa liczba zmiennopozycyjna:"+d.ZMIENN().getText()));
                     }
                     //@ASM
                     //dodaj zainicjalizowaną liczbę całk. (int32)
@@ -193,11 +194,11 @@ public class UstalaczStruktur extends plplBaseListener {
                 }
 
                 //dodanie obiektu pamięci
-                new ObiektStatyczny(sym);
+                //new ObiektStatyczny(sym);
             }
             else{//automatycznych już nie można inicjować, generator będzie musiał wstawić odpowiedni kod w procedurze
                 //dodanie obiektu pamięci
-                new ObiektAutomatyczny(sym);
+               // new ObiektAutomatyczny(sym);
             }
 
         }
@@ -293,7 +294,7 @@ public class UstalaczStruktur extends plplBaseListener {
                 "Analizator semantyczny rozpozanł wyjście do wyższego zakresu, a jest już w globalnym"
         ));}
         //procedura musi sobie ustawić wszyskie deklaracje
-        //aktualnyZakres.procedura.przeliczStruktury()
+        aktualnyZakres.procedura.przeliczStruktury();
         //co jeśli nie ma wejśc do procedury?
         if(aktualnyZakres.procedura.wejscia.size() < 1)
         Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
@@ -327,7 +328,7 @@ public class UstalaczStruktur extends plplBaseListener {
             aktualnyZakres.dodajSymbol(sym);
 
             //...i obiektu pamięci z nim powiązanego
-            new ObiektStatyczny(sym);
+            //new ObiektStatyczny(sym);
             String wartosc = ctx.NAPIS_DOSL().getText().replaceAll("^\"|\"$", "");//usuwamy cudzysłowy z końca i początku
             //@ASM
             //dodaj zainicjalizowany string, zamknięty w kopniętych apostrofach `` (obsługuje \n\t itd) i z nullem (zerem) na końcu

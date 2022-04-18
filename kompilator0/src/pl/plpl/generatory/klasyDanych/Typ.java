@@ -52,4 +52,18 @@ public class Typ {
         }
 
     }
+    public static String akumulator(int rozmiar_B)
+    {
+        switch(rozmiar_B)
+        {
+            case 1: return "al";
+            case 2: return "ax";
+            case 4: return "eax";
+            default:
+                Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, 0,-1 ,-1,
+                        "Niedozwolona długość typu atomicznego:"+rozmiar_B+"bajtów (dozwolone 8bi/16bi/32bi)" )); return "eax";
+        }
+    }
+    public static final int DLUGOSC_SLOWA_B = 4;//długość słowa w bajtach
+
 }

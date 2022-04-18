@@ -190,13 +190,6 @@ public interface plplVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitWyrazeniePoteg(plplParser.WyrazeniePotegContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code wyrazenieId}
-	 * labeled alternative in {@link plplParser#wyrazenie}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitWyrazenieId(plplParser.WyrazenieIdContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code wyrazenieLogicz}
 	 * labeled alternative in {@link plplParser#wyrazenie}.
 	 * @param ctx the parse tree

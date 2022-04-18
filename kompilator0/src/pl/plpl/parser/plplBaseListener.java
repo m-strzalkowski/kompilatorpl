@@ -364,18 +364,6 @@ public class plplBaseListener implements plplListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterWyrazenieId(plplParser.WyrazenieIdContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitWyrazenieId(plplParser.WyrazenieIdContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterWyrazenieLogicz(plplParser.WyrazenieLogiczContext ctx) { }
 	/**
 	 * {@inheritDoc}

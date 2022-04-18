@@ -20,6 +20,7 @@ public class Zakres {
         nr = licznik++;
         this.nadrzedny = nadrzedny;
         this.procedura = procedura;
+        this.procedura.zakresy.add(this);
         this.startToken = startToken;
     }
 
@@ -69,6 +70,19 @@ public class Zakres {
                 "\n, procedura=" + procedura.nr +
                 "\n, symbole=" + symbole.toString() +
                 "\nKoniec zakresu}";
+    }
+    public String krotkoSymbole()
+    {
+        StringBuilder sb = new StringBuilder("Symbole w zakresie"+nr+"\nidentyfikator, etykieta, token");
+        for(var s: symbole){sb.append("\n"+s.identyfikator+","+s.etykieta()+","+s.token);}
+        return sb.toString();
+    }
+    public String krotkoPrzestrzen()
+    {
+        StringBuilder sb = new StringBuilder("\nSymbole w zakresie"+nr+"\nidentyfikator, etykieta, token, zakres");
+        for(var s: symbole){sb.append("\n"+s.identyfikator+","+s.etykieta()+","+s.token+","+this.nr);}
+        if(this.nadrzedny != null) sb.append(this.nadrzedny.krotkoPrzestrzen());
+        return sb.toString();
     }
 
     //dajSymbol

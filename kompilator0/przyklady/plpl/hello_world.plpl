@@ -1,8 +1,21 @@
 procedura
 {
     zacznij program();
-    wypisz("Hello world!\n");
-    wypisz("Witaj świecie!\n");
-    wypisz("Salve orbi!\n");
+    //znak z - nie działa jak powinno z jakiegoś powodu, pewnnie od zamieszania z mov ? al, może trzeba movs/movz byte?
+    całk z;
+    z='a';
+    wypisz(z);
+    z=z+1;
+    wypisz(z);
+    z=z+10;
+    wypisz(z);
+    całk a;
+    a=8-z;
+    wypisz(a);
+    a=z-8;
+    wypisz(a);
     zwróć();
 }
+procedura{zacznij f(); zwróć();<SEM:,>}
+procedura{zacznij g(); zwróć();<SEM:dok.>}
+procedura{zacznij h(); zwróć();<SEM:cd proc 1>}

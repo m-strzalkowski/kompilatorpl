@@ -1,0 +1,23 @@
+procedura
+{
+    zacznij program();
+    wypisz("Hello world!\n");
+    wypisz("Witaj świecie!\n");
+    wypisz("Salve orbi!\n");
+    statyczny całk a=1;
+    całk b,c,d;
+    a=11+3;
+    b=22;
+    c=1;
+    d=44;
+    wypisz(a);
+    wypisz(b);
+    wypisz(c);
+    wypisz(d);
+    d=10-4;
+    wypisz(d);
+    zwróć();
+}
+procedura{zacznij f(); zwróć();<SEM:,>}
+procedura{zacznij g(); zwróć();<SEM:dok.>}
+procedura{zacznij h(); zwróć();<SEM:cd proc 1>}

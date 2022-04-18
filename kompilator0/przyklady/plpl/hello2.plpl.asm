@@ -2,9 +2,9 @@ global _main
 extern _printf
 
 section .data
-Sznak_1_1:   db    `Program z pętlą:\n`, 0  ;z linii 4
-Sznak_1_2:   db    `To jest `, 0  ;z linii 8
-Sznak_1_3:   db    `iteracja %d\n`, 0  ;z linii 9
+Sznak_1_1:   db    `Program z pętlą:\n`, 0  ;z linii 5
+Sznak_1_2:   db    `To jest `, 0  ;z linii 9
+Sznak_1_3:   db    `iteracja %d!\n`, 0  ;z linii 10
 section .text
 P_main_prolog:
 ;coś tu może być...

@@ -54,6 +54,12 @@ public class SkladaczKoduAsemblera {
 
         gotowyKod.append("global _main\nextern _printf\n\n");
 
+        gotowyKod.append(";dodatki dla wypisz\n");
+        gotowyKod.append("section .rodata\n");
+        gotowyKod.append("WYPISZ_CALK_FMT:   db    `liczba:%d\\n`, 0  ;\n");
+        gotowyKod.append("WYPISZ_ZNAK_FMT:   db    `znak:%c\\n`, 0  ;\n");
+        gotowyKod.append(";koniec dodatków\n");
+
         gotowyKod.append(Tablice.kod_globalny.zamienNaAssembler());
         for (Procedura p : Tablice.procedury) {
             gotowyKod.append(p.zamienNaAssembler());
