@@ -480,4 +480,77 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         return sb.toString();
     }
 
+    @Override public String visitWyrazenieMult(plplParser.WyrazenieMultContext ctx)
+    {
+        StringBuilder sb = new StringBuilder();
+        String wyrazenie2 = visit(ctx.wyrazenie().get(1));
+        PelnyTyp twyrazenie2 = stosTypów.pop();
+        String wyrazenie1 = visit(ctx.wyrazenie().get(0));
+        PelnyTyp twyrazenie1 = stosTypów.peek();
+        //@ASM
+        sb.append(";mnożenie/dzielenie/modulo:"+ctx.start.getLine() +"\n");
+        sb.append(wyrazenie2);
+        sb.append("                push eax\n");
+        sb.append(wyrazenie1);
+        sb.append("                pop ebx\n");
+        if(ctx.mult.getText().equals("*"))
+        {
+            sb.append("                imul ebx\n");
+        }
+        if(ctx.mult.getText().equals("/"))
+        {
+            sb.append("                xor edx, edx\n");
+            sb.append("                idiv ebx\n");
+        }
+        if(ctx.mult.getText().equals("%"))
+        {
+            sb.append("                xor edx, edx\n");
+            sb.append("                idiv ebx\n");
+            sb.append("                mov eax, edx\n");
+        }
+        sb.append(";koniec mnożenia/dzielenia/modulo:"+ctx.start.getLine() +"\n");
+
+        return sb.toString();
+    }
+
+    @Override public String visitWyrazeniePoteg(plplParser.WyrazeniePotegContext ctx)
+    {
+        StringBuilder sb = new StringBuilder();
+        String wyrazenie2 = visit(ctx.wyrazenie().get(1));
+        PelnyTyp twyrazenie2 = stosTypów.pop();
+        String wyrazenie1 = visit(ctx.wyrazenie().get(0));
+        PelnyTyp twyrazenie1 = stosTypów.peek();
+        //@ASM
+        sb.append(";potęgowanie:"+ctx.start.getLine() +"\n");
+        sb.append(wyrazenie2);
+        sb.append("                push eax\n");
+        sb.append(wyrazenie1);
+        sb.append("                pop ebx\n");
+        sb.append("                sub esp, 16\n");
+        sb.append("                cvtsi2sd xmm0, eax\n");
+        sb.append("                cvtsi2sd xmm1, ebx\n");
+        sb.append("                call _pow\n");
+        sb.append("                add esp, byte 16\n");
+        sb.append("                cvttsd2si eax, xmm0\n");
+        sb.append(";koniec potęgowania:"+ctx.start.getLine() +"\n");
+        return sb.toString();
+    }
+
+    @Override public String visitWyrazenieZnak(plplParser.WyrazenieZnakContext ctx)
+    {
+        StringBuilder sb = new StringBuilder();
+        String wyrazenie = visit(ctx.wyrazenie());
+        PelnyTyp twyrazenie = stosTypów.peek();
+        //@ASM
+        sb.append(";znak:"+ctx.start.getLine() +"\n");
+        sb.append(wyrazenie);
+        sb.append("                push eax\n");
+        if(ctx.znak.getText().equals("-"))
+        {
+            sb.append("                neg eax\n");
+        }
+        sb.append(";koniec znaku:"+ctx.start.getLine() +"\n");
+
+        return sb.toString();
+    }
 }

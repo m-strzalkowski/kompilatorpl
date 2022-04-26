@@ -52,7 +52,7 @@ public class SkladaczKoduAsemblera {
     private StringBuilder generujAssembler() {
         StringBuilder gotowyKod = new StringBuilder();
 
-        gotowyKod.append("global _main\nextern _printf\n\n");
+        gotowyKod.append("global _main\nextern _printf\nextern _pow\n\n");
 
         gotowyKod.append(";dodatki dla wypisz\n");
         gotowyKod.append("section .rodata\n");
