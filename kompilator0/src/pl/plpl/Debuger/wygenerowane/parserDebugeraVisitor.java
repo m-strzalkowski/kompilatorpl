@@ -166,4 +166,10 @@ public interface parserDebugeraVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitPisz_symbol(parserDebugera.Pisz_symbolContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link parserDebugera#pisz_stan_maszyny_deklaracyjnej}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPisz_stan_maszyny_deklaracyjnej(parserDebugera.Pisz_stan_maszyny_deklaracyjnejContext ctx);
 }

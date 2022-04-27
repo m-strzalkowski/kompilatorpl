@@ -30,6 +30,7 @@ int i=0;
         i=0;
 
     }
+    public Object getTarget(){return target;}
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args)

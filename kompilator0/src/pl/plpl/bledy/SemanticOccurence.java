@@ -7,6 +7,7 @@ public class SemanticOccurence
 
     public enum Level {
 
+        DEBUG(-1),
         INFO(0),
         WARN(1),
         ERROR(2),
@@ -26,6 +27,7 @@ public class SemanticOccurence
         }
         public String nazwapolska(){
             return switch (severity) {
+                case -1 -> "INFO";
                 case 0 -> "INFORMACJA";
                 case 1 -> "OSTRZEŻENIE";
                 case 2 -> "BŁĄD";

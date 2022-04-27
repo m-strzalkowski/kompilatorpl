@@ -14,7 +14,7 @@ public class Symbol {
     int nr=0;
     public String identyfikator;//dla zmiennych/nazwanych stałych/punktów wejściowych
     public Token token;//dla stałych
-    public PunktWejsciowy pktWe;//dla punktów wejściowych
+    public PunktWejsciowy pktWe;//dla identyfikatorów punktów wejściowych
     public Zakres zakres;
     public PelnyTyp pelnyTyp;
     public ObiektPamieci obiektPamieci;
@@ -26,13 +26,18 @@ public class Symbol {
                 ", identyfikator='" + identyfikator + '\'' +
                 ", zakres=" + zakres.nr +
                 ", " + pelnyTyp +
+                ((pktWe == null)?("pktWe=null"):("\npktWe="+pktWe)) +
                 '}';
     }
+    public String briefToString()
+    {
+        return ""+identyfikator+","+etykieta()+","+token;
+    }
 
-    public Symbol(String identyfikator, Zakres zakres, PelnyTyp pelnyTyp) {
+    public Symbol(String identyfikator, Token pierwsze_wystąpienie, Zakres zakres, PelnyTyp pelnyTyp) {
         this.nr = licznik++;
         this.identyfikator = identyfikator;
-        this.token = null;
+        this.token = pierwsze_wystąpienie;
         this.zakres = zakres;
         this.pelnyTyp = pelnyTyp;
         this.obiektPamieci = (pelnyTyp.rodzaj_pamieci == PelnyTyp.RodzajPam.AUTOMATYCZNA)?(new ObiektAutomatyczny(this)):(new ObiektStatyczny(this));
@@ -48,12 +53,16 @@ public class Symbol {
     }
     public String etykieta()
     {
+        //dla "prawdziwych" punktów wejsciowych
+        if(pktWe != null && pktWe.procedura.nieokreslona == false){return pktWe.etykieta();}
+        //Dla zmiennych automatycznych
         //Normalizer.normalize(pelnyTyp.typ.nazwa, Normalizer.Form.NFD)NFKD
         if(pelnyTyp.rodzaj_pamieci == PelnyTyp.RodzajPam.AUTOMATYCZNA){
             var obp = (ObiektAutomatyczny)obiektPamieci;
             String zn = (obp.offset<0)?(""):("+");
             return "ebp"+zn+obp.offset;
         }
+        //Dla zmiennych statycznych
         return "S"+Normalizer.normalize(pelnyTyp.typ.nazwa, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")+"_"+zakres.nr+"_"+nr;
     }
 

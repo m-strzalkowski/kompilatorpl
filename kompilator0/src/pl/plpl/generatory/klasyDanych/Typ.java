@@ -13,13 +13,15 @@ public class Typ {
     public String nazwa;
     public int dlugosc_B=4;
     public boolean atomiczny=false;
-    public Map<PelnyTyp, Pair<Integer, Integer>> przesuniecia; //dla typów złozonych: nazwa -> przesuniecie, rozmiar obiektu;
+    //public Map<PelnyTyp, Pair<Integer, Integer>> przesuniecia; //dla typów złozonych: nazwa -> przesuniecie, rozmiar obiektu;
+    public Struktura struktura=null;//dla typów złozonych - składowe
 
-    public Typ(String nazwa, int dlugosc_B, boolean atomiczny, Map<PelnyTyp, Pair<Integer, Integer>> przesuniecia) {
+    public Typ(String nazwa, int dlugosc_B, boolean atomiczny, Struktura struktura) {
         this.nazwa = nazwa;
         this.dlugosc_B = dlugosc_B;
         this.atomiczny = atomiczny;
-        this.przesuniecia = przesuniecia;
+        this.struktura = struktura;
+        //this.przesuniecia = przesuniecia;
     }
 
     @Override
@@ -28,7 +30,7 @@ public class Typ {
                 "nazwa='" + nazwa + '\'' +
                 ", dlugosc_B=" + dlugosc_B +
                 ", atomiczny=" + atomiczny +
-                ", przesuniecia=" + przesuniecia +
+                ", struktura=" + struktura +
                 '}';
     }
     public static final Typ Całk = new Typ("całk", 4, true, null);

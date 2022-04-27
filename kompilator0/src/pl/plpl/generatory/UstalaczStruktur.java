@@ -1,6 +1,7 @@
 package pl.plpl.generatory;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 import pl.plpl.bledy.SemanticOccurence;
 import pl.plpl.generatory.klasyDanych.*;
 import pl.plpl.generatory.klasyDanych.pamiec.ObiektAutomatyczny;
@@ -8,8 +9,10 @@ import pl.plpl.generatory.klasyDanych.pamiec.ObiektStatyczny;
 import pl.plpl.parser.plplBaseListener;
 import pl.plpl.parser.plplParser;
 
+import java.lang.reflect.Method;
 import java.util.Objects;
 
+import static java.lang.System.exit;
 import static pl.plpl.generatory.Tablice.typy;
 
 /*
@@ -28,48 +31,186 @@ Jednak żeby to uzyskać, trzeba najpierw przetworzyć wszystkie deklaracje i po
  * Wychodząc z deklaracji procedury przetrawić argumenty i zmienne lokalne i ustalić ramkę stosu.
  */
 public class UstalaczStruktur extends plplBaseListener {
-    plplParser parser;
-    private Zakres aktualnyZakres;
+
     public Zakres getAktualnyZakres() {return aktualnyZakres;}
     public UstalaczStruktur(plplParser parser) {this.parser = parser;}
+
     @Override public void enterProgram(plplParser.ProgramContext ctx) {
-        System.out.println("USTALANIE STRUKTUR\n");
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                "POCZĄTEK USTALANIA STRUKTUR"));
         aktualnyZakres = Tablice.zakres_globalny;
     }
-    @Override public void enterInstrukcja_zlozona(plplParser.Instrukcja_zlozonaContext ctx) {
-        aktualnyZakres = new Zakres(aktualnyZakres, aktualnyZakres.procedura, ctx.getStart());
-        Tablice.dodajZakres(aktualnyZakres);
-        System.out.println("dodano zakres"+aktualnyZakres.toString());
-    }
-    @Override public void exitInstrukcja_zlozona(plplParser.Instrukcja_zlozonaContext ctx) {
-        System.out.println("wyjście z zakresu:"+aktualnyZakres.nr+"->"+aktualnyZakres.nadrzedny.nr);
-
-        if(aktualnyZakres == null) {Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(
-             SemanticOccurence.Level.FATAL,
-             ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                "Analizator semantyczny rozpozanł wyjście do wyższego zakresu, a jest już w globalnym"
-        ));}
-        aktualnyZakres = aktualnyZakres.nadrzedny;
+    @Override public void exitProgram(plplParser.ProgramContext ctx) {
+        if(Tablice.znaleziono_pkt_we_programu == false)
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.INFO, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                    "Nie znaleziono punktu wejściowego do programu ('zacznij program')"
+            ));
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                "KONIEC USTALANIA STRUKTUR"));
     }
 
+    /**
+     * Obsługuje wejście do procedury - zmienia aktualną proceurę i tworzy zakres
+     */
     @Override public void enterProcedura(plplParser.ProceduraContext ctx) {
         Procedura p = new Procedura(ctx.getStart());
         Tablice.procedury.add(p);
         aktualnyZakres = new Zakres(aktualnyZakres, p, ctx.getStart());
         Tablice.dodajZakres(aktualnyZakres);
         p.najogolniejszy_zakres = aktualnyZakres;
-        System.out.println("dodano procedurę "+p.nr+" i zakres "+ aktualnyZakres.nr);
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                "dodano procedurę "+p.nr+" i zakres "+ aktualnyZakres.nr));
     }
-    /*
-        Przetwarzanie deklaracji
+    /**
+     * Obsługuje wyjście z procedury - zmienia aktualną proceurę i zakres na nadrzędne
+     * Wywołuje Procedura.przeliczStruktury() - ustala ramkę
      */
-    @Override public void enterDeklaracja_atomiczna(plplParser.Deklaracja_atomicznaContext ctx) {
-        PelnyTyp t = new PelnyTyp();
-        //przydomki typów:
+    @Override public void exitProcedura(plplParser.ProceduraContext ctx) {
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                "wyjście z procedury "+aktualnyZakres.procedura.nr+" i zakresu:"+aktualnyZakres.nr+"->"+aktualnyZakres.nadrzedny.nr));
+
+        if(aktualnyZakres == null) {Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(
+                SemanticOccurence.Level.FATAL,
+                ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                "Analizator semantyczny rozpozanł wyjście do wyższego zakresu, a jest już w globalnym"
+        ));}
+        //procedura musi sobie ustawić wszyskie deklaracje
+        aktualnyZakres.procedura.przeliczStruktury();
+        /*
+        //TODO: SKASOWAĆ
+        try {
+            Object[] args = new Object[1]; args[0] = ctx;
+            Tablice.debuger_kompilatora.zmuś=true;
+            Tablice.debuger_kompilatora.krok(this, true, plplBaseListener.class.getMethod("exitProcedura", plplParser.ProceduraContext.class), args);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            exit(1);
+        }
+        */
+
+        //co jeśli nie ma wejśc do procedury?
+        if(aktualnyZakres.procedura.wejscia.size() < 1)
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                    "Procedura bez punktów wejściowych, co to ma znaczyć?"
+            ));
+
+        //wyjście do wyższego zakresu
+        aktualnyZakres = aktualnyZakres.nadrzedny;
+    }
+    /**
+     * Obsługuje wejscie do nowego zakresu - tworzy go i ustawia jako aktualny
+     */
+    @Override public void enterInstrukcja_zlozona(plplParser.Instrukcja_zlozonaContext ctx) {
+        aktualnyZakres = new Zakres(aktualnyZakres, aktualnyZakres.procedura, ctx.getStart());
+        Tablice.dodajZakres(aktualnyZakres);
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                "dodano zakres"+aktualnyZakres.toString()));
+    }
+    /**
+     * Obsługuje wyjście z zakresu - zmienia na nadrzędny
+     */
+    @Override public void exitInstrukcja_zlozona(plplParser.Instrukcja_zlozonaContext ctx) {
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                "wyjście z zakresu:"+aktualnyZakres.nr+"->"+aktualnyZakres.nadrzedny.nr));
+
+        if(aktualnyZakres == null) {Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(
+                SemanticOccurence.Level.FATAL,
+                ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                "Analizator semantyczny rozpoznał wyjście do wyższego zakresu, a jest już w globalnym"
+        ));}
+        aktualnyZakres = aktualnyZakres.nadrzedny;
+    }
+
+
+
+    /*
+        MASZYNA ZAKRESÓW
+     */
+    ////////////
+    //SKŁADOWE//
+    ////////////
+    plplParser parser;
+    private Zakres aktualnyZakres;
+    //Dwie rzeczy, które umożliwią, żeby odpowiednik for(int i;i<k;i++){i+=1;} miał rację bytu - coś innego mogło wcześniej zacząć odpowiedni zakres.
+    ParserRuleContext ostatniTworcaZakresu=null;
+    ParserRuleContext ostatniPominietyWasatyNawias=null;
+
+    /*
+        MASZYNA DEKLARACJI
+     */
+    private PelnyTyp aktualnyTyp=null;
+    private PunktWejsciowy aktualnyPunkt=null;
+    private Struktura aktualnaStruktura=null;
+    int offset_w_hierarchii_zakresow = 0;//1 - symbole mają powstawać zakres wyżej niż powinny, na przykład nazwy punktów wejściowych. Uwaga, to nie jest jedyne źródło przesunięcia,  niektóre rzeczy powstają w najogólniejszym zakresie swoje procedury. (dlaczego dodawac jeszcze to? Bo aktualnyZakres nie jest częścią maszyny deklaracji, tylko maszyny zakresów. Stan maszyny zakresów nie powinien się zmieniać przy przetwarzaniu deklaracji, więc najlepiej go w ogóle nie ruszać)
+    //powód powyższego: maszyna deklaracji nie powinna ruszać maszyny zakresów
+    /** Zwraca ten sam zakres lub odpowiedniego przodka w drzewie zakresów, na podstawie stanu maszyny deklaracji.
+     * @param z zakres od którego należy zacząć (uwaga:za przesunięcie w hierarchii bierze offset_w_hierarchii_zakresow maszyny deklaracji)
+     * @return zakres ten sam/ przesunięty w hierarchii względem z
+     */
+    private Zakres przesunietyZakres(Zakres z){
+        System.err.println("\n\nOFS:"+offset_w_hierarchii_zakresow+"z.nr:"+z.nr);
+        Zakres w = z;
+        //składowe, nazwy punktów wejściowych i parametry formalne związane są z zakresem procedury/struktury a nie jakimś lokalnym potomnym
+        if( aktualnaStruktura != null || aktualnyPunkt != null || aktualnyTyp.parametr_formalny){w = w.procedura.najogolniejszy_zakres;}
+        //if(aktualnyTyp.typ == Typ.Pkt){w=w.procedura.najogolniejszy_zakres.nadrzedny;}
+        //tyle, że należy uwzględnić ewentualne przesunięcie (dla nazw punktów wejściowych, ew. przez przydomek /publiczny/), które sprawi,że nazwa wyląduje zakres wyżej
+        for(int i=offset_w_hierarchii_zakresow; i>0; i--)
+        {
+            w = w.nadrzedny;
+        }
+        System.err.println("\n\nw.nr:"+w.nr);
+        return w;
+    }
+
+    /**Robi to, co trzeba na początku każdej deklaracji symbolu,
+     * a właściwie procesu deklaracyjnego - składającego się ze zbierania wiedzy i emisji symboli i kodu w deklaratorach na podstawie tej wiedzy
+     * Zgodnie z gramatyką, wejściami do procesu deklaracji są deklaracja_prosta i instrukcja_wkroczenia
+     * aktualnaStruktura jest manipulowana poza procesem deklaracji (wyżej w gramatyce)
+     */
+    private void zacznij_deklarację()
+    {
+        aktualnyTyp = new PelnyTyp();
+        //Domyślne przydomki typów:
+        aktualnyTyp.modyfikowalonosc = PelnyTyp.Mod.ZMIENNA;//domyślnie zmienne są modyfikowalne
+        //statyczne/automatyczne:
         if(aktualnyZakres.procedura.nr == Tablice.kod_globalny.nr)//w kodzie globalnym
         {
-            t.rodzaj_pamieci = PelnyTyp.RodzajPam.STATYCZNA;//domyślnie wszytko jest statyczne
-            if(ctx.przydomki().AUTOMATYCZN() != null)//a jeśli jest napisane, że nie są, to jest to błąd
+            aktualnyTyp.rodzaj_pamieci = PelnyTyp.RodzajPam.STATYCZNA;//domyślnie wszytko jest statyczne
+
+        }
+        else{//w kodzie każdej normalnej procedury
+            aktualnyTyp.rodzaj_pamieci = PelnyTyp.RodzajPam.AUTOMATYCZNA;//zmienne są domyślnie automatyczne
+        }
+        offset_w_hierarchii_zakresow = 0;
+    }
+    /**Sprząta po deklaracji symbolu (po procesie deklaracyjnym)
+     */
+    private void skończ_deklarację()
+    {
+        aktualnyTyp = null;
+        aktualnyPunkt = null;//instrukcja wkroczenia jest w istocie deklaracją na podobnej zasadzie, jak całk i,j,k (tyle, że typ moze byc inny dla każdej zmiennej)
+        //aktualna struktura ustalana jest wcześniej
+    }
+
+    /*
+        MASZYNA DEKLARACJI - ZBIERANIE INFORMACJI
+    */
+
+    /**Deklaracja prosta - deklaracja w kodzie, albo w deklaracji typu (strukturze)
+     */
+    @Override public void enterDeklaracja_prosta(plplParser.Deklaracja_prostaContext ctx) {
+        zacznij_deklarację();
+    }
+    @Override public void exitDeklaracja_prosta(plplParser.Deklaracja_prostaContext ctx) {
+        skończ_deklarację();
+    }
+    /**Dodaje wiedzę o własnościach typu: statyczny/automatyczny, stały
+     */
+    @Override public void enterPrzydomki(plplParser.PrzydomkiContext ctx) {
+        if(ctx.AUTOMATYCZN() != null)
+        {
+            aktualnyTyp.rodzaj_pamieci = PelnyTyp.RodzajPam.AUTOMATYCZNA;
+            if(aktualnyZakres.procedura.nr == Tablice.kod_globalny.nr)//Próba deklaracji zmiennej automatycznej w kodzie globalnym
             {
                 Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(
                         SemanticOccurence.Level.ERROR,
@@ -78,147 +219,309 @@ public class UstalaczStruktur extends plplBaseListener {
                 ));
             }
         }
-        else{//w kodzie każdej normalnej procedury
-            t.rodzaj_pamieci = PelnyTyp.RodzajPam.AUTOMATYCZNA;//zmienne są domyślnie automatyczne
-            if(ctx.przydomki().STATYCZN() != null) {t.rodzaj_pamieci = PelnyTyp.RodzajPam.STATYCZNA;}//chyba, że jest napisane statyczn.
+        //zmienne są statyczne, jeśli się to napisze, chyba że w kodzie globalnym, tam są domyślnie statyczne
+        if(ctx.STATYCZN()!=null || (aktualnyZakres.procedura.nr == Tablice.kod_globalny.nr)) {aktualnyTyp.rodzaj_pamieci = PelnyTyp.RodzajPam.STATYCZNA;}
+        aktualnyTyp.modyfikowalonosc = (ctx.STAL() == null)?(PelnyTyp.Mod.ZMIENNA):(PelnyTyp.Mod.STALA);//zmienne domyślnie są zmienne, chyba, że jest napisane stal.
+    }
+    /**Ustawia własciwy typ, jako jeden z atomicznych
+     */
+    @Override public void enterNazwa_typu_atom(plplParser.Nazwa_typu_atomContext ctx) {
+        aktualnyTyp.typ = Typ.zTokena(ctx.getStart());
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                "Odczytano typ atomiczny:"+aktualnyTyp.typ.nazwa));
+    }
+    /**Ustawia własciwy typ, jako jeden ze zdefiniowanych przez użytkownika
+     * * Wywala błąd, jeśli nie ma takiego zdefiniowaneo typu
+     */
+    @Override public void enterPelny_typ(plplParser.Pelny_typContext ctx) {
+        //Określenie typu (podstawowego)
+        String nzw=null;
+        aktualnyTyp.typ = null;
+        if(ctx.ID() != null)
+        {nzw = ctx.ID().getText(); aktualnyTyp.typ = Tablice.typPoNazwie(nzw);}
+        if(ctx.nazwa_typu_atom() != null)
+        {nzw = ctx.nazwa_typu_atom().getStart().getText(); aktualnyTyp.typ = Typ.zTokena(ctx.nazwa_typu_atom().getStart());}
+        if(aktualnyTyp.typ == null)
+        {
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                    "Niezdefiniowany typ:"+nzw));
         }
-        t.modyfikowalonosc = (ctx.przydomki().STAL() == null)?(PelnyTyp.Mod.ZMIENNA):(PelnyTyp.Mod.STALA);//zmienne domyślnie są zmienne, chyba, że jest napisane stal.
-
-        System.out.println("deklaracja:"+ctx.getText()+"\n"+ctx.nazwa_typu_atom() + "" + ctx.deklarator_bez_przypisania()+""+ctx.przydomki().STAL());
-
-        //określenie typu
-        t.typ = Typ.zTokena(ctx.nazwa_typu_atom().getStart());
-        System.out.println("Typ:"+t.typ.nazwa);
-        //pętla po deklaracjach bez inicjalizacji
-        t.inicjalizowana = false;
-        for (var d:ctx.deklarator_bez_przypisania()) {
-            //sprawdzanie sensowności przydomków
-            if( t.modyfikowalonosc== PelnyTyp.Mod.STALA)
-            {
-                Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                        "Atomiczna stała "+d.ID().getText()+" zadeklarowana bez przypisania (jak nadać jej jakąkolwiek wartość?)"
-                ));
-            }
-            System.out.println("deklaracja bez przypisania id:"+d.ID().getText()+" pamiec:"+t.rodzaj_pamieci);
-
-            //sprawdzanie redeklaracji
-            sprawdzanie_redeklaracji_w_kodzie(d.ID().getText(), t, ctx);
-            //nowy symbol
-            Symbol sym = new Symbol(d.ID().getText(), aktualnyZakres, t);
-            aktualnyZakres.dodajSymbol(sym);
-            if(t.rodzaj_pamieci== PelnyTyp.RodzajPam.STATYCZNA)
-            {
-                //@ASM
-                //dodj niezainicjalizowane miejsce długie na ileś bajtów opatrzone etykietą
-                aktualnyZakres.procedura.bss.append(sym.etykieta()).append(":   resb    ").append(t.typ.dlugosc_B).append(";").append(sym.identyfikator).append("\n");
-                //dodanie obiektu pamięci
-                //new ObiektStatyczny(sym);
-            }
-            else{//automatyczna
-                //nie następuje emisja żadnego kodu
-                //dodanie obiektu pamięci
-                //new ObiektAutomatyczny(sym);
-            }
-
-
+        aktualnyTyp.dlugosc_tablicy = -1;//nie wiadomo
+        aktualnyTyp.krotnosc_tablicowa =0;
+        //Określanie pełnego typu
+        aktualnyTyp.krotnosc_tablicowa += ctx.nieokreslony_deklarator_tablicowy().size();
+        if(ctx.okreslony_deklarator_tablicowy() != null)
+        {
+            aktualnyTyp.krotnosc_tablicowa +=1;
+            //TODO: ZAMIENIĆ NA WYRAŻENIE I UZYĆ WEWNĘTRZNEGO KALKULATORA (JAK SIE NIE UDA, TO FATAL)
+            aktualnyTyp.dlugosc_tablicy = Integer.parseInt( ctx.okreslony_deklarator_tablicowy().CALK().getText());
         }
-        //pętla po deklaracjach z inicjalizacją
-        t = t.clone(); t.inicjalizowana=true;//to jest inny pełny typ (stąd clone - potrzebny drugi obiekt)
-        for (var d:ctx.deklarator_atomiczny_z_przypisaniem()) {
-            System.out.println("deklaracja z przypisaniem id:"+d.ID().getText());
-            //sprawdzanie redeklaracji
-            sprawdzanie_redeklaracji_w_kodzie(d.ID().getText(), t, ctx);
-            //nowy symbol
-            Symbol sym = new Symbol(d.ID().getText(), aktualnyZakres, t);
-            aktualnyZakres.dodajSymbol(sym);
-            if(t.rodzaj_pamieci== PelnyTyp.RodzajPam.STATYCZNA)
-            {
-                if(d.CALK()!=null)
-                {
-                    if(t.typ != Typ.Całk)Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(
-                            SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                            "Nie da sie zainicjalizować literałem całkowitym zmiennej o typie"+t.typ
-                    ));else{
-                        try{
-                            Integer.parseInt(d.CALK().getText());
-                        }
-                        catch (NumberFormatException e)
-                        {
-                            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                                    "Nieprawidłowa liczba całkowita:"+d.CALK().getText()));
-                        }
-                        //@ASM
-                        //dodaj zainicjalizowaną liczbę całk. (int32)
-                        aktualnyZakres.procedura.data.append(sym.etykieta()).append(":   dd    ").append(d.CALK().getText()).append(";").append(sym.identyfikator).append("\n");
-                    }
 
-                    System.out.println("INICJ CALKOWITA"+d.CALK().getText());
-                }
-                if(d.ZMIENN()!=null)
-                {
-                    if(t.typ != Typ.Rzeczyw)Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(
-                            SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                            "Nie da sie zainicjalizować literałem zmiennoprzecinkowym zmiennej o typie"+t.typ
-                    ));else{
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                "Odczytano typ złożony:"+aktualnyTyp.typ.nazwa));
+
+    }
+
+    /*
+        MASZYNA DEKLARACJI - DEKLARATORY: EMISJA SYMBOLI I KODU NA PODSTAWIE ZEBRANYCH INFORMACJI
+    */
+
+    /**Kawałek kodu wspólny wszystkim deklaratorom, powodujacy właściwe dodanie symbolu do właściwego zakresu (albo niedodanie w przypadku dozwolonej redeklaracji, albo zgon kompilatora w przypadku niedozwolonej)
+     Potrzebuje nazwy, tokenu - do zaznaczenia miejsca pierwszego wystąpienia i kontekstu do generowania błędów
+     Typ bierze z aktualnego typu, zakres z aktualnego zakresu i offsetu (używa przesuniętyZakres(aktualnyZakres))
+     */
+    Symbol dodanie_samego_symbolu(String nazwa, Token wystapienie, ParserRuleContext ctx)//???
+    {
+        //Do jakiego zakresu dodac symbol?
+        //zmienne nie-parametry: do aktualnego, parametry i składowe struktur - do najogolniejszego zakresu procedury
+        //składowe, nazwy punktów wejściowych i parametry formalne związane są z zakresem procedury/struktury a nie akimś lokalnym potomnym
+        Zakres zakres_docelowy = przesunietyZakres(aktualnyZakres);
+
+        //Czy nazwa się powtarza (albo jak, jeśli może), sprawdzenie zależne od stanu maszyny deklaracji
+        Symbol symbol_redeklarowany =  sprawdzanie_redeklaracji_zaleznie_od_stanu(nazwa, aktualnyTyp, zakres_docelowy, ctx);
+        if(symbol_redeklarowany!=null){return symbol_redeklarowany;}
+        //Tworzenie nowego symbolu i dodanie (jeśli zachowano reguły redeklaracji, bo inaczej powyższe sprawdzanie redeklaracji emituje błąd i ewentualnie ubija kompilator)
+        //Każdy symbol dotaje swój klon obiektu PelnyTyp, dlatego można zmieniać stan aktualnegoTypu do woli, nie wpłynie to na wygenerowane już symbole
+        Symbol sym = new Symbol(nazwa, wystapienie, zakres_docelowy, aktualnyTyp.clone());
+        zakres_docelowy.dodajSymbol(sym);
+        return sym;
+    }
+    /**Ma:
+     * + Wyprodukować symbol w odpowiednim zakresie
+     * * Podpiąć symbol do punktu wejściowego, jeśli trzeba
+     * * Wyemitować asembler do .bss: ETYKIETA: resb x; - jeśli symbol jest statyczny
+     */
+    @Override public void enterDeklarator_bez_przypisania(plplParser.Deklarator_bez_przypisaniaContext ctx) {
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                "Deklarator bez przypisania:początek"));
+
+        //sprawdzanie sensowności przydomków
+        if( aktualnyTyp.modyfikowalonosc== PelnyTyp.Mod.STALA)
+        {
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                    "Atomiczna stała "+ctx.ID().getText()+" zadeklarowana bez przypisania (jak nadać jej jakąkolwiek wartość?)"));
+        }
+
+        //Jaką nazwę mamy dodać?
+        String nazwa = ctx.ID().getText();
+        //Jakie jest pierwsze wystąpienie?
+        Token wystąpienie = ctx.ID().getSymbol();
+        //Podstawowa część deklaracji
+        Symbol sym =  dodanie_samego_symbolu(nazwa, wystąpienie, ctx);
+
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                "Deklarator bez przypisania:dodano symbol:"+sym.toString()));
+
+        //TODO Podpinanie do punktu wejściowego, jeśli to parametr formalny
+        if(sym.pelnyTyp.parametr_formalny)
+        {
+            if(aktualnyPunkt == null)throw new RuntimeException("Błąd wewnętrzny: symbol"+sym.identyfikator+ "miał być parametrem formalnym, a aktualny punkt wejściowy == null");
+            //TODO
+            //punkt wejściowy potrafi przypiąć sobie symbol
+            aktualnyPunkt.przypnijParametr(sym);
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                    "Próba przypięcia symbolu jako parametru:"+sym.toString()+" do punktu "+ aktualnyPunkt.nazwa));
+        }
+        //Emisja kodu, jeśli symbol jest statyczny
+        if(sym.pelnyTyp.rodzaj_pamieci == PelnyTyp.RodzajPam.STATYCZNA)
+        {
+            //@ASM
+            //dodj niezainicjalizowane miejsce długie na ileś bajtów opatrzone etykietą
+            aktualnyZakres.procedura.bss.append(sym.etykieta()).append(":   resb    ").append(sym.pelnyTyp.typ.dlugosc_B).append(";").append(sym.identyfikator).append("\n");
+        }
+        else {//automatyczna
+            //nie następuje emisja żadnego kodu
+        }
+    }
+    /**Deklarator atomiczny z przypisaniem ma:
+     * * Wyprodukować symbol w odpowiednim zakresie
+     * * Podpiąć symbol do punktu wejściowego, jeśli trzeba
+     * (czyli to, co deklaracja bez przypisania w pierwszych 2 pkt)
+     *
+     * * Jeśli symbol jest statyczny:
+     *   * Sprawdzić, czy da się obliczyć wartość przypisania podczas kompilacji
+     *      *Jeśli nie - ustawić inicjalizowany=false i cos jeszcze, by powiadomić generator kodu o konieczności emisji instrukcji
+     *      *Jeśli da się obliczyc podczas kompilacji:
+     *          *Wyemitować odpowiedni asembler w .data : ETYKIETA: dd/db `ala`/12 więc:
+     *              * Dla całk
+     *              * Dla rzeczyw (zmiennoprzecinkowe)
+     *              * Dla znak (dosłownych stałych znakowych)
+     *
+     * * (Jeśli symbol automatyczny:
+     *      * Ustawić informacje dla generatora o konieczności emisji kodu)
+     */
+    @Override public void enterDeklarator_atomiczny_z_przypisaniem(plplParser.Deklarator_atomiczny_z_przypisaniemContext ctx) {
+        //Jaką nazwę mamy dodać?
+        String nazwa = ctx.ID().getText();
+        //Jakie jest pierwsze wystąpienie?
+        Token wystąpienie = ctx.ID().getSymbol();
+        //Podstawowa część deklaracji
+        Symbol sym =  dodanie_samego_symbolu(nazwa, wystąpienie, ctx);
+
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                "Deklarator z przypisaniem:dodano symbol:"+sym.toString()));
+        //Ściana kodu dla inicjalizacji typów podstawowych
+        if(aktualnyTyp.rodzaj_pamieci== PelnyTyp.RodzajPam.STATYCZNA)
+        {
+            sym.pelnyTyp.inicjalizowana = true;
+            if(ctx.CALK()!=null)
+            {
+                if(aktualnyTyp.typ != Typ.Całk)Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(
+                        SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                        "Nie da sie zainicjalizować literałem całkowitym zmiennej o typie"+aktualnyTyp.typ
+                ));else{
                     try{
-                        Double.parseDouble(d.ZMIENN().getText());
+                        Integer.parseInt(ctx.CALK().getText());
                     }
                     catch (NumberFormatException e)
                     {
                         Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                                "Nieprawidłowa liczba zmiennopozycyjna:"+d.ZMIENN().getText()));
+                                "Nieprawidłowa liczba całkowita:"+ctx.CALK().getText()));
                     }
                     //@ASM
                     //dodaj zainicjalizowaną liczbę całk. (int32)
-                    aktualnyZakres.procedura.data.append(sym.etykieta()).append(":   dd    ").append(d.ZMIENN().getText()).append(";").append(sym.identyfikator).append("\n");
+                    aktualnyZakres.procedura.data.append(sym.etykieta()).append(":   dd    ").append(ctx.CALK().getText()).append(";").append(sym.identyfikator).append("\n");
                 }
 
-                    System.out.println("INICJ ZMIENN"+d.ZMIENN().getText());
-                }
-                if(d.ZNAK_DOSL()!=null)
-                {
-                    if(t.typ != Typ.Znak)Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(
-                            SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                            "Nie da sie zainicjalizować znakiem dosłownym zmiennej o typie"+t.typ
-                    ));else{
-                        //String wartosc = d.ZNAK_DOSL().getText();
-                        //if(wartosc.charAt(0) != '\'' || wartosc.charAt(wartosc.length()-1) != '\'')Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(
-                        //        SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                        //        "Wygląda, że przypisywany do znaku literał /"+wartosc+"/ nie jest literałem znakowym (w pojedynczych apostrofach)."));
-
-                        //@ASM
-                        //dodaj zainicjalizowaną liczbę całk. (int32)
-                        aktualnyZakres.procedura.data.append(sym.etykieta()).append(":   db    ").append(d.ZNAK_DOSL().getText()).append(";").append(sym.identyfikator).append("\n");
-                    }
-                    System.out.println("INICJ ZNAK"+d.ZNAK_DOSL().getText());
-                }
-
-                //dodanie obiektu pamięci
-                //new ObiektStatyczny(sym);
+                System.out.println("INICJ CALKOWITA"+ctx.CALK().getText());
             }
-            else{//automatycznych już nie można inicjować, generator będzie musiał wstawić odpowiedni kod w procedurze
-                //dodanie obiektu pamięci
-               // new ObiektAutomatyczny(sym);
+            if(ctx.ZMIENN()!=null)
+            {
+                if(aktualnyTyp.typ != Typ.Rzeczyw)Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(
+                        SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                        "Nie da sie zainicjalizować literałem zmiennoprzecinkowym zmiennej o typie"+aktualnyTyp.typ
+                ));else{
+                    try{
+                        Double.parseDouble(ctx.ZMIENN().getText());
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                                "Nieprawidłowa liczba zmiennopozycyjna:"+ctx.ZMIENN().getText()));
+                    }
+                    //@ASM
+                    //dodaj zainicjalizowaną liczbę całk. (int32)
+                    aktualnyZakres.procedura.data.append(sym.etykieta()).append(":   dd    ").append(ctx.ZMIENN().getText()).append(";").append(sym.identyfikator).append("\n");
+                }
+
+            }
+            if(ctx.ZNAK_DOSL()!=null)
+            {
+                if(aktualnyTyp.typ != Typ.Znak)Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(
+                        SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                        "Nie da sie zainicjalizować znakiem dosłownym zmiennej o typie"+aktualnyTyp.typ
+                ));else{
+                    //@ASM
+                    //dodaj zainicjalizowaną liczbę całk. (int32)
+                    aktualnyZakres.procedura.data.append(sym.etykieta()).append(":   db    ").append(ctx.ZNAK_DOSL().getText()).append(";").append(sym.identyfikator).append("\n");
+                }
+                System.out.println("INICJ ZNAK"+ctx.ZNAK_DOSL().getText());
             }
 
         }
     }
 
-    private void sprawdzanie_redeklaracji_w_kodzie(String id, PelnyTyp t, ParserRuleContext ctx) {
+    /**Deklarator złożony z przypisaniem ma w skrócie wyprodukować symbol i powiązać referencję nim będącą z obiektem pamięci, czyli:
+     * * Wyprodukować symbol w odpowiednim zakresie
+     * * Podpiąć symbol do punktu wejściowego, jeśli trzeba
+     * (czyli to, co deklaracja bez przypisania w pierwszych 2 pkt)
+     *
+     * * Jeśli symbol jest statyczny:
+     *   * Sprawdzić, czy da się obliczyć wartość przypisania podczas kompilacji
+     *      *Jeśli nie - ustawić inicjalizowany=false i cos jeszcze, by powiadomić generator kodu o konieczności emisji instrukcji
+     *      *Jeśli da się obliczyc podczas kompilacji:
+     *          *Dla dyrektywy statycznej alokacji (/coś/):
+     *              * Wygenerować odpowiedni obiekt pamięci opatrzony zapamięaną etykietą
+     *          *Wyemitować odpowiedni asembler w .data : ETYKIETA: dd INNA_ETYKIETA: (INNA_ETYKIETA z literału: nic/coś/inny symbol po nazwie)
+     *
+     * * (Jeśli symbol automatyczny:
+     *      * Ustawić informacje dla generatora o konieczności emisji kodu)
+     */
+    @Override public void exitDeklarator_zlozony_z_przypisaniem(plplParser.Deklarator_zlozony_z_przypisaniemContext ctx) {
+        //Jaką nazwę mamy dodać?
+        String nazwa = ctx.ID().getText();
+        //Jakie jest pierwsze wystąpienie?
+        Token wystąpienie = ctx.ID().getSymbol();
+        //Podstawowa część deklaracji
+        Symbol sym =  dodanie_samego_symbolu(nazwa, wystąpienie, ctx);
+        //Jeśli jest to jednowymiarowa statyczna tablica
+        if(sym.pelnyTyp.rodzaj_pamieci== PelnyTyp.RodzajPam.STATYCZNA && sym.pelnyTyp.krotnosc_tablicowa == 1 && sym.pelnyTyp.dlugosc_tablicy == -1)
+        {
+            //jeśli to napis dosłowny
+            if(ctx.stala_tablicowa().NAPIS_DOSL() != null)
+            {
 
-        if(aktualnyZakres.poNazwie_bez_nadrzednych(id) != null){//całk a; {całk a;} ma wyprodukować dwie zmienne a
+                Symbol literal =  aktualnyZakres.poTokenie(ctx.stala_tablicowa().NAPIS_DOSL().getSymbol());
+                if(literal == null){return;}
+                sym.pelnyTyp.inicjalizowana = true;
+                //@ASM
+                //dodaj zainicjalizowaną referencję
+                aktualnyZakres.procedura.data.append(sym.etykieta()).append(":   dd    ").append(literal.etykieta()).append(";").append(sym.identyfikator).append("\n");
+            }
+        }
+    }
+    /*
+        MASZYNA DEKLARACJI - ułomny proces deklaracyjny do dodawania typu zwracanego przez funkcję
+     */
+    @Override public void enterTyp_zwracany(plplParser.Typ_zwracanyContext ctx) {
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                "POCZĄTEK ZBIERANIA TYPU ZWRACANEGO"));
+        zacznij_deklarację();
+    }
+    /*Pełny typ jest opisany wyżej i ustawi aktualnyTyp*/
+    @Override public void exitTyp_zwracany(plplParser.Typ_zwracanyContext ctx) {
+        aktualnyZakres.procedura.typZwracany = aktualnyTyp;
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                "KONIEC ZBIERANIA TYPU ZWRACANEGO:"+aktualnyTyp));
+        skończ_deklarację();
+    }
+
+    /*
+        MASZYNA DEKLARACJI - różne inne rzeczy
+     */
+
+    /*
+    SPRAWDZANIE REDEKLARACJI
+    zwykłe zmienne: redeklaracja zabroniona
+    zmienne - parametry: redeklaracja dozwolona na liście parametrów, o ile typy sie zgadzają (aktualnypunkt!=null), nie mile widziana wszędzie indziej
+    składowe - redeklaracja zabroniona (chyba, żeby zrobić dziedziczenie)
+     */
+
+    /**funkcja wybierająca przypadek sprawdzania redeklaracji, zależnie od stanu maszyny deklaracji
+     *
+     * @param id  string nazwy, jaką sprawdzamy
+     * @param aktualnyTyp   Typ nazwy (ewentualne dozwolone redeklaracje mogą zajść wyłącznie, gdy typ zgadza sę w obu miejscach)
+     * @param zakres_docelowy - zakres w którym będzie sprawdzana redeklaracja
+     * @param ctx Kontekst, potrzebny do informacji o linii, przy informowaniu o ewentualnych błędach
+     * @return Redeklarowany symbol, jeśli jest to dozwolone, albo null, jeśli nie ma redeklaracji
+     */
+    private Symbol sprawdzanie_redeklaracji_zaleznie_od_stanu(String id, PelnyTyp aktualnyTyp,  Zakres zakres_docelowy, ParserRuleContext ctx)
+    {
+        //normalny kod w procedurze/na liście parametrów formalnych
+        if( aktualnaStruktura == null && aktualnyTyp.typ != Typ.Pkt){return sprawdzanie_redeklaracji_w_kodzie(id,aktualnyTyp,zakres_docelowy, ctx);}
+        //deklaracja punktu wejściowego
+        if( aktualnaStruktura == null && aktualnyTyp.typ == Typ.Pkt){return sprawdzanie_redeklaracji_punktu_we(id, zakres_docelowy, ctx);}
+        //deklaracja składowej
+        if(aktualnyPunkt == null && aktualnaStruktura != null){return sprawdzanie_redeklaracji_skladowej(id,aktualnyTyp, zakres_docelowy, ctx);}
+        throw new RuntimeException("Nie zaimplementowano tego scenariusza sprawdzania redeklaracji\n"+ this.piszStanMaszynyDeklaracyjnej());
+    }
+
+    private Symbol sprawdzanie_redeklaracji_w_kodzie(String id, PelnyTyp aktualnyTyp, Zakres zakres_docelowy,ParserRuleContext ctx) {
+
+        Symbol s=null;
+        if( (s=zakres_docelowy.poNazwie_bez_nadrzednych(id)) != null && !aktualnyTyp.parametr_formalny && aktualnyPunkt == null){//całk a; {całk a;} ma wyprodukować dwie zmienne a
             Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.ERROR, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
                     "Redeklaracja identyfikatora '"+id+"' poza listą parametrów formalnych"
             ));
-            if(aktualnyZakres.poNazwie(id).pelnyTyp.equals(t)){
+            if((s=zakres_docelowy.poNazwie_bez_nadrzednych(id)).pelnyTyp.equals(aktualnyTyp) && s.pelnyTyp.rodzaj_pamieci == PelnyTyp.RodzajPam.AUTOMATYCZNA){
                 Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.INFO, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                        "Redeklaracja identyfikatora '"+id+"':typ się zgadza z poprzednim, można kontynuować"
+                        "Redeklaracja identyfikatora '"+id+"':typ się zgadza z poprzednim i zmienna jest automatyczna, można kontynuować"//przy statyczej mogłaby zaszłaby dwukrotna emisja kodu inicjalizującego
                 ));
             }
             else {Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                    "Redeklaracja identyfikatora:"+id+"typ się nie zgadza z poprzednim, nie można kontynuować"+"typy:\n"+ aktualnyZakres.poNazwie(id).pelnyTyp.toString() + "\n"+t.toString()
+                    "Redeklaracja identyfikatora:"+id+"typ się nie zgadza z poprzednim, nie można kontynuować"+"typy:\n"+ s.pelnyTyp.toString() + "\n"+aktualnyTyp.toString()
             ));
-                Symbol ewentualny_parametr = aktualnyZakres.procedura.najogolniejszy_zakres.poNazwie_bez_nadrzednych(id);//coś w zakresie całej procedury...
+                Symbol ewentualny_parametr = zakres_docelowy.procedura.najogolniejszy_zakres.poNazwie_bez_nadrzednych(id);//Jeżeli już istnieje coś w zakresie całej procedury...
                 if(ewentualny_parametr.pelnyTyp.parametr_formalny)//...co jest parametrem formalnym
                 {
                     Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.WARN, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
@@ -228,11 +531,37 @@ public class UstalaczStruktur extends plplBaseListener {
 
             }
         }
+        //jeśli już jest jako parametr formalny
+        Symbol sp;
+        if((sp=zakres_docelowy.procedura.najogolniejszy_zakres.poNazwie_bez_nadrzednych(id))!=null)
+        {
+            s=sp;//to nic?
+        }
+
+        return s;
     }
-    //deklaracje na listach parametrów
+    private Symbol sprawdzanie_redeklaracji_skladowej(String id,PelnyTyp aktualnyTyp,Zakres zakres_docelowy,ParserRuleContext ctx)
+    {
+        Symbol s=null;
+        if((s=zakres_docelowy.poNazwie_bez_nadrzednych(id)) != null) {//całk a; {całk a;} ma wyprodukować dwie zmienne a
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.ERROR, ctx.stop, ctx.stop.getLine(), ctx.stop.getCharPositionInLine(),
+                    "Redeklaracja identyfikatora '" + id + "' poza listą parametrów formalnych"
+            ));
+        }
+        return s;
+    }
+
+    /** Deklaracja określonego - zwykłego punktu wejściowego
+     * Trzeba:
+     * Zrobić symbol na punkt wejściowy, dodac (ale do wyższego zakresu)
+     * Zrobić sam punkt wejściowy
+     * Ustawić aktualnyPunkt, by deklaracje z listy pareametrów doczepiły się jako parametry punktu wejściowego
+     * @param ctx
+     */
     @Override public void enterInstrukcja_wkroczenia(plplParser.Instrukcja_wkroczeniaContext ctx) {
+        String nazwapkt = ctx.ID().getText();
         //rozpoznawanie początkowaej procedury....
-        if(Objects.equals(ctx.ID().getText(), Tablice.WEJSCIE_PROG))
+        if(Objects.equals(nazwapkt, Tablice.WEJSCIE_PROG))
         {
             System.out.println("Znaleziono punkt wejściowy programu");
             if(Tablice.znaleziono_pkt_we_programu)//nie może być dwóch mainów!
@@ -254,57 +583,59 @@ public class UstalaczStruktur extends plplBaseListener {
                 ));
             }
         }
+
         //dodawanie punktu wejściowego
-        sprawdzanie_redeklaracji_punktu_we(ctx.getText(), ctx);
-        PunktWejsciowy pkt = new PunktWejsciowy(ctx.ID().getText());
+        //sprawdzanie_redeklaracji_punktu_we(ctx.ID().getText(), );
+        //sprawdzanie_redeklaracji_punktu_we(ctx.getText(), ctx);
+        zacznij_deklarację();
+        aktualnyTyp.typ = Typ.Pkt;
+        aktualnyTyp.rodzaj_pamieci = PelnyTyp.RodzajPam.STATYCZNA;
+        int of=offset_w_hierarchii_zakresow;offset_w_hierarchii_zakresow = 1; Zakres sz = aktualnyZakres; aktualnyZakres = aktualnyZakres.procedura.najogolniejszy_zakres;
+        Zakres zakres_docelowy = przesunietyZakres(aktualnyZakres);
+
+        PunktWejsciowy pkt = new PunktWejsciowy(nazwapkt, aktualnyZakres.procedura);
+        sprawdzanie_redeklaracji_punktu_we(nazwapkt, zakres_docelowy, ctx);
         aktualnyZakres.procedura.wejscia.add(pkt);
         aktualnyZakres.procedura.zamknieta_zwroc=false;
         //dodawanie symbolu
-        PelnyTyp t = new PelnyTyp();
-        t.typ = Typ.Pkt;
-        Symbol symPunktu = new Symbol(ctx.ID().getText(), Tablice.zakres_globalny, t);
+        Symbol symPunktu =  dodanie_samego_symbolu(nazwapkt, ctx.getStart(), ctx);
+        //powiazanie symbolu punktu z punktem wejściowym
         symPunktu.pktWe = pkt;
-        Tablice.zakres_globalny.dodajSymbol(symPunktu);
+        offset_w_hierarchii_zakresow =of;
+        aktualnyZakres = sz;
+        skończ_deklarację();
+        //deklaracje z listy parametrów można potraktować jako osobny proces deklaracyjny, tylko z ustawionym aktualnymPunktem i aktualnyTyp.parametr_formalny
+        //zacznij i skończ deklaracje jest też wywoływane w eneter i exit deklaracja prosta odpowiednio
+        zacznij_deklarację();
+        aktualnyPunkt = pkt;
+        aktualnyTyp.parametr_formalny = true;
     }
 
-    private void sprawdzanie_redeklaracji_punktu_we(String id, ParserRuleContext ctx) {
+    /**
+     * Musi posprzątać po deklaracji określonego punktu wejściowego - ustawić aktualnyPkt na null
+     * @param ctx
+     */
+    @Override public void exitInstrukcja_wkroczenia(plplParser.Instrukcja_wkroczeniaContext ctx) {
+        //deklaracje nieokreślonych punktów wejściowych mogłyby być zagnieżdżone i musiałyby posiadać jakiś stos, tu na zagnieżdżenie gramatyka nie pozwala
+        aktualnyPunkt = null;//nadmiarowe
+        skończ_deklarację();
+    }
 
-        if(Tablice.zakres_globalny.poNazwie_bez_nadrzednych(id) != null){//całk a; {całk a;} ma wyprodukować dwie zmienne a
+
+    private Symbol sprawdzanie_redeklaracji_punktu_we(String id, Zakres zakres_docelowy,ParserRuleContext ctx) {
+
+        Symbol s=null;
+        if((s=zakres_docelowy.poNazwie_bez_nadrzednych(id)) != null){//całk a; {całk a;} ma wyprodukować dwie zmienne a
             Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
                     "Redeklaracja identyfikatora '"+id+"' jako punktu wejściowego"
             ));
             //TODO lokalne punkty wejściowe?
         }
+        return s;
     }
     @Override public void enterInstrukcja_powrotu(plplParser.Instrukcja_powrotuContext ctx) {
-        aktualnyZakres.procedura.zamknieta_zwroc=true;
+        aktualnyZakres.procedura.zamknieta_zwroc=true;//TODO - nie będzie działać, bo co jak będzie inna instrukcja potem
     }
-
-    /**
-     *
-     *
-     *
-     */
-    @Override public void exitProcedura(plplParser.ProceduraContext ctx) {
-        System.out.println("wyjście z procedury "+aktualnyZakres.procedura.nr+" i zakresu:"+aktualnyZakres.nr+"->"+aktualnyZakres.nadrzedny.nr);
-
-        if(aktualnyZakres == null) {Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(
-                SemanticOccurence.Level.FATAL,
-                ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                "Analizator semantyczny rozpozanł wyjście do wyższego zakresu, a jest już w globalnym"
-        ));}
-        //procedura musi sobie ustawić wszyskie deklaracje
-        aktualnyZakres.procedura.przeliczStruktury();
-        //co jeśli nie ma wejśc do procedury?
-        if(aktualnyZakres.procedura.wejscia.size() < 1)
-        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                "Procedura bez punktów wejściowych, co to ma znaczyć?"
-        ));
-
-        //wyjście do wyższego zakresu
-        aktualnyZakres = aktualnyZakres.nadrzedny;
-    }
-
 
     /** Stałe typu "string" {1,2,3}, na które będą wskazywać pary symbol-obiekt pamięci typu referenyjnego, muszą odpowiadać jakimś rzeczywistym obiektom, które trzeba zrobić...
      *
@@ -336,11 +667,15 @@ public class UstalaczStruktur extends plplBaseListener {
         }
     }
 
-    @Override public void exitProgram(plplParser.ProgramContext ctx) {
-        if(Tablice.znaleziono_pkt_we_programu == false)
-        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.INFO, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                "Nie znaleziono punktu wejściowego do programu ('zacznij program')"
-        ));
-        System.out.println("KONIEC USTALANIA STRUKTUR");
+    public String piszStanMaszynyDeklaracyjnej()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\nSTAN MASZYNY DEKLARACYJNEJ:\n");
+        sb.append("aktualnyTyp:").append(aktualnyTyp).append("\n")
+        .append("aktualnyPunkt wejściowy:").append(aktualnyPunkt).append("\n")
+        .append("aktualnaStruktura:").append(aktualnaStruktura).append("\n")
+        .append("offset_w_hierarchii_zakresow:").append(offset_w_hierarchii_zakresow).append("\n")
+        .append("aktualnyZakres:").append(aktualnyZakres.nr).append("\n");
+        return sb.toString();
     }
 }

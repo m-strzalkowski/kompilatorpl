@@ -1,0 +1,31 @@
+procedura {zacznij program();
+całk a,b,c;
+statyczny znak z;
+zwróć();
+}
+procedura
+{
+zacznij f(całk w, całk z);
+zacznij g(całk a, całk w);
+zacznij h(całk a, całk b,całk c);
+zwróć();
+}
+
+
+
+
+całk a;
+procedura->całk{
+{
+zacznij ff(całk w);
+całk a;
+    {
+        znak[] z;
+        znak[][] z2;
+        znak[][3] z3;
+        //znak[3][] z4;
+        zacznij gg(znak[] napis);
+    }
+}
+zwróć(0);<S>
+}

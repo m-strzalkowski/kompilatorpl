@@ -29,6 +29,12 @@ public interface plplVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitProcedura(plplParser.ProceduraContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link plplParser#typ_zwracany}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTyp_zwracany(plplParser.Typ_zwracanyContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link plplParser#deklaracja_typu}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -64,6 +70,12 @@ public interface plplVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitDeklaracja_referencji(plplParser.Deklaracja_referencjiContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link plplParser#deklarator_zlozony_z_przypisaniem}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDeklarator_zlozony_z_przypisaniem(plplParser.Deklarator_zlozony_z_przypisaniemContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link plplParser#lista_instrukcji}.
 	 * @param ctx the parse tree
@@ -322,17 +334,23 @@ public interface plplVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPelny_typ(plplParser.Pelny_typContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link plplParser#nieokreslony_deklarator_tablicowy}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNieokreslony_deklarator_tablicowy(plplParser.Nieokreslony_deklarator_tablicowyContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link plplParser#okreslony_deklarator_tablicowy}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOkreslony_deklarator_tablicowy(plplParser.Okreslony_deklarator_tablicowyContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link plplParser#przydomki}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitPrzydomki(plplParser.PrzydomkiContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link plplParser#przydomek}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitPrzydomek(plplParser.PrzydomekContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link plplParser#nazwa_typu_atom}.
 	 * @param ctx the parse tree

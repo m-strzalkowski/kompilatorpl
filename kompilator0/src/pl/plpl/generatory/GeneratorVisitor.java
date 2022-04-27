@@ -148,7 +148,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override public String visitInstrukcja_wkroczenia(plplParser.Instrukcja_wkroczeniaContext ctx) {
-        Symbol s = aktualnyZakres.poNazwie(ctx.ID().getText());
+        Symbol s = przestrzeń(ctx.ID().getText());//aktualnyZakres.poNazwie(ctx.ID().getText());
         if(s.pktWe==null){throw new RuntimeException("Punkt wejściowy"+ctx.ID().getText()+"miał być zarejestrowany na etapie deklaracji!");}
         PunktWejsciowy pkt = s.pktWe;
         StringBuilder sb = new StringBuilder();
@@ -326,6 +326,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         stosTypów.push(t);
         return sb.toString();
     }
+    @Override public String visitWyrazenieNawiasy(plplParser.WyrazenieNawiasyContext ctx) { return visit(ctx.wyrazenie()); }
     @Override public String visitWyrazenieLwartosc(plplParser.WyrazenieLwartoscContext ctx) { return visit(ctx.lwartosc()); }
     /*
     @Override public String visitLwartosc(plplParser.LwartoscContext ctx)

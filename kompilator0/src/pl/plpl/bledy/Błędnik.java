@@ -10,13 +10,23 @@ Należy do niego zgłaszać zdarzenia (SemanticOccurence), co może spowodować 
 public class Błędnik {
     List<SemanticOccurence> zdarzenia = new ArrayList<>();
     SemanticOccurence.Level stop_at_severity = SemanticOccurence.Level.FATAL;//kiedy ma zatrzymać kompilator
+    SemanticOccurence.Level stderr_threshold = SemanticOccurence.Level.INFO;//od jakiej ważności ma pisać na stderr, zamiast stdout
+    SemanticOccurence.Level mute_threshold = SemanticOccurence.Level.DEBUG;//poniżej jakiej ważności ma w ogóle pisać
     public List<SemanticOccurence> getZdarzenia() {
         return zdarzenia;
     }
 
     public void zglosZdarzenie(SemanticOccurence z)
     {
-        System.err.println(z.toString());
+        if(z.getSeverity().worseOrEqual(mute_threshold))
+        {
+            if(z.getSeverity().worseOrEqual(stderr_threshold))
+            {
+                System.err.println(z.toString());
+            }
+            else{System.out.println(z.toString());}
+        }
+
         zdarzenia.add(z);
         if(z.getSeverity().worseOrEqual(stop_at_severity))
         {

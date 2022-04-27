@@ -267,4 +267,14 @@ public interface parserDebugeraListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitPisz_symbol(parserDebugera.Pisz_symbolContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link parserDebugera#pisz_stan_maszyny_deklaracyjnej}.
+	 * @param ctx the parse tree
+	 */
+	void enterPisz_stan_maszyny_deklaracyjnej(parserDebugera.Pisz_stan_maszyny_deklaracyjnejContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link parserDebugera#pisz_stan_maszyny_deklaracyjnej}.
+	 * @param ctx the parse tree
+	 */
+	void exitPisz_stan_maszyny_deklaracyjnej(parserDebugera.Pisz_stan_maszyny_deklaracyjnejContext ctx);
 }

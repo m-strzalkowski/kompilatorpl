@@ -52,6 +52,18 @@ public class plplBaseListener implements plplListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterTyp_zwracany(plplParser.Typ_zwracanyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTyp_zwracany(plplParser.Typ_zwracanyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterDeklaracja_typu(plplParser.Deklaracja_typuContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -119,6 +131,18 @@ public class plplBaseListener implements plplListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitDeklaracja_referencji(plplParser.Deklaracja_referencjiContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterDeklarator_zlozony_z_przypisaniem(plplParser.Deklarator_zlozony_z_przypisaniemContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDeklarator_zlozony_z_przypisaniem(plplParser.Deklarator_zlozony_z_przypisaniemContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -604,6 +628,30 @@ public class plplBaseListener implements plplListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterNieokreslony_deklarator_tablicowy(plplParser.Nieokreslony_deklarator_tablicowyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNieokreslony_deklarator_tablicowy(plplParser.Nieokreslony_deklarator_tablicowyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterOkreslony_deklarator_tablicowy(plplParser.Okreslony_deklarator_tablicowyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOkreslony_deklarator_tablicowy(plplParser.Okreslony_deklarator_tablicowyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterPrzydomki(plplParser.PrzydomkiContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -611,18 +659,6 @@ public class plplBaseListener implements plplListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitPrzydomki(plplParser.PrzydomkiContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterPrzydomek(plplParser.PrzydomekContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitPrzydomek(plplParser.PrzydomekContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

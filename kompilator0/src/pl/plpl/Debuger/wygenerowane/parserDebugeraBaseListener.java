@@ -323,6 +323,18 @@ public class parserDebugeraBaseListener implements parserDebugeraListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitPisz_symbol(parserDebugera.Pisz_symbolContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPisz_stan_maszyny_deklaracyjnej(parserDebugera.Pisz_stan_maszyny_deklaracyjnejContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPisz_stan_maszyny_deklaracyjnej(parserDebugera.Pisz_stan_maszyny_deklaracyjnejContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

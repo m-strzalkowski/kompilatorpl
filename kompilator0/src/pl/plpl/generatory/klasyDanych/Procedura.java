@@ -14,12 +14,13 @@ public class Procedura {
     public int nr;
 
     public boolean poczatkowa=false;//czy jest w niej program/main
+    public boolean nieokreslona=false;//procedura nieokreślona jest konceptualną zaślepką, mówiącą, że podczas wykonania znajdzie się coś, czego rzeczywistej procedury nie znamy/nie mamy podczas kompilacji. Nie jest wpisana do globalnej listy procedur, nie napuszcza się na nią generatora kodu.
     public boolean zamknieta_zwroc=false;//czy ostatnią instrukcją jest zwróć
     public PelnyTyp typZwracany;
     public List<Pair<String,PelnyTyp>> pelnaListaArgumentow = new ArrayList<Pair<String,PelnyTyp>>();//nazwa - typ
     public List<PunktWejsciowy> wejscia = new ArrayList<>();
     public List<Zakres> zakresy = new ArrayList<>();
-    //najogólniejszy zakres?
+    public Zakres najogolniejszy_zakres=null;//zakres odpowiadający nawiasom klamrowym procedury, potrzebny bo w nim mają być parametry formalne
     public Map<Symbol, Boolean> zmapowane_w_pamiec_symbole = new HashMap<Symbol,Boolean>();//te, które maja odpowiadające obiekty pamięci
 
     public List<ObiektStatyczny> statyczne = new ArrayList<ObiektStatyczny>();
@@ -48,7 +49,7 @@ public class Procedura {
         czystaRef.typ = Typ.Ref;
         czystaRef.rodzaj_pamieci = PelnyTyp.RodzajPam.AUTOMATYCZNA;
         czystaRef.parametr_formalny = false;
-        Symbol ebp = new Symbol("poprzedni ebp", najogolniejszy_zakres, czystaRef);
+        Symbol ebp = new Symbol("poprzedni ebp", null,  najogolniejszy_zakres, czystaRef);
        // ramka_stosu.add((ObiektAutomatyczny) ebp.obiektPamieci);
         //ramka_stosu.getLast().offset=offset_kolejnych;
         offset_kolejnych -= ramka_stosu.getLast().rozmiar_B;
@@ -81,7 +82,7 @@ public class Procedura {
 
     public StringBuilder text_prolog = new StringBuilder();
     public StringBuilder text_epilog = new StringBuilder();
-    public Zakres najogolniejszy_zakres=null;//zakres odpowiadający nawiasom klamrowym procedury, potrzebny bo w nim mają być parametry formalne
+
     //public StringBuilder prolog_text = new StringBuilder();
 
     public Procedura(Token startToken) {

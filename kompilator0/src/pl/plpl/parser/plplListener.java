@@ -38,6 +38,16 @@ public interface plplListener extends ParseTreeListener {
 	 */
 	void exitProcedura(plplParser.ProceduraContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link plplParser#typ_zwracany}.
+	 * @param ctx the parse tree
+	 */
+	void enterTyp_zwracany(plplParser.Typ_zwracanyContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link plplParser#typ_zwracany}.
+	 * @param ctx the parse tree
+	 */
+	void exitTyp_zwracany(plplParser.Typ_zwracanyContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link plplParser#deklaracja_typu}.
 	 * @param ctx the parse tree
 	 */
@@ -97,6 +107,16 @@ public interface plplListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitDeklaracja_referencji(plplParser.Deklaracja_referencjiContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link plplParser#deklarator_zlozony_z_przypisaniem}.
+	 * @param ctx the parse tree
+	 */
+	void enterDeklarator_zlozony_z_przypisaniem(plplParser.Deklarator_zlozony_z_przypisaniemContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link plplParser#deklarator_zlozony_z_przypisaniem}.
+	 * @param ctx the parse tree
+	 */
+	void exitDeklarator_zlozony_z_przypisaniem(plplParser.Deklarator_zlozony_z_przypisaniemContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link plplParser#lista_instrukcji}.
 	 * @param ctx the parse tree
@@ -532,6 +552,26 @@ public interface plplListener extends ParseTreeListener {
 	 */
 	void exitPelny_typ(plplParser.Pelny_typContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link plplParser#nieokreslony_deklarator_tablicowy}.
+	 * @param ctx the parse tree
+	 */
+	void enterNieokreslony_deklarator_tablicowy(plplParser.Nieokreslony_deklarator_tablicowyContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link plplParser#nieokreslony_deklarator_tablicowy}.
+	 * @param ctx the parse tree
+	 */
+	void exitNieokreslony_deklarator_tablicowy(plplParser.Nieokreslony_deklarator_tablicowyContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link plplParser#okreslony_deklarator_tablicowy}.
+	 * @param ctx the parse tree
+	 */
+	void enterOkreslony_deklarator_tablicowy(plplParser.Okreslony_deklarator_tablicowyContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link plplParser#okreslony_deklarator_tablicowy}.
+	 * @param ctx the parse tree
+	 */
+	void exitOkreslony_deklarator_tablicowy(plplParser.Okreslony_deklarator_tablicowyContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link plplParser#przydomki}.
 	 * @param ctx the parse tree
 	 */
@@ -541,16 +581,6 @@ public interface plplListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitPrzydomki(plplParser.PrzydomkiContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link plplParser#przydomek}.
-	 * @param ctx the parse tree
-	 */
-	void enterPrzydomek(plplParser.PrzydomekContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link plplParser#przydomek}.
-	 * @param ctx the parse tree
-	 */
-	void exitPrzydomek(plplParser.PrzydomekContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link plplParser#nazwa_typu_atom}.
 	 * @param ctx the parse tree

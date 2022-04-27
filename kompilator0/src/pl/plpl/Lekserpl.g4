@@ -1,5 +1,5 @@
 lexer grammar Lekserpl; // note "lexer grammar"
-ZNACZNIK_DEBUGGERA :   '<' ~( '<') * '>' -> channel(333)
+ZNACZNIK_DEBUGGERA :   '<' ~( '<') *? '>' -> channel(333)
                     ;
 NIC : 'nic' | 'NIC' | 'Nic';
 STATYCZN: 'statyczn'[yea];
@@ -19,6 +19,7 @@ ZNAK_DOSL
 NAPIS_DOSL
     :  '"' ( EscapeSequence | ~('\\'|'"') )* '"'
     ;
+
 LINIA_ASEMBLERA : '$$' .*? '\r'? '\n';
 fragment
 EscapeSequence

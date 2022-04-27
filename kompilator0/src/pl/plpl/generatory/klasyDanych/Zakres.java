@@ -29,7 +29,7 @@ public class Zakres {
     {
         symbole.add(s);
         if(s.token != null){sym_po_tokenie.put(s.token, s);}
-        else if(s.identyfikator != null){sym_po_nazwie.put(s.identyfikator, s);}
+        if(s.identyfikator != null){sym_po_nazwie.put(s.identyfikator, s);}
     }
 
     //Znajduje symbol w PRZESTREZNI NAZW - czyli danym zakresie i nadrzędnych
@@ -73,14 +73,18 @@ public class Zakres {
     }
     public String krotkoSymbole()
     {
-        StringBuilder sb = new StringBuilder("Symbole w zakresie"+nr+"\nidentyfikator, etykieta, token");
+        StringBuilder sb = new StringBuilder("\nSymbole w zakresie "+nr+"\nidentyfikator, etykieta, token");
         for(var s: symbole){sb.append("\n"+s.identyfikator+","+s.etykieta()+","+s.token);}
+        sb.append("\nPO NAZWIE:\n");
+        for(var s: sym_po_nazwie.values()){sb.append("\n"+s.briefToString());}
+        sb.append("\nPO TOKENIE:\n");
+        for(var s: sym_po_tokenie.values()){sb.append("\n"+s.briefToString());}
         return sb.toString();
     }
     public String krotkoPrzestrzen()
     {
-        StringBuilder sb = new StringBuilder("\nSymbole w zakresie"+nr+"\nidentyfikator, etykieta, token, zakres");
-        for(var s: symbole){sb.append("\n"+s.identyfikator+","+s.etykieta()+","+s.token+","+this.nr);}
+        StringBuilder sb = new StringBuilder("\n\nSymbole w zakresie "+nr+"\nidentyfikator, etykieta, token");
+        for(var s: symbole){sb.append("\n"+s.briefToString());}
         if(this.nadrzedny != null) sb.append(this.nadrzedny.krotkoPrzestrzen());
         return sb.toString();
     }

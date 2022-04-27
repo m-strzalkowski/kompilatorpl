@@ -18,7 +18,6 @@ nastepny_krok: SREDNIK;
 nastepny_znacznik: PRZECINEK;
 komenda_ubicia_kompilatora : ZGIN;
 komenda_ubicia_debugera : DOKONCZ;
-
 przechodzenie: CD (cd_do_proc | cd_do_zakresu);
 
 /*komendy przechodzenia*/
@@ -32,16 +31,18 @@ listowanie: (ogolne_listowanie)|( LS (listing_procedur | listing_zakresow ))
                     | pisz_ramke_procedury
                     | pisz_statyczne_procedury
                     | pisz_symbole
+                    | pisz_symbol
                     | pisz_sekcje
                     | pisz_nazwy_typow
                     | pisz_tokeny
                     | pisz_drzewo_skladniowe
+                    | pisz_stan_maszyny_deklaracyjnej
                     )
                 );
 /*lisotwanie*/
 ogolne_listowanie: LS;
-listing_procedur: PROC;
-listing_zakresow: ZAKR;
+listing_procedur: PROC (MINUS_L)?;
+listing_zakresow: ZAKR (MINUS_L)?;
 
 /*wypisywanie*/
 pisz_zakres : ZAKR NUM;
@@ -53,4 +54,5 @@ pisz_nazwy_typow: TYPY;
 pisz_tokeny: TOKENY;
 pisz_drzewo_skladniowe: DRZEWO;
 pisz_symbole: SYMBOLE (TU|TUIWYZEJ)?;
-pisz_symbol: SYMBOL ID;
+pisz_symbol: SYMBOL ID (MINUS_L)?;
+pisz_stan_maszyny_deklaracyjnej : STAN_MASZYNY_DEKLARACYJNEJ;

@@ -2,6 +2,19 @@ procedura
 {
     zacznij program();
     //znak z - nie działa jak powinno z jakiegoś powodu, pewnnie od zamieszania z mov ? al, może trzeba movs/movz byte?
+    {
+    {
+    {
+
+    }
+     wypisz("Nebuzaradan");
+    }
+    }
+    {
+
+    }
+    {{{}{}}}
+    wypisz("Ala");
     całk z;
     z='a';
     wypisz(z);
@@ -16,6 +29,6 @@ procedura
     wypisz(a);
     zwróć();
 }
-procedura{zacznij f(); zwróć();<SEM:,>}
-procedura{zacznij g(); zwróć();<SEM:dok.>}
+procedura{zacznij f(); zwróć();}
+procedura{zacznij g(); zwróć();<S:dok.>}
 procedura{zacznij h(); zwróć();<SEM:cd proc 1>}

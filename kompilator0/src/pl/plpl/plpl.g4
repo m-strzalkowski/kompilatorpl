@@ -1,9 +1,10 @@
 grammar plpl;
 import Lekserpl;
-program : (byt_globalny)*;
+program : (byt_globalny)*;//a co z EOF?
 byt_globalny: procedura | deklaracja_typu | deklaracja_prosta;
 
-procedura   :  'procedura' ('->' pelny_typ)? '{' lista_instrukcji  '}';
+procedura   :  'procedura' ('->' typ_zwracany)? '{' lista_instrukcji  '}';
+typ_zwracany: pelny_typ;
 
 deklaracja_typu   : 'typ'  ID  '{' ( deklaracja_prosta )+ '}';//użytkownik wprowadza nowy typ
 deklaracja_prosta   :  deklaracja_atomiczna  |  deklaracja_referencji;//użytkownik deklarje obiekt istniejącego już typu (atomicznego, bądź zdefiniowanego)
@@ -16,8 +17,8 @@ deklaracja_atomiczna
 deklarator_bez_przypisania : ID;
 deklarator_atomiczny_z_przypisaniem : ID  '='  (CALK | ZMIENN | ZNAK_DOSL);
 deklaracja_referencji   :
-     przydomki pelny_typ ID  EOS |//pełny typ to np. całk[][]
-     przydomki pelny_typ  ID   '='  (ID | NAPIS_DOSL) EOS ;
+     przydomki pelny_typ (deklarator_bez_przypisania|deklarator_zlozony_z_przypisaniem) (',' (deklarator_bez_przypisania|deklarator_zlozony_z_przypisaniem))*  EOS ;
+deklarator_zlozony_z_przypisaniem : ID  '='  (lwartosc | stala_tablicowa /*|TABLICA_CALK_DOSL*/);
 
 lista_instrukcji   : instrukcja+;
 instrukcja   :   instrukcja_wyboru
@@ -29,8 +30,9 @@ instrukcja   :   instrukcja_wyboru
              |   instrukcja_kontynuacji_petli
              |   instrukcja_powrotu
              |   instrukcja_zakonczenia
-             |   deklaracja_atomiczna
-             |   deklaracja_referencji
+             //|   deklaracja_atomiczna
+             //|   deklaracja_referencji
+             |   deklaracja_prosta
              |   wstawka_asemblerowa
              |   wypisanie;
 instrukcja_zlozona  : '{'  lista_instrukcji?  '}';
@@ -46,7 +48,7 @@ instrukcja_prosta  :   wyrazenie EOS;
 wstawka_asemblerowa : LINIA_ASEMBLERA;//przede wszystkim dla celów testowych, realnie wklejanie bezpośrednio kodu będzie mało przydatne.
 
 lista_parametrow_formalnych : (deklaracja_parametru  (',' deklaracja_parametru)*)?;
-deklaracja_parametru   :  pelny_typ   ID;
+deklaracja_parametru   :  przydomki ( nazwa_typu_atom | pelny_typ)   deklarator_bez_przypisania;
 
 /* przykład z książki
 expression
@@ -76,6 +78,10 @@ wyrazenie
           ;
 
  lwartosc: ID (selektor_tablicowy)?(selektor_typu_zlozonego(selektor_tablicowy)*)*;//konstrukcje typu a.b[d+2][7][12+w]
+ //lwartosc: ID | NAPIS_DOSL | tablica_calk_dosl;
+ //do wyrażeń:
+ //|wyrazenie selektor_tablicowy #wyrazenieSelekcjaTablicowa
+ //|wyrazenie selektor_typu_zlozonego #wyrazenieSelekcjiSkladowej
  selektor_tablicowy   :  '['  wyrazenie  ']';
  selektor_typu_zlozonego   :  '.' ID ;
 
@@ -92,8 +98,9 @@ wyrazenie
  stala_atomiczna   :  CALK  |  ZMIENN  |  ZNAK_DOSL ;
  stala_tablicowa   : NAPIS_DOSL;
 //pelny_typ : ((nazwa_typu_atom ('[]')* ('[' CALK ']')+ ) | ID (('[]')* ('[' CALK ']')*) ) ;
-pelny_typ : (nazwa_typu_atom | ID ) ('[]')* ('[' CALK ']')*;
+pelny_typ : (nazwa_typu_atom | ID ) (nieokreslony_deklarator_tablicowy)* (okreslony_deklarator_tablicowy)?;
+nieokreslony_deklarator_tablicowy: '['']';
+okreslony_deklarator_tablicowy: '[' CALK ']';
 przydomki : ((STATYCZN|AUTOMATYCZN)? STAL?) | (STAL? (STATYCZN|AUTOMATYCZN)?);
-przydomek: STATYCZN | AUTOMATYCZN | STAL;
 //nazwa_typu_atom   : 'całk' | 'rzeczyw' | 'znak';
 nazwa_typu_atom : TCALK | TRZECZYW | TZNAK | TREF;

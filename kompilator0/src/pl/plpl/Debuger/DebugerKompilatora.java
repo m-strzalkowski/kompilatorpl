@@ -192,6 +192,7 @@ public class DebugerKompilatora extends parserDebugeraBaseVisitor  {
         Zakres aktualny_zakres=null;
         boolean interaktywność=true;
         LinkedList< ParseTree> sesja_inter = new LinkedList<>();//sesja interaktywna
+        public boolean zmuś=false;//zmuś do rozpoczęcia sesji interaktywnej
 
         public void krok(Object ofiara, boolean na_poczatku, Method method, Object[] args)//ofiara debugowania oczywiście
         {
@@ -222,20 +223,29 @@ public class DebugerKompilatora extends parserDebugeraBaseVisitor  {
             System.out.println(karetka());
             //czy jest się poszło za znacznik?
             LinkedList<Pair<Token, ParseTree>> znaczniki = switch(aktualny_przebieg){case ZBIERANIE_TYPOW -> zn_typ; case ANALIZA_SEMANTYCZNA -> zn_sem; case GENERACJA_KODU -> zn_gen;};
-            if(znaczniki.size() < 1){return;}//i tak nie ma nic do roboty
-            Token znacznik_w_programie = znaczniki.getFirst().a;
-            System.out.println(""+ indeks_znaku +" > " + znacznik_w_programie.getStartIndex() + " lista" + znaczniki.size());
-            if(indeks_znaku >= znacznik_w_programie.getStartIndex())
+            Token znacznik_w_programie=null;
+            if(!zmuś)
             {
-                System.out.print(karetka()+":");
-                //wykonaj podaną w znaczniku komendę
-                ParseTree komenda_ze_znacznika  = znaczniki.getFirst().b;
-                interaktywność = true;
-                this.visit(komenda_ze_znacznika);
-                if(znaczniki.size()<1){return;}
-                System.out.println(znaczniki.getFirst().b.getText());
-                //usuń z komend do wykonania
-                znaczniki.removeFirst();
+                if(znaczniki.size() < 1){return;}//i tak nie ma nic do roboty
+                znacznik_w_programie = znaczniki.getFirst().a;
+                System.out.println(""+ indeks_znaku +" > " + znacznik_w_programie.getStartIndex() + " lista" + znaczniki.size());
+            }
+            else {znaczniki = zn_sem;}
+            if(zmuś || indeks_znaku >= znacznik_w_programie.getStartIndex())
+            {
+                if(!zmuś)
+                {
+                    System.out.print(karetka()+":");
+                    //wykonaj podaną w znaczniku komendę
+                    ParseTree komenda_ze_znacznika  = znaczniki.getFirst().b;
+                    interaktywność = true;
+                    this.visit(komenda_ze_znacznika);
+                    if(znaczniki.size()<1){return;}
+                    System.out.println(znaczniki.getFirst().b.getText());
+                    //usuń z komend do wykonania
+                    znaczniki.removeFirst();
+                }
+                else{zmuś=false; interaktywność=true;}
 
 
                 //wykonuj komendy interaktywne
@@ -284,6 +294,13 @@ public class DebugerKompilatora extends parserDebugeraBaseVisitor  {
     @Override public String visitOgolne_listowanie(parserDebugera.Ogolne_listowanieContext ctx) { System.out.println(Tablice.wypisz());  return ""; }
     @Override public String visitListing_procedur(parserDebugera.Listing_procedurContext ctx)
     {
+        if(ctx.MINUS_L()==null){System.out.println(Tablice.krotkilistingProcedur()); return "";}
+        System.out.println(Tablice.listingProcedur());
+        return "";
+    }
+    @Override public String visitListing_zakresow(parserDebugera.Listing_zakresowContext ctx)
+    {
+        if(ctx.MINUS_L()==null){System.out.println(Tablice.krotkilistingZakresow()); return "";}
         System.out.println(Tablice.listingProcedur());
         return "";
     }
@@ -294,7 +311,19 @@ public class DebugerKompilatora extends parserDebugeraBaseVisitor  {
         {
             if(p.nr==nr_proc){aktualna_procedura = p; break;}
         }
+        if(nr_proc == 0){aktualna_procedura = Tablice.kod_globalny;}
         aktualny_zakres = aktualna_procedura.najogolniejszy_zakres;
+        return "";
+    }
+    @Override public String visitCd_do_zakresu(parserDebugera.Cd_do_zakresuContext ctx)
+    {
+        int nr_zakr = Integer.parseInt( ctx.NUM().getText());
+        for(var z :Tablice.zakresy)
+        {
+            if(z.nr==nr_zakr){aktualny_zakres = z; break;}
+        }
+        if(nr_zakr == 0){aktualny_zakres = Tablice.zakres_globalny;}
+        if(aktualny_zakres.procedura != aktualna_procedura){aktualna_procedura = aktualny_zakres.procedura;}
         return "";
     }
 
@@ -323,9 +352,26 @@ public class DebugerKompilatora extends parserDebugeraBaseVisitor  {
         else{System.out.println("PRZESTRZEŃ NAZW:\n"+aktualny_zakres.krotkoPrzestrzen());}
         return "";
     }
-    @Override public String visitPisz_symbol(parserDebugera.Pisz_symbolContext ctx)
+    @Override public String visitPisz_stan_maszyny_deklaracyjnej(parserDebugera.Pisz_stan_maszyny_deklaracyjnejContext ctx)
     {
+        if(this.aktualny_przebieg == Przebieg.ANALIZA_SEMANTYCZNA)
+        {
+            String s = ((UstalaczStruktur)(((InvocationHandlerForDebugger) Proxy.getInvocationHandler(this.proxy)).getTarget())).piszStanMaszynyDeklaracyjnej();
+            System.out.println(s);
+        }
+        else {
+            System.out.println("STAN MASZYNY DEKLARACYJNEJ DOSTĘPNY TYLKO PODCZAS ANALIZY SEMANTYCZNEJ\n");
+        }
         return "";
     }
+    @Override public String visitPisz_symbol(parserDebugera.Pisz_symbolContext ctx)
+    {
+        if(ctx.ID().getText() != null && ctx.ID().getText().length() > 0)
+        {
+            System.out.println( Tablice.wypiszSymbolWPrzestrzeni(ctx.ID().getText(), aktualny_zakres, ctx.MINUS_L() != null));
+        }
+        return "";
+    }
+
 
 }

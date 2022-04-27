@@ -6,7 +6,7 @@ public class PelnyTyp implements Cloneable{
     @Override
     public String toString() {
         return "PelnyTyp{" +
-                "typ=" + typ.toString() +
+                "typ=" + ((typ==null)?("null"):(typ.toString())) +
                 ", rodzaj_pamieci=" + rodzaj_pamieci.toString() +
                 ", inicjalizowana=" + inicjalizowana +
                 ", parametr_formalny=" + parametr_formalny +

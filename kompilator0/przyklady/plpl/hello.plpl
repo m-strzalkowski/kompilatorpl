@@ -1,11 +1,12 @@
 procedura
 {
-    statyczny znak z = 1234;
+    statyczny całk z = 3;
     zacznij program();
-    //zacznij program(całk i);
-    //całk i = czytaj_znak();
-    pisz_znak('H');
-    pisz_znak('E');
+    wypisz("H");
+    całk i; i=7;
+    wypisz(i);
+    z=(i+2+3)*2*i;
+    wypisz(z);
     //skończ(17);
     zwróć();
 }

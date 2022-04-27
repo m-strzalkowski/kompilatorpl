@@ -1,0 +1,8 @@
+procedura
+{
+    zacznij program();
+    statyczny całk a=2;
+    statyczny znak[] t="Ala ma kota";
+    zwróć();
+}
+procedura{zacznij f(); zwróć();<S>}

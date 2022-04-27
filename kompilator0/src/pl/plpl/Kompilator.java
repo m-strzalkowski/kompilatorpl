@@ -130,8 +130,11 @@ public class Kompilator {
         }
         System.out.println(tree.toStringTree(parser)); // print tree as text <label id="code.tour.main.7"/>
 
-        //3.Zebranie nowych nazw typów
+        //walker
         ParseTreeWalker walker = new ParseTreeWalker();
+        plplListener sprawdzacz = new Sprawdzacz(parser, tokens);
+        walker.walk(sprawdzacz, tree);
+        //3.Zebranie nowych nazw typów
         plplListener zbieracz = new ZbieraczNowychTypow(parser);
         //if(debuger_kompilatora!=null){debuger_kompilatora.podmień(zbieracz, DebugerKompilatora.Przebieg.ZBIERANIE_TYPOW);}
         if(debuger_kompilatora!=null){zbieracz =  (plplListener) debuger_kompilatora.zmień(zbieracz, DebugerKompilatora.Przebieg.ZBIERANIE_TYPOW); }
