@@ -1,5 +1,5 @@
 lexer grammar Lekserpl; // note "lexer grammar"
-ZNACZNIK_DEBUGGERA :   '<' ~( '<') *? '>' -> channel(333)
+ZNACZNIK_DEBUGGERA :   '<<' ~( '<') *? '>>' -> channel(333)
                     ;
 NIC : 'nic' | 'NIC' | 'Nic';
 STATYCZN: 'statyczn'[yea];
