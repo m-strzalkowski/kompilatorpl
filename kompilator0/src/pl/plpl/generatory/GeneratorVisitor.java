@@ -208,7 +208,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
             //wypisanie
             sb.append(";wypisanie\n");
             sb.append("                push dword "+sym.etykieta()+"\n");
-            sb.append("                call _printf\n");
+            sb.append("                call printf\n");
             sb.append("                add esp, byte 4\n");
             sb.append(";koniec wypisania\n");
             return sb.toString();
@@ -231,7 +231,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
                 sb.append("                mov dword eax, ["+sym.etykieta()+"]\n");
                 sb.append("                mov dword [esp], eax\n");
                 sb.append("                push dword WYPISZ_CALK_FMT\n");
-                sb.append("                call _printf\n");
+                sb.append("                call printf\n");
                 sb.append("                add esp, byte 8\n");
                 sb.append(";koniec wypisania\n");
                 return sb.toString();
@@ -248,7 +248,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
                 sb.append("                mov byte al, ["+sym.etykieta()+"]\n");
                 sb.append("                mov byte [esp], al\n");
                 sb.append("                push dword WYPISZ_ZNAK_FMT\n");
-                sb.append("                call _printf\n");
+                sb.append("                call printf\n");
                 sb.append("                add esp, byte 5\n");
                 sb.append(";koniec wypisania\n");
                 return sb.toString();
@@ -527,11 +527,13 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         sb.append("                push eax\n");
         sb.append(wyrazenie1);
         sb.append("                pop ebx\n");
-        sb.append("                sub esp, 16\n");
+        sb.append("                pxor xmm0, xmm0\n");
+        sb.append("                pxor xmm1, xmm1\n");
+        sb.append("                sub esp, 8\n");
         sb.append("                cvtsi2sd xmm0, eax\n");
         sb.append("                cvtsi2sd xmm1, ebx\n");
-        sb.append("                call _pow\n");
-        sb.append("                add esp, byte 16\n");
+        sb.append("                call pow\n");
+        sb.append("                add esp, 8\n");
         sb.append("                cvttsd2si eax, xmm0\n");
         sb.append(";koniec potęgowania:"+ctx.start.getLine() +"\n");
         return sb.toString();
@@ -551,6 +553,96 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
             sb.append("                neg eax\n");
         }
         sb.append(";koniec znaku:"+ctx.start.getLine() +"\n");
+
+        return sb.toString();
+    }
+
+    @Override public String visitWyrazenieNegacja(plplParser.WyrazenieNegacjaContext ctx)
+    {
+        StringBuilder sb = new StringBuilder();
+        String wyrazenie = visit(ctx.wyrazenie());
+        PelnyTyp twyrazenie = stosTypów.peek();
+        //@ASM
+        sb.append(";negacja:"+ctx.start.getLine() +"\n");
+        sb.append(wyrazenie);
+        sb.append("                push eax\n");
+        sb.append("                xor eax, 1\n");
+        sb.append(";koniec negacji:"+ctx.start.getLine() +"\n");
+
+        return sb.toString();
+    }
+
+    @Override public String visitWyrazeniePorownanie(plplParser.WyrazeniePorownanieContext ctx)
+    {
+        StringBuilder sb = new StringBuilder();
+        String wyrazenie2 = visit(ctx.wyrazenie().get(1));
+        PelnyTyp twyrazenie2 = stosTypów.pop();
+        String wyrazenie1 = visit(ctx.wyrazenie().get(0));
+        PelnyTyp twyrazenie1 = stosTypów.peek();
+        //@ASM
+        sb.append(";porównanie:"+ctx.start.getLine() +"\n");
+        sb.append(wyrazenie2);
+        sb.append("                push eax\n");
+        sb.append(wyrazenie1);
+        sb.append("                pop ebx\n");
+        sb.append("                cmp eax, ebx\n");
+        if(ctx.porownanie.getText().equals("=="))
+        {
+            sb.append("                mov eax, 0\n");
+            sb.append("                sete al\n");
+        }
+        if(ctx.porownanie.getText().equals("!="))
+        {
+            sb.append("                mov eax, 0\n");
+            sb.append("                setne al\n");
+        }
+        if(ctx.porownanie.getText().equals("<"))
+        {
+            sb.append("                mov eax, 0\n");
+            sb.append("                setl al\n");
+        }
+        if(ctx.porownanie.getText().equals("<="))
+        {
+            sb.append("                mov eax, 0\n");
+            sb.append("                setle al\n");
+        }
+        if(ctx.porownanie.getText().equals(">"))
+        {
+            sb.append("                mov eax, 0\n");
+            sb.append("                setg al\n");
+        }
+        if(ctx.porownanie.getText().equals(">="))
+        {
+            sb.append("                mov eax, 0\n");
+            sb.append("                setge al\n");
+        }
+        sb.append(";koniec porównania:"+ctx.start.getLine() +"\n");
+
+        return sb.toString();
+    }
+
+    @Override public String visitWyrazenieLogicz(plplParser.WyrazenieLogiczContext ctx)
+    {
+        StringBuilder sb = new StringBuilder();
+        String wyrazenie2 = visit(ctx.wyrazenie().get(1));
+        PelnyTyp twyrazenie2 = stosTypów.pop();
+        String wyrazenie1 = visit(ctx.wyrazenie().get(0));
+        PelnyTyp twyrazenie1 = stosTypów.peek();
+        //@ASM
+        sb.append(";and/or:"+ctx.start.getLine() +"\n");
+        sb.append(wyrazenie2);
+        sb.append("                push eax\n");
+        sb.append(wyrazenie1);
+        sb.append("                pop ebx\n");
+        if(ctx.logicz.getText().equals("||"))
+        {
+            sb.append("                or eax, ebx\n");
+        }
+        if(ctx.logicz.getText().equals("&&"))
+        {
+            sb.append("                and eax, ebx\n");
+        }
+        sb.append(";koniec and/or:"+ctx.start.getLine() +"\n");
 
         return sb.toString();
     }
