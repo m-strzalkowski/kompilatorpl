@@ -208,7 +208,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
             //wypisanie
             sb.append(";wypisanie\n");
             sb.append("                push dword "+sym.etykieta()+"\n");
-            sb.append("                call printf\n");
+            sb.append("                call _printf\n");
             sb.append("                add esp, byte 4\n");
             sb.append(";koniec wypisania\n");
             return sb.toString();
@@ -231,7 +231,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
                 sb.append("                mov dword eax, ["+sym.etykieta()+"]\n");
                 sb.append("                mov dword [esp], eax\n");
                 sb.append("                push dword WYPISZ_CALK_FMT\n");
-                sb.append("                call printf\n");
+                sb.append("                call _printf\n");
                 sb.append("                add esp, byte 8\n");
                 sb.append(";koniec wypisania\n");
                 return sb.toString();
@@ -248,7 +248,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
                 sb.append("                mov byte al, ["+sym.etykieta()+"]\n");
                 sb.append("                mov byte [esp], al\n");
                 sb.append("                push dword WYPISZ_ZNAK_FMT\n");
-                sb.append("                call printf\n");
+                sb.append("                call _printf\n");
                 sb.append("                add esp, byte 5\n");
                 sb.append(";koniec wypisania\n");
                 return sb.toString();
@@ -532,7 +532,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         sb.append("                sub esp, 8\n");
         sb.append("                cvtsi2sd xmm0, eax\n");
         sb.append("                cvtsi2sd xmm1, ebx\n");
-        sb.append("                call pow\n");
+        sb.append("                call _pow\n");
         sb.append("                add esp, 8\n");
         sb.append("                cvttsd2si eax, xmm0\n");
         sb.append(";koniec potęgowania:"+ctx.start.getLine() +"\n");
