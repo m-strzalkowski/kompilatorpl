@@ -1,12 +1,9 @@
 procedura
 {
-    statyczny całk z = 3;
     zacznij program();
-    wypisz("H");
-    całk i; i=7;
-    wypisz(i);
-    z=(i+2+3)*2*i;
-    wypisz(z);
-    //skończ(17);
+    jeśli(1) { wypisz("JESTEM W JESLI"); }
+    
+    całk a = 1;
+    dopóki(a) { a=0; wypisz("JESTEM W DOPOKI"); }
     zwróć();
 }

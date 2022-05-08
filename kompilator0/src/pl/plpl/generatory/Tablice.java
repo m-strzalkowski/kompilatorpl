@@ -32,6 +32,9 @@ public class Tablice {
     public static String PODKRESLNIK = "_";//zamienić na "", jeśli w tym srodowisku nie życzą sobie podkreśnika przed np. main
     public static String WEJSCIE_PROG = "program";//nazwa stojąca za main
 
+    public static int liczbaIfow = 0;
+    public static int liczbaPetli = 0;
+
     public static void dodajZakres(Zakres z)
     {
         zakresy.add(z); zakresy_po_pierwszym_tokenie.put(z.startToken, z);
@@ -159,6 +162,16 @@ public class Tablice {
             else{sb.append(s.briefToString());}
         }
         return sb.toString();
+    }
+
+    public static int dodajIfa()
+    {
+        return liczbaIfow++;
+    }
+
+    public static int dodajPetle()
+    {
+        return liczbaPetli++;
     }
 
 }

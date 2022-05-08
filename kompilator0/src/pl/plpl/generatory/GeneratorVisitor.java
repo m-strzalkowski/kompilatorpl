@@ -2,6 +2,7 @@ package pl.plpl.generatory;
 
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ParseTree;
 import pl.plpl.bledy.SemanticOccurence;
 import pl.plpl.generatory.klasyDanych.*;
 import pl.plpl.parser.plplBaseVisitor;
@@ -110,14 +111,59 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public String visitInstrukcja_wyboru(plplParser.Instrukcja_wyboruContext ctx) { return ""; }
+    @Override public String visitInstrukcja_wyboru(plplParser.Instrukcja_wyboruContext ctx) {
+
+        System.out.println("wizytacja instrukcji warunkowej "+"0");
+
+        StringBuilder returningAsm = new StringBuilder();
+
+        String indeksInstrukcjiWarunkowejStr = String.valueOf(Tablice.dodajIfa());
+        //@ASM
+        //instrukcja wyboru
+        returningAsm.append("\n;instrukcja jesli\n");
+
+        returningAsm.append(visit(ctx.wyrazenie()));
+        returningAsm.append("cmp eax, 0\n");
+        returningAsm.append("je " + "inaczej" + indeksInstrukcjiWarunkowejStr + "\n");
+        returningAsm.append(visit(ctx.instrukcja(0)) + "\n");
+        returningAsm.append("inaczej" + indeksInstrukcjiWarunkowejStr + ":\n");
+        if(ctx.instrukcja().size() > 1)
+        {
+            returningAsm.append(visit(ctx.instrukcja(1)) + "\n");
+        }
+        returningAsm.append("; koniec instrukcji warunkowej\n");
+
+        return returningAsm.toString();
+    }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation returns the result of calling
      * {@link #visitChildren} on {@code ctx}.</p>
      */
-    @Override public String visitInstrukcja_petli(plplParser.Instrukcja_petliContext ctx) { return ""; }
+    @Override public String visitInstrukcja_petli(plplParser.Instrukcja_petliContext ctx) {
+
+        System.out.println("wizytacja pętli "+"0");
+
+        StringBuilder returningAsm = new StringBuilder();
+
+        String indeksPetliStr = String.valueOf(Tablice.dodajPetle());
+        //@ASM
+        //instrukcja wyboru
+        returningAsm.append(";instrukcja dopoki\n");
+
+        returningAsm.append("petla" + indeksPetliStr + ":\n");
+        returningAsm.append(visit(ctx.wyrazenie()));
+        returningAsm.append("cmp eax, 0\n");
+        returningAsm.append("je " + "po_petli" + indeksPetliStr + "\n");
+        returningAsm.append(visit(ctx.instrukcja()) + "\n");
+        returningAsm.append("jmp " + "petla" + indeksPetliStr + "\n");
+        returningAsm.append("po_petli" + indeksPetliStr + ":\n");
+
+        returningAsm.append("; koniec dopoki\n");
+
+        return returningAsm.toString();
+    }
     /**
      * {@inheritDoc}
      *
