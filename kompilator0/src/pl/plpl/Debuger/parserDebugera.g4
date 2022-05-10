@@ -1,7 +1,7 @@
 parser grammar parserDebugera;
 options {tokenVocab=lekserDebugera;}
 //import lekserDebugera;
-znacznik: OTW? oznaczenia_przebiegow (SEPARATOR_ZNACZNIKOWY zbior_komend)? (ZMK|ZMKK)?;
+znacznik: OTW? oznaczenia_przebiegow (SEPARATOR_ZNACZNIKOWY zbior_komend)? (ZMK|ZMKK)? EOF;
 oznaczenia_przebiegow : (PRZEBIEG_TYPOWANIA | PRZEBIEG_ANALIZY_SEMANTYCZNEJ | PRZEBIEG_GENERACYJNY)*;
 zbior_komend: komenda (NASTEPNA reszta)?;
 reszta: ~(ZMK)* ;
@@ -37,6 +37,7 @@ listowanie: (ogolne_listowanie)|( LS (listing_procedur | listing_zakresow ))
                     | pisz_tokeny
                     | pisz_drzewo_skladniowe
                     | pisz_stan_maszyny_deklaracyjnej
+                    | pisz_punkt_we
                     )
                 );
 /*lisotwanie*/
@@ -46,7 +47,7 @@ listing_zakresow: ZAKR (MINUS_L)?;
 
 /*wypisywanie*/
 pisz_zakres : ZAKR NUM;
-pisz_procedure: PROC NUM;
+pisz_procedure: PROC (NUM|ID);
 pisz_ramke_procedury: RAMKA (PROC)?;
 pisz_statyczne_procedury: STATYCZNE (PROC)?;
 pisz_sekcje: SEKCJA (BSS|DATA|RODATA|TEXT| GWIAZDKA);
@@ -55,4 +56,5 @@ pisz_tokeny: TOKENY;
 pisz_drzewo_skladniowe: DRZEWO;
 pisz_symbole: SYMBOLE (TU|TUIWYZEJ)?;
 pisz_symbol: SYMBOL ID (MINUS_L)?;
+pisz_punkt_we: PUNKT ID (MINUS_L)?;
 pisz_stan_maszyny_deklaracyjnej : STAN_MASZYNY_DEKLARACYJNEJ;

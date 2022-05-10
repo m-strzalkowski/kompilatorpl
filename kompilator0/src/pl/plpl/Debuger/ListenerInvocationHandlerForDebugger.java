@@ -11,12 +11,12 @@ public class ListenerInvocationHandlerForDebugger extends InvocationHandlerForDe
         for(Method method: plplListener.class.getDeclaredMethods())
         {
             this.methods.put(method.getName(), method);
-            System.err.println(method.getName());
+            //System.err.println(method.getName());
         }
         for(Method method: ParseTreeListener.class.getDeclaredMethods())
         {
             this.methods.put(method.getName(), method);
-            System.err.println(method.getName());
+            //System.err.println(method.getName());
         }
     }
 }

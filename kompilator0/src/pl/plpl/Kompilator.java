@@ -139,17 +139,14 @@ public class Kompilator {
         //if(debuger_kompilatora!=null){debuger_kompilatora.podmień(zbieracz, DebugerKompilatora.Przebieg.ZBIERANIE_TYPOW);}
         if(debuger_kompilatora!=null){zbieracz =  (plplListener) debuger_kompilatora.zmień(zbieracz, DebugerKompilatora.Przebieg.ZBIERANIE_TYPOW); }
         walker.walk( zbieracz, tree );
-        System.out.println(Tablice.wypisz());
         //4.Czytanie deklaracji i tworzenie struktur pamięci (typy i ramki stosu procedur)
         plplListener ustalacz = new UstalaczStruktur(parser);
         if(debuger_kompilatora!=null){ustalacz =  (plplListener) debuger_kompilatora.zmień(ustalacz, DebugerKompilatora.Przebieg.ZBIERANIE_TYPOW); }
         walker.walk(ustalacz, tree);
-        System.out.println(Tablice.wypisz());
         //5.Generacja kodu
         plplVisitor generator = new GeneratorVisitor();
         if(debuger_kompilatora!=null){generator =  (plplVisitor) debuger_kompilatora.zmień(generator, DebugerKompilatora.Przebieg.ZBIERANIE_TYPOW); }
         generator.visit(tree);
-        System.out.println(Tablice.wypisz());
         //6.Składanie kodu?
         SkladaczKoduAsemblera skladacz = new SkladaczKoduAsemblera(inputFilePath, Tablice.SRODOWISKO);
         skladacz.zapiszKodAssembleraDoPliku();

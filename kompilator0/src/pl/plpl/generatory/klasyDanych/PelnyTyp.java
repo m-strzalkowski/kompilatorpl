@@ -47,6 +47,20 @@ public class PelnyTyp implements Cloneable{
         PelnyTyp pelnyTyp = (PelnyTyp) o;
         return inicjalizowana == pelnyTyp.inicjalizowana && parametr_formalny == pelnyTyp.parametr_formalny && krotnosc_tablicowa == pelnyTyp.krotnosc_tablicowa && dlugosc_tablicy == pelnyTyp.dlugosc_tablicy && Objects.equals(typ, pelnyTyp.typ) && rodzaj_pamieci == pelnyTyp.rodzaj_pamieci && modyfikowalonosc == pelnyTyp.modyfikowalonosc;
     }
+    //równość - oprócz bycia parametrem
+    public boolean equalsOpróczByciaParametrem(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PelnyTyp pelnyTyp = (PelnyTyp) o;
+        return inicjalizowana == pelnyTyp.inicjalizowana  && krotnosc_tablicowa == pelnyTyp.krotnosc_tablicowa && dlugosc_tablicy == pelnyTyp.dlugosc_tablicy && Objects.equals(typ, pelnyTyp.typ) && rodzaj_pamieci == pelnyTyp.rodzaj_pamieci && modyfikowalonosc == pelnyTyp.modyfikowalonosc;
+    }
+    //równość w sensie zgodności funkcjonalnej - daje się przypisać (Oprócz stałości, którą operator przypisania powinien sprawdzić sam, po odpowiedniej stronie)
+    public boolean equalsFunctionally(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PelnyTyp pelnyTyp = (PelnyTyp) o;
+        return  krotnosc_tablicowa == pelnyTyp.krotnosc_tablicowa && dlugosc_tablicy == pelnyTyp.dlugosc_tablicy && Objects.equals(typ, pelnyTyp.typ);
+    }
 
     @Override
     public int hashCode() {

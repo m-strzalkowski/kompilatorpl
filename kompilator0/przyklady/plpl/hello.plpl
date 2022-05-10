@@ -14,3 +14,4 @@ procedura
 
     zwróć();
 }
+procedura{zacznij p();zwróć();}

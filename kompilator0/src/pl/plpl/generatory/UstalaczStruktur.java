@@ -148,7 +148,7 @@ public class UstalaczStruktur extends plplBaseListener {
      * @return zakres ten sam/ przesunięty w hierarchii względem z
      */
     private Zakres przesunietyZakres(Zakres z){
-        System.err.println("\n\nOFS:"+offset_w_hierarchii_zakresow+"z.nr:"+z.nr);
+        //System.err.println("\n\nOFS:"+offset_w_hierarchii_zakresow+"z.nr:"+z.nr);
         Zakres w = z;
         //składowe, nazwy punktów wejściowych i parametry formalne związane są z zakresem procedury/struktury a nie jakimś lokalnym potomnym
         if( aktualnaStruktura != null || aktualnyPunkt != null || aktualnyTyp.parametr_formalny){w = w.procedura.najogolniejszy_zakres;}
@@ -158,7 +158,7 @@ public class UstalaczStruktur extends plplBaseListener {
         {
             w = w.nadrzedny;
         }
-        System.err.println("\n\nw.nr:"+w.nr);
+        //System.err.println("\n\nw.nr:"+w.nr);
         return w;
     }
 
@@ -277,13 +277,26 @@ public class UstalaczStruktur extends plplBaseListener {
         //składowe, nazwy punktów wejściowych i parametry formalne związane są z zakresem procedury/struktury a nie akimś lokalnym potomnym
         Zakres zakres_docelowy = przesunietyZakres(aktualnyZakres);
 
-        //Czy nazwa się powtarza (albo jak, jeśli może), sprawdzenie zależne od stanu maszyny deklaracji
-        Symbol symbol_redeklarowany =  sprawdzanie_redeklaracji_zaleznie_od_stanu(nazwa, aktualnyTyp, zakres_docelowy, ctx);
-        if(symbol_redeklarowany!=null){return symbol_redeklarowany;}
-        //Tworzenie nowego symbolu i dodanie (jeśli zachowano reguły redeklaracji, bo inaczej powyższe sprawdzanie redeklaracji emituje błąd i ewentualnie ubija kompilator)
-        //Każdy symbol dotaje swój klon obiektu PelnyTyp, dlatego można zmieniać stan aktualnegoTypu do woli, nie wpłynie to na wygenerowane już symbole
-        Symbol sym = new Symbol(nazwa, wystapienie, zakres_docelowy, aktualnyTyp.clone());
-        zakres_docelowy.dodajSymbol(sym);
+        //Czy nazwa się powtarza (albo jak, jeśli może), sprawdzenie zależne od stanu maszyny deklaracji, sprawdzenie zwraca jużi stniejacy symbol w razie redeklaracji
+        Symbol sym =  sprawdzanie_redeklaracji_zaleznie_od_stanu(nazwa, aktualnyTyp, zakres_docelowy, ctx);
+        if(sym==null)
+        {
+            //Tworzenie nowego symbolu i dodanie (jeśli zachowano reguły redeklaracji, bo inaczej powyższe sprawdzanie redeklaracji emituje błąd i ewentualnie ubija kompilator)
+            //Każdy symbol dotaje swój klon obiektu PelnyTyp, dlatego można zmieniać stan aktualnegoTypu do woli, nie wpłynie to na wygenerowane już symbole
+            sym = new Symbol(nazwa, wystapienie, zakres_docelowy, aktualnyTyp.clone());
+            zakres_docelowy.dodajSymbol(sym);
+        }
+
+        //TODO Podpinanie do punktu wejściowego, jeśli to parametr formalny
+        if(sym.pelnyTyp.parametr_formalny)
+        {
+            if(aktualnyPunkt == null)throw new RuntimeException("Błąd wewnętrzny: symbol"+sym.identyfikator+ "miał być parametrem formalnym, a aktualny punkt wejściowy == null");
+            //TODO
+            //punkt wejściowy potrafi przypiąć sobie symbol
+            aktualnyPunkt.przypnijParametr(sym);
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                    "Próba przypięcia symbolu jako parametru:"+sym.toString()+" do punktu "+ aktualnyPunkt.nazwa));
+        }
         return sym;
     }
     /**Ma:
@@ -312,16 +325,7 @@ public class UstalaczStruktur extends plplBaseListener {
         Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
                 "Deklarator bez przypisania:dodano symbol:"+sym.toString()));
 
-        //TODO Podpinanie do punktu wejściowego, jeśli to parametr formalny
-        if(sym.pelnyTyp.parametr_formalny)
-        {
-            if(aktualnyPunkt == null)throw new RuntimeException("Błąd wewnętrzny: symbol"+sym.identyfikator+ "miał być parametrem formalnym, a aktualny punkt wejściowy == null");
-            //TODO
-            //punkt wejściowy potrafi przypiąć sobie symbol
-            aktualnyPunkt.przypnijParametr(sym);
-            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
-                    "Próba przypięcia symbolu jako parametru:"+sym.toString()+" do punktu "+ aktualnyPunkt.nazwa));
-        }
+
         //Emisja kodu, jeśli symbol jest statyczny
         if(sym.pelnyTyp.rodzaj_pamieci == PelnyTyp.RodzajPam.STATYCZNA)
         {
@@ -506,42 +510,60 @@ public class UstalaczStruktur extends plplBaseListener {
         throw new RuntimeException("Nie zaimplementowano tego scenariusza sprawdzania redeklaracji\n"+ this.piszStanMaszynyDeklaracyjnej());
     }
 
+    /** Zwraca null, jeśli redeklaracja nie nastąpiła, albo odpowiedni symbol, jeśli zaszła. Jeśli nowe wystąpienie byłoby parametrem, promuje stary symbol do parametru.
+     */
     private Symbol sprawdzanie_redeklaracji_w_kodzie(String id, PelnyTyp aktualnyTyp, Zakres zakres_docelowy,ParserRuleContext ctx) {
 
+        //Drzewo decyzyjne redeklaracji symbolu
         Symbol s=null;
-        if( (s=zakres_docelowy.poNazwie_bez_nadrzednych(id)) != null && !aktualnyTyp.parametr_formalny && aktualnyPunkt == null){//całk a; {całk a;} ma wyprodukować dwie zmienne a
-            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.ERROR, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                    "Redeklaracja identyfikatora '"+id+"' poza listą parametrów formalnych"
-            ));
-            if((s=zakres_docelowy.poNazwie_bez_nadrzednych(id)).pelnyTyp.equals(aktualnyTyp) && s.pelnyTyp.rodzaj_pamieci == PelnyTyp.RodzajPam.AUTOMATYCZNA){
-                Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.INFO, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                        "Redeklaracja identyfikatora '"+id+"':typ się zgadza z poprzednim i zmienna jest automatyczna, można kontynuować"//przy statyczej mogłaby zaszłaby dwukrotna emisja kodu inicjalizującego
+        s=zakres_docelowy.poNazwie_bez_nadrzednych(id);
+        if(s != null)//nastąpiła redeklaacja
+        {
+            if(s.pelnyTyp.rodzaj_pamieci == PelnyTyp.RodzajPam.STATYCZNA)//redeklaracje statycznych w ogóle zabronione
+            {
+                Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                        "Redeklaracja statycznego symbolu'"+id+"'."
                 ));
             }
-            else {Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                    "Redeklaracja identyfikatora:"+id+"typ się nie zgadza z poprzednim, nie można kontynuować"+"typy:\n"+ s.pelnyTyp.toString() + "\n"+aktualnyTyp.toString()
-            ));
-                Symbol ewentualny_parametr = zakres_docelowy.procedura.najogolniejszy_zakres.poNazwie_bez_nadrzednych(id);//Jeżeli już istnieje coś w zakresie całej procedury...
-                if(ewentualny_parametr.pelnyTyp.parametr_formalny)//...co jest parametrem formalnym
+            else//zmienne automatyczne - dozwolone w niektórych przypadkach
+            {
+                boolean st_param = s.pelnyTyp.parametr_formalny;//czy stare wystąpienie jest parametrem formalnym?
+                boolean nw_param = aktualnyZakres != null;//czy nowe wystąpienie byłoby parametrem formalnym?
+                boolean zg_typ = s.pelnyTyp.equalsOpróczByciaParametrem(aktualnyTyp);//czy zachodzi pełna zgodność typów pomiędzy wystąpieniami?
+                Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                        "Być może dozwolona redeklaracja identyfikatora '"+id
+                ));
+                if(!zg_typ)//typy obu wystąpień nie są dokładnie identyczne
                 {
-                    Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.WARN, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                            "Redeklaracja identyfikatora '"+id+"': Istnieje już w tej procedurze parametr formalny o tej nazwie. Dodanie do podrzędnego zakresu symbolu o tej samej nazwie spowoduje zasłonięcie parametru formalnego, czy o to Ci chodziło?"
-                    ));
+                    Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                            "Redeklaracja identyfikatora:"+id+"typ się nie zgadza z poprzednim, nie można kontynuować"+"typy:\n"+ s.pelnyTyp.toString() + "\n"+aktualnyTyp.toString() ));
                 }
-
+                else{//typy obu wystąpień się zgadzają
+                    if(!nw_param)//nowe wystąpienie poza listą parametrów formalnych
+                    {
+                        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.ERROR, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                                "Redeklaracja identyfikatora '"+id+"' poza listą parametrów formalnych"
+                        ));//błąd, ale nie koniecznie fatalny, w wypadku kontunuacji zwrócony zostanie poprzedni symbol do wykorzystania
+                    }
+                    else{//nowe wystąpienie na liście parametrów formalnych
+                        if(!st_param)//stare wystąpienie nie jest parametrem formalnym
+                        {
+                            //promocja symbolu do parametru formalnego (stary zostaje zwrócony, ale w zmodyfikowanym stanie)
+                            s.pelnyTyp.parametr_formalny = true;
+                            aktualnyPunkt.przypnijParametr(s);
+                            //System.exit(44);
+                        }
+                    }
+                }
             }
-        }
-        //jeśli już jest jako parametr formalny
-        Symbol sp;
-        if((sp=zakres_docelowy.procedura.najogolniejszy_zakres.poNazwie_bez_nadrzednych(id))!=null)
-        {
-            s=sp;//to nic?
         }
 
         return s;
     }
     private Symbol sprawdzanie_redeklaracji_skladowej(String id,PelnyTyp aktualnyTyp,Zakres zakres_docelowy,ParserRuleContext ctx)
     {
+        return sprawdzanie_redeklaracji_w_kodzie(id, aktualnyTyp, zakres_docelowy, ctx);
+        /*
         Symbol s=null;
         if((s=zakres_docelowy.poNazwie_bez_nadrzednych(id)) != null) {//całk a; {całk a;} ma wyprodukować dwie zmienne a
             Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.ERROR, ctx.stop, ctx.stop.getLine(), ctx.stop.getCharPositionInLine(),
@@ -549,6 +571,7 @@ public class UstalaczStruktur extends plplBaseListener {
             ));
         }
         return s;
+        */
     }
 
     /** Deklaracja określonego - zwykłego punktu wejściowego

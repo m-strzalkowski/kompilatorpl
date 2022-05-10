@@ -1,0 +1,24 @@
+procedura -> całk
+{<<T>>
+    zacznij f();
+    zwróć(2+5);
+}
+procedura -> całk
+{
+    całk w;
+    zacznij proporcjonalna(całk a, całk x);
+    całk b;b=0;
+    zacznij liniowa(całk a, całk b, całk x);
+    w = a*x+b;
+    {
+        wypisz("Jestem wewnątrz funkcji i wewnątrz jakiś bezsensownych wąsów2\n!");
+        zwróć(w);
+    }
+}
+procedura{zacznij program();<<S>>
+    całk w,z,y;
+    z=10; y=2;
+    //w=f(); wypisz(w);
+    w=liniowa(z,y,10); wypisz(w);
+    zwróć();
+}

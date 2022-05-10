@@ -1,0 +1,19 @@
+typ zespolona
+{
+	rzeczyw cz_rzeczywista;
+	rzeczyw cz_urojona;
+}
+//zespolona z;
+całk t_globalne=0;
+procedura -> całk
+{
+	statyczne całkowite t=0;
+	całk b,c;
+	zacznij f(całk a);
+	b=0;
+	zacznij g(całk a, całk b);
+	c = t_globalne + t;
+	zwróć(a*c^2+b*c);
+	<<S>>
+}
+procedura{zacznij program(); zwróć();<<S:cd proc 1>>}

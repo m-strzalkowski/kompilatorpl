@@ -23,6 +23,8 @@ public class DodawaczKomendZeZnacznikow extends parserDebugeraBaseVisitor {
         {
             bref.zn_typ.add(new Pair<Token, ParseTree>(currenttoken, currenttree) );
         }
+
+
         return "";
     }
 }

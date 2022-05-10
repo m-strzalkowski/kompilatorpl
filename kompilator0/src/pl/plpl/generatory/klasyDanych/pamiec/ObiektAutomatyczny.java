@@ -14,7 +14,7 @@ public class ObiektAutomatyczny extends ObiektPamieci{
         offset = 0;
         this.rozmiar_B = symbol.pelnyTyp.rozmiar_B();
         //this.procedura = symbol.zakres.procedura;
-        this.symbol.zakres.procedura.ramka_stosu.add(this);
+        //this.symbol.zakres.procedura.ramka_stosu.add(this);//niepotrzebne, i tak podczas przeliczania przez procedurę ramki, jest ona czyszczona
     }
     @Override
     public String toString() {

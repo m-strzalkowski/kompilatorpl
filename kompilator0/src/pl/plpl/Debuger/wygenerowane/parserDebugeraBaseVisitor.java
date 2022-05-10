@@ -199,5 +199,12 @@ public class parserDebugeraBaseVisitor<T> extends AbstractParseTreeVisitor<T> im
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitPisz_punkt_we(parserDebugera.Pisz_punkt_weContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitPisz_stan_maszyny_deklaracyjnej(parserDebugera.Pisz_stan_maszyny_deklaracyjnejContext ctx) { return visitChildren(ctx); }
 }

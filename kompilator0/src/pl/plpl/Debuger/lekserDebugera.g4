@@ -1,6 +1,6 @@
 lexer grammar lekserDebugera;
-OTW : '<';
-ZMK : '>';
+OTW : '<<';
+ZMK : '>>'; 
 PRZEBIEG_TYPOWANIA : 'TYP'| 'T';
 PRZEBIEG_ANALIZY_SEMANTYCZNEJ : 'SEM'| 'S';
 PRZEBIEG_GENERACYJNY : 'GEN'|'G';
@@ -9,9 +9,10 @@ WSZ  :   [ \t\n\r]+ -> skip ;
 //NASTEPNA : '\\';
 
 mode KOMENDY;
-ZMKK : '>' -> mode(DEFAULT_MODE);
+ZMKK : '>>' -> mode(DEFAULT_MODE);
 PROC: 'procedura' | 'proc'('.')? | 'proced'('.')?;
 ZAKR: 'zakres' | 'zakr'('.'?) | 'zakresy';
+PUNKT: 'pkt'('.')?| 'punkt';
 MINUS_L: '-l';
 GWIAZDKA: '*';
 SREDNIK: ';';
@@ -35,7 +36,7 @@ TEXT: ('.')?'text';
 BSS: ('.')?'bss';
 DATA: ('.')?'data';
 RODATA: ('.')?'rodata';
-ID  :   ([A-Za-z]|OGONKI)([0-9A-Za-z_]|OGONKI)* ;      // identyfikatory
+ID  :   ([A-Za-z]|OGONKI|'.')([0-9A-Za-z_]|OGONKI)* ;      // identyfikatory (dodatkowo możliwa .)
 NUM :   [0-9]+ ;   //zwykła liczba
 WS  :   [ \t\n\r]+ -> skip ;
 NASTEPNA : '\\';

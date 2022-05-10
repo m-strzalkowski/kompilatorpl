@@ -1,0 +1,50 @@
+
+procedura -> całk
+{
+    całk w;
+    zacznij proporcjonalna(całk a, całk x);
+    całk b=0;
+    zacznij liniowa(całk a, całk b, całk x);
+    w = a*x+b;
+
+    {
+     $$CC:
+        //pisz("Funkcja zwraca liczbe ujemną");
+
+        zwróć(w);
+    }
+}
+
+procedura
+{
+    zacznij napisownik();
+    rzeczyw[] tab;
+    ref[] ta;
+    ref[12] tb;
+    //ta=tb;
+    //znak[] n1 = "In";
+    //znak[] n2 = "principio";
+    //ta[0] = n1;
+    //znak[] napis = "Ala ma kota, a Ola chce go zjeść.";
+    //C.printf("napis:%s\ndługość napisu:%d", napis, napis.dł);/*  to operator podający długość tablicy*/
+    zwróć();
+
+}
+typ nowytyp {całk pole1; znak pole2;}
+procedura
+{
+    całk a;
+    {
+    całk a;
+    }
+    zacznij program();
+    //pisz("Witaj świecie");
+
+    proporcjonalna(1,2);
+
+    liniowa(1,2,3);
+
+    zwróć();
+}
+procedura{zacznij ost(); zwróć();}
+

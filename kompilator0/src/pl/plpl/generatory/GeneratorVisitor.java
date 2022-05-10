@@ -1,6 +1,5 @@
 package pl.plpl.generatory;
 
-import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import pl.plpl.bledy.SemanticOccurence;
@@ -10,6 +9,7 @@ import pl.plpl.parser.plplParser;
 
 import static pl.plpl.generatory.klasyDanych.Typ.*;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
 
@@ -54,12 +54,12 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
 
         //Prolog procedury - otwarcie
         //@ASM
-        proc.text_prolog.append(proc.etykieta()).append(Procedura.PROLOG_LABEL_SUFFIX).append(":\n");
-        proc.text_prolog.append(";coś tu może być...\n");
+        proc.text_prolog.append(proc.etykieta()).append(Procedura.PRZYROSTEK_ETYKIETY_PROLOGU).append(":\n");
+        proc.text_prolog.append(";coś tu może być(prolog)...\n");
         //Epilog procedury - otwarcie
         //@ASM
-        proc.text_epilog.append(proc.etykieta()).append(Procedura.EPILOG_LABEL_SUFFIX).append(":\n");
-        proc.text_epilog.append(";coś tu może być...\n");
+        proc.text_epilog.append(proc.etykieta()).append(Procedura.PRZYROSTEK_ETYKIETY_EPILOGU).append(":\n");
+        proc.text_epilog.append(";coś tu może być(epilog)...\n");
         //Odwiedzenie dzieci...
         var mid = proc.text; proc.text = new StringBuilder();
 
@@ -91,6 +91,8 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         //mid.append(kod);
 
         //Składanie .text
+        proc.text.append(";PROCEDURA Z LINII "+ctx.getStart().getLine()+" - "+ctx.getStop().getLine()+"\n");
+        proc.text.append(";"+proc.infoORamce().replaceAll("\n", "\n;")+"\n;koniec opisu procedury\n");
         proc.text.append(proc.text_prolog);
         proc.text.append(mid);
         proc.text.append(proc.text_epilog);
@@ -229,8 +231,28 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
 
             //@ASM
             //instrukcja powrotu
-            sb.append(";instrukcja zwróć() w globalnej procedurze\n");
-            sb.append("              call "+aktualnyZakres.procedura.etykieta()+Procedura.EPILOG_LABEL_SUFFIX+"\n");
+            sb.append(";instrukcja zwróć()\n");
+            sb.append("                call "+aktualnyZakres.procedura.etykieta()+Procedura.PRZYROSTEK_ETYKIETY_EPILOGU +"\n");
+
+            //@ASM
+            //obliczenie wyrażenia zwracanego
+            if(aktualnyZakres.procedura.typZwracany != null)
+            {
+                if(ctx.wyrazenie() == null)
+                {
+                    Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                            "Zadeklarowano, że procedura zwraca typ" + aktualnyZakres.procedura.typZwracany.typ.nazwa+" a natrafiono na zwróć bez parametru"));
+                }
+                sb.append(visit(ctx.wyrazenie()));
+                PelnyTyp typ_wyrazenia =  stosTypów.pop();
+                if(!typ_wyrazenia.equalsFunctionally(aktualnyZakres.procedura.typZwracany))
+                {
+                    Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                            "Wyrażenie - parametr aktualny zwróć zwraca typ niezgodny z  zadeklarowanym typem zwracanym przez procedurę\n "+aktualnyZakres.procedura.typZwracany+ "\n "+typ_wyrazenia));
+                }
+            }
+            //@ASM
+            //instrukcja powrotu - dalszy ciąg
             sb.append("                ;niszczenie ramki\n");
             sb.append("                mov esp, ebp\n");
             sb.append("                pop ebp\n");
@@ -251,22 +273,116 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         if(s.pktWe==null){throw new RuntimeException("Punkt wejściowy"+ctx.ID().getText()+"miał być zarejestrowany na etapie deklaracji!");}
         PunktWejsciowy pkt = s.pktWe;
         StringBuilder sb = new StringBuilder();
-        if(Objects.equals(pkt.nazwa, Tablice.WEJSCIE_PROG))
-        {
-            //@ASM
-            //instrukcja wkroczenia dla main
-            sb.append(";punkt wejsciowy program\n");
-            sb.append("              jmp after_main; jeśli sterowanie trafia na wkroczenie, ma go przeskoczyć\n");
-            sb.append("_main:\n");
-            sb.append(";robienie ramki\n");
-            sb.append("              push ebp;\n");
-            sb.append("              mov ebp, esp;\n");
-            sb.append("              sub esp, "+(aktualnyZakres.procedura.rozmiar_B_zmiennych_automatycznych())+"\n");
-            sb.append(";^robienie ramki stosu\n");
-            sb.append("              call "+aktualnyZakres.procedura.etykieta()+Procedura.PROLOG_LABEL_SUFFIX+"\n");
-            sb.append("              ;tu coś może być\n");
-            sb.append("              after_main:\n");
+
+
+        //@ASM
+        //instrukcja wkroczenia
+        sb.append(";punkt wejsciowy\n");
+        sb.append("              jmp "+Procedura.PRZEDROSTEK_ETYKIETY_PO_PUNKCIE +pkt.etykieta()+"; jeśli sterowanie trafia na wkroczenie, ma go przeskoczyć\n");
+        sb.append(pkt.etykieta()+":\n");
+        //kod przebudowujący ramkę, ale nie dla main
+        if(!Objects.equals(pkt.nazwa, Tablice.WEJSCIE_PROG)) {
+            sb.append("              nop;tutaj konstrukcja ramki na parametry\n");
+            sb.append(Procedura.LOKALNA_ETYKIETA_PO_PRZEBUDOWIE_RAMKI + ":; punkt wejscia, jesli ma sie nie wykonywac kod konstruujący ramke\n");
         }
+        sb.append(";robienie miejsca na zmienne lokalne w ramce\n");
+        sb.append("              push ebp;\n");
+        sb.append("              mov ebp, esp;\n");
+        sb.append("              sub esp, "+(aktualnyZakres.procedura.rozmiar_B_zmiennych_automatycznych())+"\n");
+        sb.append(";^robienie ramki stosu\n");
+        sb.append("              call "+aktualnyZakres.procedura.etykieta()+Procedura.PRZYROSTEK_ETYKIETY_PROLOGU +"\n");
+        sb.append("              ;tu coś może być\n");
+        sb.append("              "+Procedura.PRZEDROSTEK_ETYKIETY_PO_PUNKCIE +pkt.etykieta()+":\n");
+
+        return sb.toString();
+    }
+    /**
+     * <p>
+     */
+    @Override public String visitWyrazenieWywolanie(plplParser.WyrazenieWywolanieContext ctx)
+    {
+        return visit(ctx.wywolanie_funkcji());
+    }
+    /**
+     * <p>
+     */
+    @Override public String visitWywolanie_funkcji(plplParser.Wywolanie_funkcjiContext ctx)
+    {
+        StringBuilder sb = new StringBuilder();
+        Symbol s = przestrzeń(ctx.ID().getText());
+        if(s.pktWe == null){
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                    "Próba wywołania identyfikatora nie powiązanego z punktem wejściowym:" + s.identyfikator));
+        }
+        else{
+            if(s.pktWe.nieokreślony() /*|| ctx.kolejno()!=null*/)
+            {
+                throw new RuntimeException("Nieokreślone punkty wejściowe jeszcze nie zaimplementowane");
+                //sb.append(wywolanie nieokreslonego(s, ctx.lista_parametrow_aktualnych().wyrazenie()));
+            }
+            else{
+                sb.append( wywolanie_okreslonego(s, ctx.lista_parametrow_aktualnych().wyrazenie()) );
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Zwraca kod wywołujący procedurę i ułozywszy przedtem ramkę stosu
+     * @param sympkt symbol odpowiadający punktowi wejściowemu
+     * @param argumenty lista argumentów
+     * @return
+     */
+    public String wywolanie_okreslonego(Symbol sympkt, List<plplParser.WyrazenieContext> argumenty)
+    {
+        StringBuilder sb = new StringBuilder();
+        Procedura proc = sympkt.pktWe.procedura;
+        //Chcemy ułożyć ramkę stosu po kolei, więc idźmy po ramce:
+        Integer numer_dla_punktu=null;
+        System.err.println("\nSYMBOL WOLANY:"+sympkt);
+        System.err.println("\nPUNKT WOLANY:"+sympkt.pktWe);
+    if(sympkt.pktWe.dajParametry().size() != argumenty.size())
+        {
+            var ctx = argumenty.get(0);//TODO a co jak len==0??
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                    "Lista parametrów formalnych ma "+sympkt.pktWe.dajParametry().size()+ "pozycji, a  lista argumentów wywołania: "+argumenty.size()));
+        }
+        for(var ob : proc.ramka_stosu)
+        {
+
+            if(ob.offset <= DLUGOSC_SLOWA_B){break;}
+            System.err.println("\nOB:"+ob);
+            Symbol parametr = ob.powiązanySymbol();
+            if(parametr.pelnyTyp.parametr_formalny && (numer_dla_punktu = sympkt.pktWe.numerArgumentuPunktu(parametr)) != null)
+            {
+                //@ASM
+                //parametr istniejący na danej liście
+                sb.append(";parametr "+parametr.identyfikator+" \n");
+                sb.append(visit(argumenty.get(numer_dla_punktu)));
+                PelnyTyp typ_wyrazenia =  stosTypów.pop();
+                if(!typ_wyrazenia.equalsFunctionally(parametr.pelnyTyp))
+                {
+                    var ctx = argumenty.get(numer_dla_punktu);
+                    Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                            "Wyrażenie - parametr aktualny zwraca typ niezgodny z typem parametru formalnego " + parametr.identyfikator +"\n "+parametr.pelnyTyp + "\n "+typ_wyrazenia));
+                }
+                sb.append(";koniec obliczania parametru "+parametr.identyfikator+" \n");
+                sb.append("              push "+akumulator(parametr.pelnyTyp.rozmiar_B())+"; złożenie na stos parametru "+parametr.identyfikator+"\n");
+            }
+            else{
+                //@ASM
+                //parametru nie ma na danej liście
+                sb.append("              push "+przedrostek_rozmiaru(parametr.pelnyTyp.rozmiar_B())+" 0;dziura po parametrze "+parametr.identyfikator+" \n");
+            }
+        }
+        //@ASM
+        //wywołanie samo
+        sb.append("              call "+sympkt.pktWe.etykieta()+Procedura.LOKALNA_ETYKIETA_PO_PRZEBUDOWIE_RAMKI+";wywołanie procedury\n");
+        //należy sie spodziewać wyniku w akumulatorze
+        stosTypów.push(proc.typZwracany);
+        //@ASM
+        //sprzątanie stosu po wywołaniu
+        sb.append("              add esp, "+proc.rozmiar_B_parametrow()+";sprzątanie stosu po wywołaniu\n");
         return sb.toString();
     }
     /**
@@ -380,6 +496,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override public String visitDeklaracja_atomiczna(plplParser.Deklaracja_atomicznaContext ctx) { return ""; }
+    @Override public String visitDeklaracja_referencji(plplParser.Deklaracja_referencjiContext ctx) { return ""; }
     @Override public String visitWyrazenieStala(plplParser.WyrazenieStalaContext ctx)
     {
         StringBuilder sb = new StringBuilder();

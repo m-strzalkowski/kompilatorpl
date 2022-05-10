@@ -158,8 +158,24 @@ public class Tablice {
             }
         }
         else{
-            if(dluzej){sb.append(s.toString());}
-            else{sb.append(s.briefToString());}
+            if(dluzej){sb.append(s.toString());
+                if(s.pktWe!=null){
+                sb.append("\nPUNKT WEJSCIOWY:\n");
+                    for(var p : s.pktWe.dajParametry())
+                    {
+                        sb.append(p.toString()+"\n");
+                    }
+                }
+            }
+            else{sb.append(s.briefToString());
+                if(s.pktWe!=null){
+                    sb.append("\nPUNKT WEJSCIOWY:\n");
+                    for(var p : s.pktWe.dajParametry())
+                    {
+                        sb.append(p.briefToString()+"\n");
+                    }
+                }
+            }
         }
         return sb.toString();
     }
