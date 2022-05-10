@@ -1,11 +1,10 @@
 lexer grammar Lekserpl; // note "lexer grammar"
-ZNACZNIK_DEBUGGERA :   '<' ~( '<') *? '>' -> channel(333)
-                    ;
+ZNACZNIK_DEBUGGERA :   '<<' ~( '<') *? '>>' -> channel(333);
 NIC : 'nic' | 'NIC' | 'Nic';
 STATYCZN: 'statyczn'[yea];
 AUTOMATYCZN : 'automatyczn'[yea];
 STAL : 'sta'[\u0142][yea];
-TCALK: 'ca'[\u0142]'k';
+TCALK: 'ca'[\u0142]'k'('owit'([yea])?)?;
 TRZECZYW: 'rzeczyw';
 TZNAK: 'znak';
 TREF: 'ref';

@@ -66,6 +66,18 @@ public class Typ {
                         "Niedozwolona długość typu atomicznego:"+rozmiar_B+"bajtów (dozwolone 8bi/16bi/32bi)" )); return "eax";
         }
     }
+    public static String przedrostek_rozmiaru(int rozmiar_B)
+    {
+        switch(rozmiar_B)
+        {
+            case 1: return "byte";
+            case 2: return "word";
+            case 4: return "dword";
+            default:
+                Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, 0,-1 ,-1,
+                        "Nie istnieje specyfikator długosci dla "+rozmiar_B+"bajtów (dozwolone 8bi/16bi/32bi)" )); return "dword";
+        }
+    }
     public static final int DLUGOSC_SLOWA_B = 4;//długość słowa w bajtach
 
 }

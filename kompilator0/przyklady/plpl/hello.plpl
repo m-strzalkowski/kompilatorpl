@@ -2,11 +2,13 @@ procedura
 {
     statyczny całk z = 3;
     zacznij program();
+    zacznij f();
     wypisz("H");
     całk i; i=7;
     wypisz(i);
     z=(i+2+3)*2*i;
-    wypisz(z);
+    wypisz(z);<<S>>
     //skończ(17);
     zwróć();
 }
+procedura{zacznij p();zwróć();}

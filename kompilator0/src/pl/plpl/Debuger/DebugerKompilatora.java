@@ -14,6 +14,7 @@ import pl.plpl.generatory.Tablice;
 import pl.plpl.generatory.UstalaczStruktur;
 import pl.plpl.generatory.ZbieraczNowychTypow;
 import pl.plpl.generatory.klasyDanych.Procedura;
+import pl.plpl.generatory.klasyDanych.PunktWejsciowy;
 import pl.plpl.generatory.klasyDanych.Zakres;
 import pl.plpl.parser.*;
 
@@ -100,6 +101,7 @@ public class DebugerKompilatora extends parserDebugeraBaseVisitor  {
         //zn_typ.stream().map(ParseTree::getText).forEach(System.err::println);
         System.out.println("LISTY:");
         for(var v : zn_sem){System.out.println(v.b.getText());}
+
         //zn_sem.stream().map(ParseTree::getText).forEach(System.err::println);
         //System.err.println("LISTY:");
         //zn_gen.stream().map(ParseTree::getText).forEach(System.err::println);
@@ -341,6 +343,53 @@ public class DebugerKompilatora extends parserDebugeraBaseVisitor  {
     @Override public String visitPisz_ramke_procedury(parserDebugera.Pisz_ramke_proceduryContext ctx)
     {
         System.out.println( aktualna_procedura.infoORamce());
+        return "";
+    }
+    @Override public String visitPisz_procedure(parserDebugera.Pisz_procedureContext ctx)
+    {
+        Procedura p=null;
+        if(ctx.NUM() != null)
+        {
+            int nr_proc = Integer.parseInt( ctx.NUM().getText());
+            for(var z :Tablice.procedury)
+            {
+                if(z.nr==nr_proc){p = z; break;}
+            }
+            if(nr_proc == 0){p = Tablice.kod_globalny;}
+        }
+        if(ctx.ID() != null)
+        {
+            String etykieta = ctx.ID().getText();
+            for(var z :Tablice.procedury)
+            {
+                if(z.etykieta().equals(etykieta)){p = z; break;}
+                for(var pkt: z.wejscia)
+                {
+                    if(pkt.etykieta().equals(etykieta) || ( pkt.nazwa != null && pkt.nazwa.equals(etykieta))){p = z; break;}
+                }
+            }
+            if(".".equals(etykieta)){p=aktualna_procedura;}
+        }
+        if(p==null){System.out.println("NIE ZNALEZIONO");}
+        else{System.out.println(p.toString());}
+        return "";
+    }
+    @Override public String visitPisz_punkt_we(parserDebugera.Pisz_punkt_weContext ctx)
+    {
+        PunktWejsciowy p =null;
+        if(ctx.ID() != null)
+        {
+            String etykieta = ctx.ID().getText();
+            for(var z :Tablice.procedury)
+            {
+                for(var pkt: z.wejscia)
+                {
+                    if(pkt.etykieta().equals(etykieta) || ( pkt.nazwa != null && pkt.nazwa.equals(etykieta))){p = pkt; break;}
+                }
+            }
+        }
+        if(p==null){System.out.println("NIE ZNALEZIONO");}
+        else{System.out.println(p.toStringLonger());}
         return "";
     }
     @Override public String visitPisz_symbole(parserDebugera.Pisz_symboleContext ctx)

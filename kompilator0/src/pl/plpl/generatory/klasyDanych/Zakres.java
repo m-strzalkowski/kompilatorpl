@@ -75,10 +75,10 @@ public class Zakres {
     {
         StringBuilder sb = new StringBuilder("\nSymbole w zakresie "+nr+"\nidentyfikator, etykieta, token");
         for(var s: symbole){sb.append("\n"+s.identyfikator+","+s.etykieta()+","+s.token);}
-        sb.append("\nPO NAZWIE:\n");
-        for(var s: sym_po_nazwie.values()){sb.append("\n"+s.briefToString());}
-        sb.append("\nPO TOKENIE:\n");
-        for(var s: sym_po_tokenie.values()){sb.append("\n"+s.briefToString());}
+        //sb.append("\nPO NAZWIE:\n");
+        //for(var s: sym_po_nazwie.values()){sb.append("\n"+s.briefToString());}
+        //sb.append("\nPO TOKENIE:\n");
+        //for(var s: sym_po_tokenie.values()){sb.append("\n"+s.briefToString());}
         return sb.toString();
     }
     public String krotkoPrzestrzen()

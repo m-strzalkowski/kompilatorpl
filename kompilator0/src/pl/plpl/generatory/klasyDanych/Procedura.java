@@ -9,6 +9,8 @@ import pl.plpl.generatory.klasyDanych.pamiec.ObiektStatyczny;
 import java.text.Normalizer;
 import java.util.*;
 
+import static pl.plpl.generatory.klasyDanych.Typ.DLUGOSC_SLOWA_B;
+
 public class Procedura {
     public static int licznik=0;
     public int nr;
@@ -17,7 +19,8 @@ public class Procedura {
     public boolean nieokreslona=false;//procedura nieokreślona jest konceptualną zaślepką, mówiącą, że podczas wykonania znajdzie się coś, czego rzeczywistej procedury nie znamy/nie mamy podczas kompilacji. Nie jest wpisana do globalnej listy procedur, nie napuszcza się na nią generatora kodu.
     public boolean zamknieta_zwroc=false;//czy ostatnią instrukcją jest zwróć
     public PelnyTyp typZwracany;
-    public List<Pair<String,PelnyTyp>> pelnaListaArgumentow = new ArrayList<Pair<String,PelnyTyp>>();//nazwa - typ
+    public List<Symbol> pelnaListaArgumentow = new ArrayList<Symbol>();//nazwa - typ
+    private Map<Symbol, Integer> numeryArgProc = new HashMap<>(); public Integer numerArgumentuProcedury(Symbol s){return numeryArgProc.getOrDefault(s, null);}
     public List<PunktWejsciowy> wejscia = new ArrayList<>();
     public List<Zakres> zakresy = new ArrayList<>();
     public Zakres najogolniejszy_zakres=null;//zakres odpowiadający nawiasom klamrowym procedury, potrzebny bo w nim mają być parametry formalne
@@ -25,9 +28,9 @@ public class Procedura {
 
     public List<ObiektStatyczny> statyczne = new ArrayList<ObiektStatyczny>();
     public LinkedList<ObiektAutomatyczny> ramka_stosu = new LinkedList<ObiektAutomatyczny>();//właściwie ramka stosu + parametry
-    public int rozmiar_B_calej_pamieci_lokalnej(){return rozmiar_B_parametrow() + rozmiar_B_zmiennych_automatycznych() + Typ.Ref.dlugosc_B;}//parametry +adres powrotny?+ ebp + zm. autom.
+    public int rozmiar_B_calej_pamieci_lokalnej(){return rozmiar_B_parametrow() + rozmiar_B_zmiennych_automatycznych() + 2*Typ.Ref.dlugosc_B;}//parametry +adres powrotny?+ ebp + zm. autom.
     public int rozmiar_B_zmiennych_automatycznych(){return ((ramka_stosu.size()<1)?(0):-(ramka_stosu.getLast().offset - ramka_stosu.getLast().rozmiar_B)) - Typ.Ref.dlugosc_B;}//bez poprzedniego ebp - od ebp-4
-    public int rozmiar_B_parametrow(){return 0;}
+    public int rozmiar_B_parametrow(){return ((ramka_stosu.size()<1)?(0):(ramka_stosu.getFirst().offset + ramka_stosu.getFirst().rozmiar_B)) - 2*Typ.Ref.dlugosc_B;}
     public String infoORamce()
     {
         StringBuilder sb = new StringBuilder();
@@ -41,6 +44,7 @@ public class Procedura {
         sb.append("\nrozmiar_B_parametrow:"+rozmiar_B_parametrow());
         return sb.toString();
     }
+    /*
     public void przeliczStruktury() {
         System.out.println("PRZELICZANIE STRUKTUR PROCEDURY"+nr);
         ramka_stosu.clear();
@@ -50,9 +54,10 @@ public class Procedura {
         czystaRef.rodzaj_pamieci = PelnyTyp.RodzajPam.AUTOMATYCZNA;
         czystaRef.parametr_formalny = false;
         Symbol ebp = new Symbol("poprzedni ebp", null,  najogolniejszy_zakres, czystaRef);
+        offset_kolejnych -= ramka_stosu.getLast().rozmiar_B;
        // ramka_stosu.add((ObiektAutomatyczny) ebp.obiektPamieci);
         //ramka_stosu.getLast().offset=offset_kolejnych;
-        offset_kolejnych -= ramka_stosu.getLast().rozmiar_B;
+
         System.out.println("%%%%%%%%%%%%%%%%%%%%%");
         //nie dodajemy symbolu do przestrezni nazw, bo właściwie go tam nie ma.
         for (Zakres zakres : zakresy)
@@ -71,6 +76,50 @@ public class Procedura {
                 }
             }
         }
+        System.out.println("KONIEC PRZELICZANIA STRUKTUR PROCEDURY"+nr);
+    }
+    */
+    public void przeliczStruktury() {
+        System.out.println("PRZELICZANIE STRUKTUR PROCEDURY"+nr);
+        ramka_stosu.clear();
+        pelnaListaArgumentow.clear();
+
+        int offset_w_dół, offset_w_górę;
+        PelnyTyp czystaRef = new PelnyTyp();
+        czystaRef.typ = Typ.Ref;
+        czystaRef.rodzaj_pamieci = PelnyTyp.RodzajPam.AUTOMATYCZNA;
+        czystaRef.parametr_formalny = false;
+        Symbol pwt = new Symbol("adres powrotny", null,  najogolniejszy_zakres, czystaRef);
+        Symbol ebp = new Symbol("poprzedni ebp", null,  najogolniejszy_zakres, czystaRef);
+        ramka_stosu.add((ObiektAutomatyczny)pwt.obiektPamieci); offset_w_górę = 1* DLUGOSC_SLOWA_B;  ((ObiektAutomatyczny) pwt.obiektPamieci).offset = offset_w_górę; offset_w_górę +=  ((ObiektAutomatyczny) pwt.obiektPamieci).rozmiar_B;
+        ramka_stosu.add((ObiektAutomatyczny)ebp.obiektPamieci); offset_w_dół = 0; ((ObiektAutomatyczny) ebp.obiektPamieci).offset = offset_w_dół; offset_w_dół -=  ((ObiektAutomatyczny) ebp.obiektPamieci).rozmiar_B;
+
+        for (Zakres zakres : zakresy)
+        {
+            for(Symbol s: zakres.symbole)//dla wszystkich symboli w zakresach procedury...
+            {
+                System.out.println(s);
+                if(s.pelnyTyp.rodzaj_pamieci == PelnyTyp.RodzajPam.AUTOMATYCZNA)//...które są automatyczne
+                {
+                    ObiektAutomatyczny obp = (ObiektAutomatyczny) s.obiektPamieci;
+                    if(s.pelnyTyp.parametr_formalny)//ebp+x
+                    {
+                        obp.offset = offset_w_górę;
+                        offset_w_górę += obp.rozmiar_B;
+                        ramka_stosu.addFirst(obp);
+                        pelnaListaArgumentow.add(s);
+                        numeryArgProc.put(s, pelnaListaArgumentow.size()-1);
+                    }
+                    else//zmienne lokalne: ebp-x
+                    {
+                        obp.offset = offset_w_dół;
+                        offset_w_dół -= obp.rozmiar_B;
+                        ramka_stosu.addLast(obp);
+                    }
+                }
+            }
+        }
+    //Collections.reverse(pelnaListaArgumentow);
         System.out.println("KONIEC PRZELICZANIA STRUKTUR PROCEDURY"+nr);
     }
 
@@ -127,19 +176,21 @@ public class Procedura {
     public String toString() {
         return "Procedura{początkowa:" + poczatkowa +
                 ", nr=" + nr +
-                ", pelnaListaArgumentow=" + pelnaListaArgumentow +
-                ", wejscia=" + wejscia +
-                ", zakresy=" + zakresy +
-                ", statyczne=" + statyczne +
-                ", ramka_stosu=" + ramka_stosu +
+                ", \npelnaListaArgumentow=" + pelnaListaArgumentow.toString().replaceAll("},", ",}\n") +
+                ", \nWEJSCIA=" + wejscia +
+                ", \nzakresy=" + zakresy +
+                ", \nstatyczne=" + statyczne +
+                ", \nramka_stosu=" + ramka_stosu +
                 ", \ndata=\n" + data +
                 ", \nbss=\n" + bss +
                 ", \nrodata=\n" + rodata +
                 ", \ntext=\n" + text +
                 "}\n";
     }
-    public static String PROLOG_LABEL_SUFFIX = "_prolog";
-    public static String EPILOG_LABEL_SUFFIX = "_epilog";
+    public static String PRZYROSTEK_ETYKIETY_PROLOGU = "_prolog";
+    public static String PRZYROSTEK_ETYKIETY_EPILOGU = "_epilog";
+    public static String PRZEDROSTEK_ETYKIETY_PO_PUNKCIE = "after_";
+    public static String LOKALNA_ETYKIETA_PO_PRZEBUDOWIE_RAMKI = ".noargshuffle";
 
 
 }

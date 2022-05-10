@@ -10,6 +10,7 @@ import pl.plpl.generatory.klasyDanych.*;
  */
 public abstract class ObiektPamieci {
     Symbol symbol;
+    public Symbol powiązanySymbol(){return this.symbol;}
     //Procedura procedura;
     public int rozmiar_B;//konstruktory z symboli klas potomnych dbają o wypełnienie
     public void sprawdzUnikalnosc(Symbol s)
