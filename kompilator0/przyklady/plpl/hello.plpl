@@ -1,9 +1,16 @@
 procedura
 {
     zacznij program();
-    jeśli(1) { wypisz("JESTEM W JESLI"); }
-    
-    całk a = 1;
-    dopóki(a) { a=0; wypisz("JESTEM W DOPOKI"); }
+    jeśli(1) { wypisz("JESTEM W JEŚLI"); }
+    całk a;
+    a=1;
+    dopóki(a<=10)
+    {
+     wypisz("JESTEM W DOPÓKI");
+     wypisz(a);
+     jeśli(a<3){wypisz("ALE TO JESZCZE DALEKO\n");}
+     a=a+1;
+    }
+
     zwróć();
 }
