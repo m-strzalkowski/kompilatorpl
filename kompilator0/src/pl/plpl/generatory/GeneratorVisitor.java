@@ -98,13 +98,12 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
     }
     @Override public String visitInstrukcja_zlozona(plplParser.Instrukcja_zlozonaContext ctx) {
         aktualnyZakres = Tablice.zakresPoPierwszymTokenie(ctx.getStart());
-        if(aktualnyZakres==null){throw new RuntimeException("Zepsute połączenie między generatorem a analizatorem ssemantycznym");}
-        return "";
+        if(aktualnyZakres==null){throw new RuntimeException("Zepsute połączenie między generatorem a analizatorem semantycznym");}
+        StringBuilder sb = new StringBuilder(); for(var c : ctx.lista_instrukcji().children){sb.append(visit(c));} return sb.toString();
     }
     @Override public String visitWstawka_asemblerowa(plplParser.Wstawka_asemblerowaContext ctx) {
         return ctx.getText().substring(2);//bez$$
     }
-    
     /**
      * {@inheritDoc}
      *
@@ -118,23 +117,37 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         StringBuilder returningAsm = new StringBuilder();
 
         String indeksInstrukcjiWarunkowejStr = String.valueOf(Tablice.dodajIfa());
+        String etykieta_warunek_niespelniony = "failed_condition_"+indeksInstrukcjiWarunkowejStr;
+        String etykieta_po_else = "after_else_"+indeksInstrukcjiWarunkowejStr;
         //@ASM
         //instrukcja wyboru
-        returningAsm.append("\n;instrukcja jesli\n");
-
+        returningAsm.append("\n;instrukcja warunkowa w liniach:"+ctx.start.getLine()+"-"+ctx.stop.getLine()+"\n");
+        //kod warunku i ewentualny błąd/ostrzeżenie przy niezgodności typów
         returningAsm.append(visit(ctx.wyrazenie()));
+        PelnyTyp typ_z_warunku = stosTypów.pop();
+        if(!typ_z_warunku.typ.equals(Całk)) {var level = ((typ_z_warunku.typ.dlugosc_B == DLUGOSC_SLOWA_B)?(SemanticOccurence.Level.WARN):(SemanticOccurence.Level.FATAL));
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(level, ctx.start, ctx.start.getLine(), ctx.start.getCharPositionInLine(),
+                    "Wyrażenie w warunku zwraca wynik typu "+typ_z_warunku.typ.nazwa+" a nie całkowity."
+            ));
+        }
         returningAsm.append("cmp eax, 0\n");
-        returningAsm.append("je " + "inaczej" + indeksInstrukcjiWarunkowejStr + "\n");
+        returningAsm.append("je " + etykieta_warunek_niespelniony + "\n");
         returningAsm.append(visit(ctx.instrukcja(0)) + "\n");
-        returningAsm.append("inaczej" + indeksInstrukcjiWarunkowejStr + ":\n");
-        if(ctx.instrukcja().size() > 1)
+        if(ctx.instrukcja().size() > 1){ returningAsm.append("jmp " + etykieta_po_else + "\n");}//trzeba, wykonując pierwszą możliwość, przeskoczyć nad kodem drugiej
+        returningAsm.append(etykieta_warunek_niespelniony+ ":\n");
+        if(ctx.instrukcja().size() > 1)//inaczej - else
         {
             returningAsm.append(visit(ctx.instrukcja(1)) + "\n");
+            returningAsm.append(etykieta_po_else+ ":\n");
         }
         returningAsm.append("; koniec instrukcji warunkowej\n");
 
         return returningAsm.toString();
     }
+
+    Stack<Integer> numery_pętli = new Stack<>();//potrzebny do przerwij - break i kontynuuj - continue
+    public static String pocz_petli = "start_loop_";
+    public static String koniec_petli = "end_loop_";
     /**
      * {@inheritDoc}
      *
@@ -146,23 +159,63 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         System.out.println("wizytacja pętli "+"0");
 
         StringBuilder returningAsm = new StringBuilder();
+        Integer indeksPetli = Tablice.dodajPetle();
+        numery_pętli.push(indeksPetli);
+        String indeksPetliStr = String.valueOf(indeksPetli);
 
-        String indeksPetliStr = String.valueOf(Tablice.dodajPetle());
         //@ASM
         //instrukcja wyboru
         returningAsm.append(";instrukcja dopoki\n");
 
-        returningAsm.append("petla" + indeksPetliStr + ":\n");
+        returningAsm.append(pocz_petli + indeksPetliStr + ":\n");
         returningAsm.append(visit(ctx.wyrazenie()));
+        PelnyTyp typ_z_warunku = stosTypów.pop();
+        if(!typ_z_warunku.typ.equals(Całk)) {var level = ((typ_z_warunku.typ.dlugosc_B == DLUGOSC_SLOWA_B)?(SemanticOccurence.Level.WARN):(SemanticOccurence.Level.FATAL));
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(level, ctx.start, ctx.start.getLine(), ctx.start.getCharPositionInLine(),
+                    "Wyrażenie w warunku zwraca wynik typu "+typ_z_warunku.typ.nazwa+" a nie całkowity."
+            ));
+        }
         returningAsm.append("cmp eax, 0\n");
-        returningAsm.append("je " + "po_petli" + indeksPetliStr + "\n");
+        returningAsm.append("je " + koniec_petli + indeksPetliStr + "\n");
         returningAsm.append(visit(ctx.instrukcja()) + "\n");
-        returningAsm.append("jmp " + "petla" + indeksPetliStr + "\n");
-        returningAsm.append("po_petli" + indeksPetliStr + ":\n");
+        returningAsm.append("jmp " + pocz_petli + indeksPetliStr + "\n");
+        returningAsm.append(koniec_petli + indeksPetliStr + ":\n");
 
         returningAsm.append("; koniec dopoki\n");
-
+        numery_pętli.pop();
         return returningAsm.toString();
+    }
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.</p>
+     */
+    @Override public String visitInstrukcja_przerwania_petli(plplParser.Instrukcja_przerwania_petliContext ctx) {
+        if(numery_pętli.empty()) {
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.start, ctx.start.getLine(), ctx.start.getCharPositionInLine(),
+                    "Instrukcja przerwania pętli poza pętlą"));
+        }
+        StringBuilder sb = new StringBuilder();
+        //@ASM
+        //instrukcja przerwania pętli
+        sb.append("                jmp "+koniec_petli + numery_pętli.peek()+";przerwanie petli\n");
+        return sb.toString();
+    }
+    /**
+     * <p>The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.</p>
+     */
+    @Override public String visitInstrukcja_kontynuacji_petli(plplParser.Instrukcja_kontynuacji_petliContext ctx) {
+        if(numery_pętli.empty()) {
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.start, ctx.start.getLine(), ctx.start.getCharPositionInLine(),
+                    "Instrukcja kontynuacji pętli poza pętlą"));
+        }
+        StringBuilder sb = new StringBuilder();
+        //@ASM
+        //instrukcja przerwania pętli
+        sb.append("                jmp "+pocz_petli + numery_pętli.peek()+";przerwanie petli\n");
+        return sb.toString();
     }
     /**
      * {@inheritDoc}
@@ -223,20 +276,8 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override public String visitInstrukcja_zakonczenia(plplParser.Instrukcja_zakonczeniaContext ctx) { return ""; }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
-    @Override public String visitInstrukcja_przerwania_petli(plplParser.Instrukcja_przerwania_petliContext ctx) { return ""; }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
-    @Override public String visitInstrukcja_kontynuacji_petli(plplParser.Instrukcja_kontynuacji_petliContext ctx) { return ""; }
+
+
     /**
      * {@inheritDoc}
      *
