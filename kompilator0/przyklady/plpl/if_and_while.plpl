@@ -1,0 +1,26 @@
+procedura
+{
+    zacznij program();
+    całk a;
+    całk b;
+    a = 2;
+    b = 9;
+    jeśli (a>b)
+    {
+        wypisz("a jest większe\n");
+    }
+    inaczej
+    {
+        wypisz("b jest większe\n");
+    }
+    dopóki(a!=b)
+    {
+        a = a+1;
+        jeśli(a == 5)
+            kontynuuj;
+        wypisz(a);
+        jeśli(a == 7)
+            przerwij;
+    }
+    zwróć();
+}
