@@ -1,14 +1,17 @@
 procedura
 {
-    statyczny całk z = 3;
     zacznij program();
-    zacznij f();
-    wypisz("H");
-    całk i; i=7;
-    wypisz(i);
-    z=(i+2+3)*2*i;
-    wypisz(z);<<S>>
-    //skończ(17);
+    jeśli(1) { wypisz("JESTEM W JEŚLI"); }
+    całk a;
+    a=1;
+    dopóki(a<=10)
+    {
+     wypisz("JESTEM W DOPÓKI");
+     wypisz(a);
+     jeśli(a<3){wypisz("ALE TO JESZCZE DALEKO\n");}
+     a=a+1;
+    }
+
     zwróć();
 }
 procedura{zacznij p();zwróć();}
