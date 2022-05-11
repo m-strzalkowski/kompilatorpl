@@ -18,7 +18,7 @@ procedura
         a = a+1;
         jeśli(a == 5)
             kontynuuj;
-        wypisz(a);
+        wypisz(a);wypisz("\n");
         jeśli(a == 7)
             przerwij;
     }

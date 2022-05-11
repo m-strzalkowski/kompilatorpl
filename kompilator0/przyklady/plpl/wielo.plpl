@@ -1,0 +1,18 @@
+/*Demonstarcja działania wielokrotnych punktów wejściowych do procedury*/
+procedura{ zacznij program();
+    g(1,2);
+    h(1,2);
+    f(1,2,1+2);
+    zwróć();
+}
+
+procedura
+{
+    całk c,d;
+    c=0;
+    zacznij g(całk a, całk b);
+    zacznij h(całk b, całk a);
+    zacznij f(całk a, całk b, całk c);
+    wypisz("a:");wypisz(a);wypisz(", b:");wypisz(b);wypisz(", c:");wypisz(c);wypisz("\n");
+    zwróć();
+}

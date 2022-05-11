@@ -8,7 +8,7 @@ WYPISZ_CALK_FMT:   db    `%d`, 0  ;
 WYPISZ_ZNAK_FMT:   db    `znak:%c\n`, 0  ;
 ;koniec dodatków
 section .text
-;PROCEDURA Z LINII 1 - 9
+;PROCEDURA Z LINII 2 - 10
 ;RAMKA STOSU (i parametry) PROCEDURYPack
 ;
 ;{ebp+12, 4B, sym:Symbol{nr=3, identyfikator='n', zakres=1, PelnyTyp{typ=Typ{nazwa='całk', dlugosc_B=4, atomiczny=true, struktura=null}, rodzaj_pamieci=AUTOMATYCZNA, inicjalizowana=false, parametr_formalny=true, modyfikowalonosc=ZMIENNA, krotnosc_tablicowa=0}pktWe=null}}
@@ -38,48 +38,14 @@ ack:
               ;tu coś może być
               after_ack:
 
-;instrukcja warunkowa w liniach:5-7
-;porównanie:5
-;stała całkowita
-                mov eax,0
-;koniec stałej całkowitej
-                push eax
-;załadowanie lwartości:5
-                mov eax, [ebp+8]
-;koniec ładowania lwartosc
-                pop ebx
-                cmp eax, ebx
-                mov eax, 0
-                sete al
-;koniec porównania:5
-cmp eax, 0
-je failed_condition_0
-;dodawanie/odejmowanie:5
-;stała całkowita
-                mov eax,1
-;koniec stałej całkowitej
-                push eax
-;załadowanie lwartości:5
-                mov eax, [ebp+12]
-;koniec ładowania lwartosc
-                pop ebx
-                add eax, ebx
-;koniec dodawania/odejmowania:5
-;wpisywanie wyrażenia do jakiegoś ID:5
-                mov [ebp-4], eax
-;koniec wpisywanie wyrażenia do jakiegoś ID
-
-jmp after_else_0
-failed_condition_0:
-
-;instrukcja warunkowa w liniach:6-7
+;instrukcja warunkowa w liniach:6-8
 ;porównanie:6
 ;stała całkowita
                 mov eax,0
 ;koniec stałej całkowitej
                 push eax
 ;załadowanie lwartości:6
-                mov eax, [ebp+12]
+                mov eax, [ebp+8]
 ;koniec ładowania lwartosc
                 pop ebx
                 cmp eax, ebx
@@ -87,58 +53,45 @@ failed_condition_0:
                 sete al
 ;koniec porównania:6
 cmp eax, 0
-je failed_condition_1
-;parametr n 
-;stała całkowita
-                mov eax,1
-;koniec stałej całkowitej
-;koniec obliczania parametru n 
-              push eax; złożenie na stos parametru n
-;parametr m 
+je failed_condition_0
 ;dodawanie/odejmowanie:6
 ;stała całkowita
                 mov eax,1
 ;koniec stałej całkowitej
                 push eax
 ;załadowanie lwartości:6
-                mov eax, [ebp+8]
+                mov eax, [ebp+12]
 ;koniec ładowania lwartosc
                 pop ebx
-                sub eax, ebx
+                add eax, ebx
 ;koniec dodawania/odejmowania:6
-;koniec obliczania parametru m 
-              push eax; złożenie na stos parametru m
-              call ack.noargshuffle;wywołanie procedury
-              add esp, 8;sprzątanie stosu po wywołaniu
 ;wpisywanie wyrażenia do jakiegoś ID:6
                 mov [ebp-4], eax
 ;koniec wpisywanie wyrażenia do jakiegoś ID
 
-jmp after_else_1
-failed_condition_1:
-;parametr n 
-;parametr n 
-;dodawanie/odejmowanie:7
+jmp after_else_0
+failed_condition_0:
+
+;instrukcja warunkowa w liniach:7-8
+;porównanie:7
 ;stała całkowita
-                mov eax,1
+                mov eax,0
 ;koniec stałej całkowitej
                 push eax
 ;załadowanie lwartości:7
                 mov eax, [ebp+12]
 ;koniec ładowania lwartosc
                 pop ebx
-                sub eax, ebx
-;koniec dodawania/odejmowania:7
-;koniec obliczania parametru n 
-              push eax; złożenie na stos parametru n
-;parametr m 
-;załadowanie lwartości:7
-                mov eax, [ebp+8]
-;koniec ładowania lwartosc
-;koniec obliczania parametru m 
-              push eax; złożenie na stos parametru m
-              call ack.noargshuffle;wywołanie procedury
-              add esp, 8;sprzątanie stosu po wywołaniu
+                cmp eax, ebx
+                mov eax, 0
+                sete al
+;koniec porównania:7
+cmp eax, 0
+je failed_condition_1
+;parametr n 
+;stała całkowita
+                mov eax,1
+;koniec stałej całkowitej
 ;koniec obliczania parametru n 
               push eax; złożenie na stos parametru n
 ;parametr m 
@@ -161,6 +114,53 @@ failed_condition_1:
                 mov [ebp-4], eax
 ;koniec wpisywanie wyrażenia do jakiegoś ID
 
+jmp after_else_1
+failed_condition_1:
+;parametr n 
+;parametr n 
+;dodawanie/odejmowanie:8
+;stała całkowita
+                mov eax,1
+;koniec stałej całkowitej
+                push eax
+;załadowanie lwartości:8
+                mov eax, [ebp+12]
+;koniec ładowania lwartosc
+                pop ebx
+                sub eax, ebx
+;koniec dodawania/odejmowania:8
+;koniec obliczania parametru n 
+              push eax; złożenie na stos parametru n
+;parametr m 
+;załadowanie lwartości:8
+                mov eax, [ebp+8]
+;koniec ładowania lwartosc
+;koniec obliczania parametru m 
+              push eax; złożenie na stos parametru m
+              call ack.noargshuffle;wywołanie procedury
+              add esp, 8;sprzątanie stosu po wywołaniu
+;koniec obliczania parametru n 
+              push eax; złożenie na stos parametru n
+;parametr m 
+;dodawanie/odejmowanie:8
+;stała całkowita
+                mov eax,1
+;koniec stałej całkowitej
+                push eax
+;załadowanie lwartości:8
+                mov eax, [ebp+8]
+;koniec ładowania lwartosc
+                pop ebx
+                sub eax, ebx
+;koniec dodawania/odejmowania:8
+;koniec obliczania parametru m 
+              push eax; złożenie na stos parametru m
+              call ack.noargshuffle;wywołanie procedury
+              add esp, 8;sprzątanie stosu po wywołaniu
+;wpisywanie wyrażenia do jakiegoś ID:8
+                mov [ebp-4], eax
+;koniec wpisywanie wyrażenia do jakiegoś ID
+
 after_else_1:
 ; koniec instrukcji warunkowej
 
@@ -168,7 +168,7 @@ after_else_0:
 ; koniec instrukcji warunkowej
 ;instrukcja zwróć()
                 call Pack_epilog
-;załadowanie lwartości:8
+;załadowanie lwartości:9
                 mov eax, [ebp-4]
 ;koniec ładowania lwartosc
                 ;niszczenie ramki
@@ -183,11 +183,11 @@ ret
 section .data
 Sznak_7_10:   db    `Wartość funkcji Ackermana dla argumentów:`, 0  ;z linii 23
 Sznak_7_11:   db    `, `, 0  ;z linii 23
-Sznak_7_12:   db    ` to`, 0  ;z linii 23
+Sznak_7_12:   db    ` to `, 0  ;z linii 23
 Sznak_7_13:   db    `\n`, 0  ;z linii 23
-Sznak_5_14:   db    `Jestem strasznie szybkim komputerem.`, 0  ;z linii 28
+Sznak_5_14:   db    `Koniec.`, 0  ;z linii 28
 section .text
-;PROCEDURA Z LINII 10 - 30
+;PROCEDURA Z LINII 11 - 30
 ;RAMKA STOSU (i parametry) PROCEDURYP_main
 ;
 ;{ebp+4, 4B, sym:Symbol{nr=15, identyfikator='adres powrotny', zakres=5, PelnyTyp{typ=Typ{nazwa='ref', dlugosc_B=4, atomiczny=true, struktura=null}, rodzaj_pamieci=AUTOMATYCZNA, inicjalizowana=false, parametr_formalny=false, modyfikowalonosc=STALA, krotnosc_tablicowa=0}pktWe=null}}
@@ -217,64 +217,64 @@ _main:
 ;stała całkowita
                 mov eax,0
 ;koniec stałej całkowitej
-;wpisywanie wyrażenia do jakiegoś ID:14
+;wpisywanie wyrażenia do jakiegoś ID:15
                 mov [ebp-4], eax
 ;koniec wpisywanie wyrażenia do jakiegoś ID
 ;instrukcja dopoki
 start_loop_0:
-;porównanie:15
+;porównanie:16
 ;stała całkowita
                 mov eax,4
 ;koniec stałej całkowitej
                 push eax
-;załadowanie lwartości:15
+;załadowanie lwartości:16
                 mov eax, [ebp-4]
 ;koniec ładowania lwartosc
                 pop ebx
                 cmp eax, ebx
                 mov eax, 0
                 setl al
-;koniec porównania:15
+;koniec porównania:16
 cmp eax, 0
 je end_loop_0
 ;stała całkowita
                 mov eax,0
 ;koniec stałej całkowitej
-;wpisywanie wyrażenia do jakiegoś ID:17
+;wpisywanie wyrażenia do jakiegoś ID:18
                 mov [ebp-8], eax
 ;koniec wpisywanie wyrażenia do jakiegoś ID
 ;instrukcja dopoki
 start_loop_1:
-;porównanie:18
+;porównanie:19
 ;stała całkowita
                 mov eax,4
 ;koniec stałej całkowitej
                 push eax
-;załadowanie lwartości:18
+;załadowanie lwartości:19
                 mov eax, [ebp-8]
 ;koniec ładowania lwartosc
                 pop ebx
                 cmp eax, ebx
                 mov eax, 0
                 setl al
-;koniec porównania:18
+;koniec porównania:19
 cmp eax, 0
 je end_loop_1
 ;parametr n 
-;załadowanie lwartości:21
+;załadowanie lwartości:22
                 mov eax, [ebp-8]
 ;koniec ładowania lwartosc
 ;koniec obliczania parametru n 
               push eax; złożenie na stos parametru n
 ;parametr m 
-;załadowanie lwartości:21
+;załadowanie lwartości:22
                 mov eax, [ebp-4]
 ;koniec ładowania lwartosc
 ;koniec obliczania parametru m 
               push eax; złożenie na stos parametru m
               call ack.noargshuffle;wywołanie procedury
               add esp, 8;sprzątanie stosu po wywołaniu
-;wpisywanie wyrażenia do jakiegoś ID:21
+;wpisywanie wyrażenia do jakiegoś ID:22
                 mov [ebp-12], eax
 ;koniec wpisywanie wyrażenia do jakiegoś ID
 ;wypisanie

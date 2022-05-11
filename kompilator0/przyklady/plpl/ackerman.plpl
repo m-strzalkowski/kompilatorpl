@@ -1,3 +1,4 @@
+/*Funkcja Ackermana - przykład okropnej rekurencji.*/
 procedura -> całk
 {
     całk odp;
@@ -19,13 +20,12 @@ procedura
         {
 
             w = ack(i,j);
-            //piszf("Wartość funkcji Ackermana(%d, %d) to %d\n", i,j,ack(i,j));
-            wypisz("Wartość funkcji Ackermana dla argumentów:"); wypisz(i); wypisz(", "); wypisz(j); wypisz(" to"); wypisz(w);wypisz("\n");
+            wypisz("Wartość funkcji Ackermana dla argumentów:"); wypisz(i); wypisz(", "); wypisz(j); wypisz(" to "); wypisz(w);wypisz("\n");
             j=j+1;
         }
         i=i+1;
     }
-    wypisz("Jestem strasznie szybkim komputerem.");
+    wypisz("Koniec.");
     zwróć();
 }
 
