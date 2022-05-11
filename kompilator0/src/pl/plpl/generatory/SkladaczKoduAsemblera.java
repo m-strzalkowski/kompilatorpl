@@ -56,7 +56,7 @@ public class SkladaczKoduAsemblera {
 
         gotowyKod.append(";dodatki dla wypisz\n");
         gotowyKod.append("section .rodata\n");
-        gotowyKod.append("WYPISZ_CALK_FMT:   db    `liczba:%d\\n`, 0  ;\n");
+        gotowyKod.append("WYPISZ_CALK_FMT:   db    `%d`, 0  ;\n");
         gotowyKod.append("WYPISZ_ZNAK_FMT:   db    `znak:%c\\n`, 0  ;\n");
         gotowyKod.append(";koniec dodatków\n");
 
@@ -99,7 +99,9 @@ public class SkladaczKoduAsemblera {
             try {
                 //wydajKomendeCmd("nasm");
                 wydajKomendeCmd("nasm -f win32 " + nazwaPlikuZRozszerzeniem + " -o "+nazwaPlikuZRozszerzeniem+".obj");
+                System.out.println("uzycie NASM:"+"nasm -f win32 " + nazwaPlikuZRozszerzeniem + " -o "+nazwaPlikuZRozszerzeniem+".obj");
                 wydajKomendeCmd("gcc -o " + nazwaPlikuZRozszerzeniem + ".exe " + nazwaPlikuZRozszerzeniem+".obj");
+                System.out.println("uzycie linkera:"+"gcc -o " + nazwaPlikuZRozszerzeniem + ".exe " + nazwaPlikuZRozszerzeniem+".obj");
                 //wydajKomendeCmd(nazwaPlikuAssemblera);
             } catch (IOException e) {
                 e.printStackTrace();

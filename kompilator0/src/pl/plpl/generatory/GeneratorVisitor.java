@@ -216,7 +216,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         StringBuilder sb = new StringBuilder();
         //@ASM
         //instrukcja przerwania pętli
-        sb.append("                jmp "+pocz_petli + numery_pętli.peek()+";przerwanie petli\n");
+        sb.append("                jmp "+pocz_petli + numery_pętli.peek()+";powrot do poczatku petli\n");
         return sb.toString();
     }
     /**
@@ -236,6 +236,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
 
             //@ASM
             //obliczenie wyrażenia zwracanego
+
             if(aktualnyZakres.procedura.typZwracany != null)
             {
                 if(ctx.wyrazenie() == null)
@@ -249,6 +250,12 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
                 {
                     Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
                             "Wyrażenie - parametr aktualny zwróć zwraca typ niezgodny z  zadeklarowanym typem zwracanym przez procedurę\n "+aktualnyZakres.procedura.typZwracany+ "\n "+typ_wyrazenia));
+                }
+            } else{
+                if(ctx.wyrazenie() != null)
+                {
+                    Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                            "Zwróć z wyrażeniem w środku, a zadeklaowano, że procedura nic nie zwraca\n "));
                 }
             }
             //@ASM
@@ -339,19 +346,19 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         Procedura proc = sympkt.pktWe.procedura;
         //Chcemy ułożyć ramkę stosu po kolei, więc idźmy po ramce:
         Integer numer_dla_punktu=null;
-        System.err.println("\nSYMBOL WOLANY:"+sympkt);
-        System.err.println("\nPUNKT WOLANY:"+sympkt.pktWe);
+        //System.err.println("\nSYMBOL WOLANY:"+sympkt);
+        //System.err.println("\nPUNKT WOLANY:"+sympkt.pktWe);
     if(sympkt.pktWe.dajParametry().size() != argumenty.size())
         {
             var ctx = argumenty.get(0);//TODO a co jak len==0??
             Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                    "Lista parametrów formalnych ma "+sympkt.pktWe.dajParametry().size()+ "pozycji, a  lista argumentów wywołania: "+argumenty.size()));
+                    "Lista parametrów formalnych ma "+sympkt.pktWe.dajParametry().size()+ " pozycji, a  lista argumentów wywołania: "+argumenty.size()));
         }
         for(var ob : proc.ramka_stosu)
         {
 
             if(ob.offset <= DLUGOSC_SLOWA_B){break;}
-            System.err.println("\nOB:"+ob);
+            //System.err.println("\nOB:"+ob);
             Symbol parametr = ob.powiązanySymbol();
             if(parametr.pelnyTyp.parametr_formalny && (numer_dla_punktu = sympkt.pktWe.numerArgumentuPunktu(parametr)) != null)
             {
@@ -625,9 +632,9 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         if(ctx.lwartosc().selektor_tablicowy().size() < 1 && ctx.lwartosc().selektor_typu_zlozonego().size() < 1)//co znaczy, że to pojedyncz nazwa an nie np. a[3][5]
         {
 
-            if(!sym.pelnyTyp.equals(twyrazenie)){
-                Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.WARN, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                        "Typy w przypisani się nie zgadzają!\n"+sym.pelnyTyp+"\n"+twyrazenie));
+            if(!sym.pelnyTyp.equals(twyrazenie)){var level = ((sym.pelnyTyp.equalsFunctionally(twyrazenie))?(SemanticOccurence.Level.DEBUG):(SemanticOccurence.Level.WARN));
+                Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(level, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                        "Typy w przypisaniu się nie zgadzają!\n"+sym.pelnyTyp+"\n"+twyrazenie));
             }
             //@ASM
             sb.append(wyrazenie);

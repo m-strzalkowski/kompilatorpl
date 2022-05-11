@@ -1,6 +1,6 @@
 grammar plpl;
 import Lekserpl;
-program : (byt_globalny)*;//a co z EOF?
+program : (byt_globalny)* EOF;//a co z EOF?
 byt_globalny: procedura | deklaracja_typu | deklaracja_prosta;
 
 procedura   :  'procedura' ('->' typ_zwracany)? '{' lista_instrukcji  '}';
@@ -24,10 +24,10 @@ lista_instrukcji   : instrukcja+;
 instrukcja   :   instrukcja_wyboru
              |   instrukcja_petli
              |   instrukcja_zlozona
-             |   instrukcja_prosta
-             |   instrukcja_wkroczenia
              |   instrukcja_przerwania_petli
              |   instrukcja_kontynuacji_petli
+             |   instrukcja_prosta
+             |   instrukcja_wkroczenia
              |   instrukcja_powrotu
              |   instrukcja_zakonczenia
              //|   deklaracja_atomiczna
@@ -41,8 +41,8 @@ instrukcja_petli   : 'dopóki' '(' wyrazenie ')' instrukcja;
 instrukcja_powrotu   : 'zwróć' '(' wyrazenie? ')' EOS;
 instrukcja_wkroczenia   : 'zacznij'  ID '(' lista_parametrow_formalnych ')' EOS;
 instrukcja_zakonczenia : 'skończ' '(' wyrazenie ')' EOS;
-instrukcja_przerwania_petli   : 'przerwij' EOS;
-instrukcja_kontynuacji_petli   : 'kontynuuj' EOS;
+instrukcja_przerwania_petli   : PRZERWIJ EOS;
+instrukcja_kontynuacji_petli   : KONTYNUUJ EOS;
 wypisanie : 'wypisz' '(' (stala_tablicowa | ID)  ')'EOS;//dla celów testowych
 instrukcja_prosta  :   wyrazenie EOS;
 wstawka_asemblerowa : LINIA_ASEMBLERA;//przede wszystkim dla celów testowych, realnie wklejanie bezpośrednio kodu będzie mało przydatne.

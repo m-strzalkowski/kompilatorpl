@@ -60,7 +60,7 @@ public class SemanticOccurence
                 //" na symbolu" + offendingSymbol +
                 " na pozycji:" + line +
                 "," + charPositionInLine +
-                " '" + message ;
+                ": " + message ;
     }
 
     public Level getSeverity() {

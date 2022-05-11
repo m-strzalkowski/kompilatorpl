@@ -9,20 +9,21 @@ procedura -> całk
 }
 procedura
 {
-    całk i; całk j;
+    całk i, j, w;
     zacznij program();
     i=0;
-    dopóki(i<3)
+    dopóki(i<4)
     {
         j=0;
-        dopóki(j<3)
+        dopóki(j<4)
         {
 
-            ack(i,j);
+            w = ack(i,j);
             //piszf("Wartość funkcji Ackermana(%d, %d) to %d\n", i,j,ack(i,j));
-            j+=1;
+            wypisz("Wartość funkcji Ackermana dla argumentów:"); wypisz(i); wypisz(", "); wypisz(j); wypisz(" to"); wypisz(w);wypisz("\n");
+            j=j+1;
         }
-        i+=1;
+        i=i+1;
     }
     wypisz("Jestem strasznie szybkim komputerem.");
     zwróć();

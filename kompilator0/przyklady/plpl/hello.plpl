@@ -9,9 +9,10 @@ procedura
      wypisz("JESTEM W DOPÓKI");
      wypisz(a);
      jeśli(a<3){wypisz("ALE TO JESZCZE DALEKO\n");}
-     a=a+1;
+     a=a+p(1);
+     kontynuuj;
     }
 
     zwróć();
 }
-procedura{zacznij p();zwróć();}
+procedura->całk {zacznij p(całk a);zwróć(a);}
