@@ -423,6 +423,13 @@ public class UstalaczStruktur extends plplBaseListener {
             }
 
         }
+        else//zmienna automatyczna - generator potem powinien wygenerowac kod
+        {
+            if(aktualnyTyp.typ != Typ.Znak)Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(
+                    SemanticOccurence.Level.FATAL, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                    "Deklaracje zmiennych automatycznych z przypisaniem jeszcze nie zaimplementowane..."
+            ));
+        }
     }
 
     /**Deklarator złożony z przypisaniem ma w skrócie wyprodukować symbol i powiązać referencję nim będącą z obiektem pamięci, czyli:

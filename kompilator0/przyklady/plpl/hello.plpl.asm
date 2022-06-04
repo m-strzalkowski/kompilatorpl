@@ -4,13 +4,13 @@ extern _pow
 
 ;dodatki dla wypisz
 section .rodata
-WYPISZ_CALK_FMT:   db    `liczba:%d\n`, 0  ;
+WYPISZ_CALK_FMT:   db    `%d`, 0  ;
 WYPISZ_ZNAK_FMT:   db    `znak:%c\n`, 0  ;
 ;koniec dodatków
 section .data
-Sznak_2_1:   db    `JESTEM W JEŚLI`, 0  ;z linii 4
-Sznak_3_3:   db    `JESTEM W DOPÓKI`, 0  ;z linii 9
-Sznak_4_4:   db    `ALE TO JESZCZE DALEKO\n`, 0  ;z linii 11
+Sznak_2_1:   db    `JESTEM W JEŚLI\n`, 0  ;z linii 4
+Sznak_3_3:   db    `JESTEM W DOPÓKI\n`, 0  ;z linii 9
+Sznak_4_4:   db    `ALE TO JESZCZE DALEKO...\n`, 0  ;z linii 11
 section .text
 ;PROCEDURA Z LINII 1 - 17
 ;RAMKA STOSU (i parametry) PROCEDURYP_main

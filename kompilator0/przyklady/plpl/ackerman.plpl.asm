@@ -181,13 +181,13 @@ Pack_epilog:
 ;coś tu może być(epilog)...
 ret
 section .data
-Sznak_7_10:   db    `Wartość funkcji Ackermana dla argumentów:`, 0  ;z linii 23
-Sznak_7_11:   db    `, `, 0  ;z linii 23
-Sznak_7_12:   db    ` to `, 0  ;z linii 23
-Sznak_7_13:   db    `\n`, 0  ;z linii 23
-Sznak_5_14:   db    `Koniec.`, 0  ;z linii 28
+Sznak_7_10:   db    `Wartość funkcji Ackermana dla argumentów:`, 0  ;z linii 22
+Sznak_7_11:   db    `, `, 0  ;z linii 22
+Sznak_7_12:   db    ` to `, 0  ;z linii 22
+Sznak_7_13:   db    `\n`, 0  ;z linii 22
+Sznak_5_14:   db    `Koniec.`, 0  ;z linii 27
 section .text
-;PROCEDURA Z LINII 11 - 30
+;PROCEDURA Z LINII 11 - 29
 ;RAMKA STOSU (i parametry) PROCEDURYP_main
 ;
 ;{ebp+4, 4B, sym:Symbol{nr=15, identyfikator='adres powrotny', zakres=5, PelnyTyp{typ=Typ{nazwa='ref', dlugosc_B=4, atomiczny=true, struktura=null}, rodzaj_pamieci=AUTOMATYCZNA, inicjalizowana=false, parametr_formalny=false, modyfikowalonosc=STALA, krotnosc_tablicowa=0}pktWe=null}}
@@ -224,7 +224,7 @@ _main:
 start_loop_0:
 ;porównanie:16
 ;stała całkowita
-                mov eax,4
+                mov eax,40
 ;koniec stałej całkowitej
                 push eax
 ;załadowanie lwartości:16
@@ -247,7 +247,7 @@ je end_loop_0
 start_loop_1:
 ;porównanie:19
 ;stała całkowita
-                mov eax,4
+                mov eax,10
 ;koniec stałej całkowitej
                 push eax
 ;załadowanie lwartości:19
@@ -261,20 +261,20 @@ start_loop_1:
 cmp eax, 0
 je end_loop_1
 ;parametr n 
-;załadowanie lwartości:22
+;załadowanie lwartości:21
                 mov eax, [ebp-8]
 ;koniec ładowania lwartosc
 ;koniec obliczania parametru n 
               push eax; złożenie na stos parametru n
 ;parametr m 
-;załadowanie lwartości:22
+;załadowanie lwartości:21
                 mov eax, [ebp-4]
 ;koniec ładowania lwartosc
 ;koniec obliczania parametru m 
               push eax; złożenie na stos parametru m
               call ack.noargshuffle;wywołanie procedury
               add esp, 8;sprzątanie stosu po wywołaniu
-;wpisywanie wyrażenia do jakiegoś ID:22
+;wpisywanie wyrażenia do jakiegoś ID:21
                 mov [ebp-12], eax
 ;koniec wpisywanie wyrażenia do jakiegoś ID
 ;wypisanie
@@ -321,36 +321,36 @@ je end_loop_1
                 call _printf
                 add esp, byte 4
 ;koniec wypisania
-;dodawanie/odejmowanie:24
+;dodawanie/odejmowanie:23
 ;stała całkowita
                 mov eax,1
 ;koniec stałej całkowitej
                 push eax
-;załadowanie lwartości:24
+;załadowanie lwartości:23
                 mov eax, [ebp-8]
 ;koniec ładowania lwartosc
                 pop ebx
                 add eax, ebx
-;koniec dodawania/odejmowania:24
-;wpisywanie wyrażenia do jakiegoś ID:24
+;koniec dodawania/odejmowania:23
+;wpisywanie wyrażenia do jakiegoś ID:23
                 mov [ebp-8], eax
 ;koniec wpisywanie wyrażenia do jakiegoś ID
 
 jmp start_loop_1
 end_loop_1:
 ; koniec dopoki
-;dodawanie/odejmowanie:26
+;dodawanie/odejmowanie:25
 ;stała całkowita
                 mov eax,1
 ;koniec stałej całkowitej
                 push eax
-;załadowanie lwartości:26
+;załadowanie lwartości:25
                 mov eax, [ebp-4]
 ;koniec ładowania lwartosc
                 pop ebx
                 add eax, ebx
-;koniec dodawania/odejmowania:26
-;wpisywanie wyrażenia do jakiegoś ID:26
+;koniec dodawania/odejmowania:25
+;wpisywanie wyrażenia do jakiegoś ID:25
                 mov [ebp-4], eax
 ;koniec wpisywanie wyrażenia do jakiegoś ID
 

@@ -13,12 +13,11 @@ procedura
     całk i, j, w;
     zacznij program();
     i=0;
-    dopóki(i<4)
+    dopóki(i<40)
     {
         j=0;
-        dopóki(j<4)
+        dopóki(j<10)
         {
-
             w = ack(i,j);
             wypisz("Wartość funkcji Ackermana dla argumentów:"); wypisz(i); wypisz(", "); wypisz(j); wypisz(" to "); wypisz(w);wypisz("\n");
             j=j+1;

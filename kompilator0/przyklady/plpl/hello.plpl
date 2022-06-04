@@ -1,18 +1,18 @@
 procedura
 {
     zacznij program();
-    jeśli(1) { wypisz("JESTEM W JEŚLI"); }
+    jeśli(1) { wypisz("JESTEM W JEŚLI\n"); }
     całk a;
     a=1;
     dopóki(a<=10)
     {
-     wypisz("JESTEM W DOPÓKI");
+     wypisz("JESTEM W DOPÓKI\n");
      wypisz(a);
-     jeśli(a<3){wypisz("ALE TO JESZCZE DALEKO\n");}
+     jeśli(a<3){wypisz("ALE TO JESZCZE DALEKO...\n");}
      a=a+p(1);
      kontynuuj;
     }
 
     zwróć();
 }
-procedura->całk {zacznij p(całk a);zwróć(a);}
+procedura->całk {zacznij p(całk a);zwróć(a);<<S>>}

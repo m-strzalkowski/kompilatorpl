@@ -1,0 +1,39 @@
+/* Procedura mogąca obliczać silnię na dwa sposoby */
+procedura -> całk{
+    zacznij rek(całk n);
+    jeśli(n<=1){zwróć(1);}
+    zwróć(rek(n-1)*n);
+
+    zacznij iter(całk n);
+    całk wynik; wynik=1;
+    dopóki(n > 0)
+    {
+        wynik = wynik * n;
+        n = n - 1;
+    }
+    zwróć(wynik);
+}
+procedura{
+    zacznij program();
+    całk i,wr,wi; i=0;
+    dopóki(i<10)
+    {
+        wr = rek(i); wi = iter(i);
+        wypisz("\n");wypisz(i); wypisz(":"); wypisz(wr); wypisz(" : "); wypisz(wi);
+        i=i+1;
+    }
+    zwróć();
+}
+
+procedura -> całk
+{
+
+    zacznij silnia_it(całk n);
+    całk wynik; wynik=1;
+    dopóki(n > 0)
+    {
+        wynik = wynik * n;
+        n = n - 1;
+    }
+    zwróć(wynik);
+}
