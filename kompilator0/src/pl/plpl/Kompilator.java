@@ -8,6 +8,7 @@ import pl.plpl.bledy.SyntaxErrorListener;
 import pl.plpl.generatory.*;
 import pl.plpl.parser.plplListener;
 import pl.plpl.parser.plplVisitor;
+import pl.plpl.polskiParser.PolishConsoleErrorListener;
 import pl.plpl.polskiParser.plplPolishLexer;
 import pl.plpl.polskiParser.plplPolishParser;
 
@@ -112,6 +113,8 @@ public class Kompilator {
 
         //1.analiza leksykalna
         plplPolishLexer lexer = new plplPolishLexer(input);
+        lexer.removeErrorListener(ConsoleErrorListener.INSTANCE);
+        lexer.addErrorListener(new PolishConsoleErrorListener());
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         //czy włączyć debuger kompilatora
         if(cmd.hasOption(interactiveDebuger))
@@ -121,6 +124,8 @@ public class Kompilator {
         plplPolishParser parser = new plplPolishParser(tokens);
         SyntaxErrorListener syntaxErrorListener = new SyntaxErrorListener();
         parser.addErrorListener(syntaxErrorListener);
+        parser.removeErrorListener(ConsoleErrorListener.INSTANCE);
+        parser.addErrorListener(new PolishConsoleErrorListener());
         ParseTree tree = parser.program(); // parse; start at prog <label id="code.tour.main.6"/>
         if(syntaxErrorListener.getNumberOfErrors() > 0)
         {
