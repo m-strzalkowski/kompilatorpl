@@ -1,0 +1,7 @@
+procedura
+{
+    zacznij program();
+    1-1;
+    1=1;
+}
+procedura->całk {zacznij p(całk a);zwróć(a);}

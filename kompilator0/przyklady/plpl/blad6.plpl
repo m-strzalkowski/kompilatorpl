@@ -1,0 +1,6 @@
+procedura
+{
+    zacznij program();
+    całk a;
+    a = 'a';
+}

@@ -1,0 +1,14 @@
+procedura
+{
+    zacznij program();
+    całk a;
+    a=1;
+    dopóki(10 = a)
+    {
+     a=a+p(1);
+     kontynuuj;
+    }
+
+    zwróć();
+}
+procedura->całk {zacznij p(całk a);zwróć(a);<<S>>}

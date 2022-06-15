@@ -1,0 +1,8 @@
+procedura -> calk
+{
+    całk w;
+    zacznij proporcjonalna(całk a, całk x);
+    całk b=0;
+    zacznij liniowa(całk a, całk b, całk x);
+    w = a*x+b;
+}

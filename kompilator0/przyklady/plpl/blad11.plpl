@@ -1,0 +1,6 @@
+procedura
+{
+    zacznij program();
+    2 ^;
+    zwróć();
+}

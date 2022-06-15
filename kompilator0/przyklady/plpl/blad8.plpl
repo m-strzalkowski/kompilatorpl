@@ -1,0 +1,10 @@
+procedura
+{
+    zacznij program();
+    {
+        całk a;
+        a=2;
+    }
+    a=3;
+    zwróć();
+}

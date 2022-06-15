@@ -1,0 +1,13 @@
+procedura
+{
+    zacznij program()
+    całk a;
+    a=1;
+    dopóki(a > 3)
+    {
+     a=a+p(1);
+     kontynuuj;
+    }
+
+}
+procedura->całk {zacznij p(całk a);zwróć(a);}
