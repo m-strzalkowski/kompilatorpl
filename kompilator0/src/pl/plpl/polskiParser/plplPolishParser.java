@@ -25,6 +25,7 @@ public class plplPolishParser extends plplParser {
 
     public final static String[] makeSymbolicNames()
     {
+        /*
         return new String[] {
                 null, null, null, null, null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null,
@@ -33,6 +34,16 @@ public class plplPolishParser extends plplParser {
                 "AUTOMATYCZNA", "STAŁA", "T CAŁKOWITA", "T RZECZYWISTA", "T ZNAK", "T REFERENCJA", "PRZERWIJ",
                 "KONTYNUUJ", "ZMIENNA", "CAŁKOWITA", "ZNAK_DOSŁOWNY", "NAPIS_DOSŁOWNY", "LINIA_ASEMBLERA",
                 "IDENTYFIKATOR", "EOS", "KOMENTARZ", "KOMENTARZ", "WS"
+        };
+        */
+        return new String[] {
+                null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, "ZNACZNIK_DEBUGGERA", "nic", "STATYCZNA",
+                "AUTOMATYCZNA", "STAŁA", "T CAŁKOWITA", "T RZECZYWISTA", "T ZNAK", "T REFERENCJA", "PRZERWIJ",
+                "KONTYNUUJ", "ZMIENNA", "CAŁKOWITA", "ZNAK_DOSŁOWNY", "NAPIS_DOSŁOWNY", "LINIA_ASEMBLERA",
+                "IDENTYFIKATOR", "ŚREDNIK", "KOMENTARZ", "KOMENTARZ", "BIAŁY_ZNAK"
         };
     }
     private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
