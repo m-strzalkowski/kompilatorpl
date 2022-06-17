@@ -6,15 +6,15 @@ import pl.plpl.Debuger.DebugerKompilatora;
 import pl.plpl.bledy.SemanticOccurence;
 import pl.plpl.bledy.SyntaxErrorListener;
 import pl.plpl.generatory.*;
-import pl.plpl.parser.plplLexer;
 import pl.plpl.parser.plplListener;
-import pl.plpl.parser.plplParser;
 import pl.plpl.parser.plplVisitor;
+import pl.plpl.polskiParser.PolishConsoleErrorListener;
+import pl.plpl.polskiParser.plplPolishLexer;
+import pl.plpl.polskiParser.plplPolishParser;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.util.Scanner;
 
 import static java.lang.System.exit;
 import static pl.plpl.generatory.Tablice.Srodowisko.*;
@@ -112,16 +112,20 @@ public class Kompilator {
         }
 
         //1.analiza leksykalna
-        plplLexer lexer = new plplLexer(input);
+        plplPolishLexer lexer = new plplPolishLexer(input);
+        lexer.removeErrorListener(ConsoleErrorListener.INSTANCE);
+        lexer.addErrorListener(new PolishConsoleErrorListener());
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         //czy włączyć debuger kompilatora
         if(cmd.hasOption(interactiveDebuger))
         {System.err.println("DEBUGGER:"); debuger_kompilatora = new DebugerKompilatora(tokens);}else{ debuger_kompilatora=null;}
 
         //2.analiza syntaktyczna
-        plplParser parser = new plplParser(tokens);
+        plplPolishParser parser = new plplPolishParser(tokens);
         SyntaxErrorListener syntaxErrorListener = new SyntaxErrorListener();
         parser.addErrorListener(syntaxErrorListener);
+        parser.removeErrorListener(ConsoleErrorListener.INSTANCE);
+        parser.addErrorListener(new PolishConsoleErrorListener());
         ParseTree tree = parser.program(); // parse; start at prog <label id="code.tour.main.6"/>
         if(syntaxErrorListener.getNumberOfErrors() > 0)
         {
