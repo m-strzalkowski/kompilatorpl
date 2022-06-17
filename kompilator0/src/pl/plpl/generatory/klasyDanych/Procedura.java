@@ -142,28 +142,28 @@ public class Procedura {
     {
         //Normalizer.normalize(pelnyTyp.typ.nazwa, Normalizer.Form.NFD)NFKD
         //if(poczatkowa) {return }
-        return "P"+ wejscia.get(0).etykieta();
+        return "P"+ ((this.najogolniejszy_zakres.nadrzedny == null)?(nr):(wejscia.get(0).etykieta()));
     }
 
-    public StringBuilder zamienNaAssembler()
+    public StringBuilder zamienNaAssembler(boolean _data, boolean _bss, boolean _text, boolean _rodata)
     {
         StringBuilder sb = new StringBuilder();
-        if(!data.isEmpty())
+        if(!data.isEmpty() && _data)
         {
             sb.append("section .data\n");
             sb.append(data);
         }
-        if(!bss.isEmpty())
+        if(!bss.isEmpty() && _bss)
         {
             sb.append("section .bss\n");
             sb.append(bss);
         }
-        if(!text.isEmpty())
+        if(!text.isEmpty() && _text)
         {
             sb.append("section .text\n");
             sb.append(text);
         }
-        if(!rodata.isEmpty())
+        if(!rodata.isEmpty() && _rodata)
         {
             sb.append("section .rodata\n");
             sb.append(rodata);

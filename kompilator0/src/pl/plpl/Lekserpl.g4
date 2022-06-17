@@ -9,10 +9,12 @@ TRZECZYW: 'rzeczyw';
 TZNAK: 'znak';
 TREF: 'ref';
 
+NOWY: 'now'[yea];
+
 PRZERWIJ : 'przerwij';
 KONTYNUUJ:'kontynuuj'|'nazad';
 
-ZMIENN : CALK'.'CALK; //zmiennoprzecinkowa liczba
+ZMIENN :  CALK'.'CALK; //zmiennoprzecinkowa liczba
 CALK :   [0-9]+ ;   //zwykła liczba
 ZNAK_DOSL
     :   '\'' ( EscapeSequence | ~('\''|'\\') ) '\''

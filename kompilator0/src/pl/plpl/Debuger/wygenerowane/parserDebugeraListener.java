@@ -128,6 +128,16 @@ public interface parserDebugeraListener extends ParseTreeListener {
 	 */
 	void exitCd_do_zakresu(parserDebugera.Cd_do_zakresuContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link parserDebugera#cd_do_typu}.
+	 * @param ctx the parse tree
+	 */
+	void enterCd_do_typu(parserDebugera.Cd_do_typuContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link parserDebugera#cd_do_typu}.
+	 * @param ctx the parse tree
+	 */
+	void exitCd_do_typu(parserDebugera.Cd_do_typuContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link parserDebugera#listowanie}.
 	 * @param ctx the parse tree
 	 */

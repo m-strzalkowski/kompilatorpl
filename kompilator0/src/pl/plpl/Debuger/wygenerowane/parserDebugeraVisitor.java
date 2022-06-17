@@ -83,6 +83,12 @@ public interface parserDebugeraVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCd_do_zakresu(parserDebugera.Cd_do_zakresuContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link parserDebugera#cd_do_typu}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCd_do_typu(parserDebugera.Cd_do_typuContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link parserDebugera#listowanie}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

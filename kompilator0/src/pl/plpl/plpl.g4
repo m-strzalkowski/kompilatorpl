@@ -15,7 +15,7 @@ deklaracja_prosta   :  deklaracja_atomiczna  |  deklaracja_referencji;//użytkow
 deklaracja_atomiczna
                 :   przydomki nazwa_typu_atom   (deklarator_atomiczny_z_przypisaniem | deklarator_bez_przypisania) (',' (deklarator_atomiczny_z_przypisaniem | deklarator_bez_przypisania))* EOS ;
 deklarator_bez_przypisania : ID;
-deklarator_atomiczny_z_przypisaniem : ID  '='  (CALK | ZMIENN | ZNAK_DOSL);
+deklarator_atomiczny_z_przypisaniem : ID  '='  (CALK | ZMIENN {notifyErrorListeners("Liczby zmienoprzecinkowe jeszcze nie zaimplementowane");} | ZNAK_DOSL);
 deklaracja_referencji   :
      przydomki pelny_typ (deklarator_bez_przypisania|deklarator_zlozony_z_przypisaniem) (',' (deklarator_bez_przypisania|deklarator_zlozony_z_przypisaniem))*  EOS ;
 deklarator_zlozony_z_przypisaniem : ID  '='  (lwartosc | stala_tablicowa /*|TABLICA_CALK_DOSL*/);
@@ -36,7 +36,7 @@ instrukcja   :   instrukcja_wyboru
              |   wstawka_asemblerowa
              |   wypisanie;
 instrukcja_zlozona  : '{'  lista_instrukcji?  '}';
-instrukcja_wyboru   : 'jeśli' '(' wyrazenie ')' instrukcja  ('inaczej'  instrukcja)?;
+instrukcja_wyboru   : ('jeśli'|'jesli'|'gdy') '(' wyrazenie ')' instrukcja  ('inaczej'  instrukcja)?;
 instrukcja_petli   : 'dopóki' '(' wyrazenie ')' instrukcja;
 instrukcja_powrotu   : 'zwróć' '(' wyrazenie? ')' EOS;
 instrukcja_wkroczenia   : 'zacznij'  ID '(' lista_parametrow_formalnych ')' EOS;
@@ -61,7 +61,12 @@ expression
 */
 wyrazenie
           : wywolanie_funkcji                           #wyrazenieWywolanie
+          | naiwne_wywolanie                           #wyrazenieWywolanieNaiwne
+          | alokacja                                    #wyrazenieAlokacja
+          | dealokacja                                  #wyrazenieDealokacja
           | lwartosc                                    #wyrazenieLwartosc//
+          | wyrazenie selektor_tablicowy                #wyrazenieSelekcjaTablicowa
+          | wyrazenie selektor_typu_zlozonego           #wyrazenieSelekcjiSkladowej
           | adr='@' lwartosc                            #wyrazenieAdres //funkcje rodem z C będą i tak potrzebować adresów....
           | neg='!' wyrazenie                           #wyrazenieNegacja
           | znak=('-'| '+') wyrazenie                   #wyrazenieZnak
@@ -70,15 +75,19 @@ wyrazenie
           | wyrazenie addyt=('+' | '-') wyrazenie       #wyrazenieAddyt
           | wyrazenie logicz=('&&' | '||')wyrazenie    #wyrazenieLogicz
           | wyrazenie porownanie=('==' | '!=' | '>' | '<' | '<=' | '>=')wyrazenie    #wyrazeniePorownanie
-          | przypisanie                                 #wyrazeniePrzypisanie
+          | <assoc=right> wyrazenie '=' wyrazenie                      #wyrazeniePrzypisanieZwykle
+          | <assoc=right> wyrazenie '^=' wyrazenie                     #wyrazeniePrzypisaniePoteg
+          | <assoc=right> wyrazenie mult=('*=' | '/=' | '%=') wyrazenie#wyrazeniePrzypisanieMult
+          | <assoc=right> wyrazenie addyt=('+=' | '-=') wyrazenie      #wyrazeniePrzypisanieAddyt
           | stala_atomiczna                             #wyrazenieStala
           //| ID                                          #wyrazenieId//wystarczy sama lwartość, której ID jest szczególnym przypadkiem
           //NAPIS_DOSL //??
           | '(' wyrazenie ')'                           #wyrazenieNawiasy
           ;
-
- lwartosc: ID (selektor_tablicowy)?(selektor_typu_zlozonego(selektor_tablicowy)*)*;//konstrukcje typu a.b[d+2][7][12+w]
- //lwartosc: ID | NAPIS_DOSL | tablica_calk_dosl;
+alokacja: NOWY '('pelny_typ_dynamiczny')';//bez nawiasów robi sie niejednoznaczność
+dealokacja:'zapomnij' '('wyrazenie')';
+// lwartosc: ID (selektor_tablicowy)?(selektor_typu_zlozonego(selektor_tablicowy)*)*;//konstrukcje typu a.b[d+2][7][12+w]
+ lwartosc: ID | NAPIS_DOSL | NIC;//  tablica_calk_dosl  | DOSLOWNA_LOSOWOSC;
  //do wyrażeń:
  //|wyrazenie selektor_tablicowy #wyrazenieSelekcjaTablicowa
  //|wyrazenie selektor_typu_zlozonego #wyrazenieSelekcjiSkladowej
@@ -86,21 +95,31 @@ wyrazenie
  selektor_typu_zlozonego   :  '.' ID ;
 
 //W przypisaniu lwartość ma zmodyfikowane znaczenie: jest to ADRES elementu, do którego trzeba wpisać WARTOść (która też może być adresem)
- przypisanie : <assoc=right> lwartosc '=' wyrazenie                      #przypisanieZwykle
+ /*przypisanie : <assoc=right> wyrazenie '=' wyrazenie                      #przypisanieZwykle
+             | <assoc=right> wyrazenie '^=' wyrazenie                     #przypisaniePoteg
+             | <assoc=right> wyrazenie mult=('*=' | '/=' | '%=') wyrazenie#przypisanieMult
+             | <assoc=right> wyrazenie addyt=('+=' | '-=') wyrazenie      #przypisanieAddyt
+             ;
+             */
+ /*przypisanie : <assoc=right> lwartosc '=' wyrazenie                      #przypisanieZwykle
              | <assoc=right> lwartosc '^=' wyrazenie                     #przypisaniePoteg
              | <assoc=right> lwartosc mult=('*=' | '/=' | '%=') wyrazenie#przypisanieMult
              | <assoc=right> lwartosc addyt=('+=' | '-=') wyrazenie      #przypisanieAddyt
              ;
-
+*/
  wywolanie_funkcji   :  ID '(' lista_parametrow_aktualnych ')';
+ naiwne_wywolanie : 'C.' ID '(' lista_parametrow_aktualnych ')';
  lista_parametrow_aktualnych : (wyrazenie  (',' wyrazenie)*)?;
 
- stala_atomiczna   :  CALK  |  ZMIENN  |  ZNAK_DOSL ;
+ stala_atomiczna   :  CALK  |  ZMIENN {notifyErrorListeners("Liczby zmienoprzecinkowe jeszcze nie zaimplementowane");} |  ZNAK_DOSL ;
  stala_tablicowa   : NAPIS_DOSL;
 //pelny_typ : ((nazwa_typu_atom ('[]')* ('[' CALK ']')+ ) | ID (('[]')* ('[' CALK ']')*) ) ;
 pelny_typ : (nazwa_typu_atom | ID ) (nieokreslony_deklarator_tablicowy)* (okreslony_deklarator_tablicowy)?;
+pelny_typ_dynamiczny : (nazwa_dynamicznie_alokowalnego_typu_atom | ID ) (obliczany_deklarator_tablicowy)? (nieokreslony_deklarator_tablicowy)*;//do alokacji pamięci
 nieokreslony_deklarator_tablicowy: '['']';
 okreslony_deklarator_tablicowy: '[' CALK ']';
+obliczany_deklarator_tablicowy: '[' wyrazenie ']';
 przydomki : ((STATYCZN|AUTOMATYCZN)? STAL?) | (STAL? (STATYCZN|AUTOMATYCZN)?);
 //nazwa_typu_atom   : 'całk' | 'rzeczyw' | 'znak';
-nazwa_typu_atom : TCALK | TRZECZYW | TZNAK | TREF;
+nazwa_typu_atom : TCALK | TRZECZYW {notifyErrorListeners("Liczby zmienoprzecinkowe jeszcze nie zaimplementowane");} | TZNAK | TREF;
+nazwa_dynamicznie_alokowalnego_typu_atom : TCALK | TRZECZYW {notifyErrorListeners("Liczby zmienoprzecinkowe jeszcze nie zaimplementowane");} | TZNAK | TREF;//po prawdzie to skrót, żeby nie zmieniać żeby oddzielić symbole gramatyczne w deklaracjach i w alokacji

@@ -160,6 +160,18 @@ public class parserDebugeraBaseListener implements parserDebugeraListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterCd_do_typu(parserDebugera.Cd_do_typuContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCd_do_typu(parserDebugera.Cd_do_typuContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterListowanie(parserDebugera.ListowanieContext ctx) { }
 	/**
 	 * {@inheritDoc}

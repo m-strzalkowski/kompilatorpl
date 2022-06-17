@@ -199,6 +199,20 @@ public class plplBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements p
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitWyrazeniePrzypisaniePoteg(plplParser.WyrazeniePrzypisaniePotegContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitWyrazeniePrzypisanieAddyt(plplParser.WyrazeniePrzypisanieAddytContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitWyrazenieNegacja(plplParser.WyrazenieNegacjaContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -241,6 +255,13 @@ public class plplBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements p
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitWyrazenieWywolanieNaiwne(plplParser.WyrazenieWywolanieNaiwneContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitWyrazenieMult(plplParser.WyrazenieMultContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -248,7 +269,21 @@ public class plplBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements p
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitWyrazeniePrzypisanie(plplParser.WyrazeniePrzypisanieContext ctx) { return visitChildren(ctx); }
+	@Override public T visitWyrazeniePrzypisanieMult(plplParser.WyrazeniePrzypisanieMultContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitWyrazenieAlokacja(plplParser.WyrazenieAlokacjaContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitWyrazenieDealokacja(plplParser.WyrazenieDealokacjaContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -262,7 +297,21 @@ public class plplBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements p
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitWyrazeniePrzypisanieZwykle(plplParser.WyrazeniePrzypisanieZwykleContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitWyrazenieAddyt(plplParser.WyrazenieAddytContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitWyrazenieSelekcjiSkladowej(plplParser.WyrazenieSelekcjiSkladowejContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -283,7 +332,28 @@ public class plplBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements p
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitWyrazenieSelekcjaTablicowa(plplParser.WyrazenieSelekcjaTablicowaContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitWyrazenieZnak(plplParser.WyrazenieZnakContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitAlokacja(plplParser.AlokacjaContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitDealokacja(plplParser.DealokacjaContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -311,35 +381,14 @@ public class plplBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements p
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPrzypisanieZwykle(plplParser.PrzypisanieZwykleContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitPrzypisaniePoteg(plplParser.PrzypisaniePotegContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitPrzypisanieMult(plplParser.PrzypisanieMultContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitPrzypisanieAddyt(plplParser.PrzypisanieAddytContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
 	@Override public T visitWywolanie_funkcji(plplParser.Wywolanie_funkcjiContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitNaiwne_wywolanie(plplParser.Naiwne_wywolanieContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -374,6 +423,13 @@ public class plplBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements p
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitPelny_typ_dynamiczny(plplParser.Pelny_typ_dynamicznyContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitNieokreslony_deklarator_tablicowy(plplParser.Nieokreslony_deklarator_tablicowyContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -388,6 +444,13 @@ public class plplBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements p
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitObliczany_deklarator_tablicowy(plplParser.Obliczany_deklarator_tablicowyContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitPrzydomki(plplParser.PrzydomkiContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -396,4 +459,11 @@ public class plplBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements p
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitNazwa_typu_atom(plplParser.Nazwa_typu_atomContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitNazwa_dynamicznie_alokowalnego_typu_atom(plplParser.Nazwa_dynamicznie_alokowalnego_typu_atomContext ctx) { return visitChildren(ctx); }
 }

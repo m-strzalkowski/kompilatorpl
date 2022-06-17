@@ -2,6 +2,9 @@ package pl.plpl.generatory;
 
 
 import pl.plpl.generatory.klasyDanych.Procedura;
+import pl.plpl.generatory.klasyDanych.Struktura;
+import pl.plpl.generatory.klasyDanych.Typ;
+
 import java.io.Writer;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -52,7 +55,7 @@ public class SkladaczKoduAsemblera {
     private StringBuilder generujAssembler() {
         StringBuilder gotowyKod = new StringBuilder();
 
-        gotowyKod.append("global _main\nextern _printf\nextern _pow\n\n");
+        gotowyKod.append("global _main\nextern _printf\nextern _pow\nextern _malloc\nextern _free\nextern _exit\n\n");
 
         gotowyKod.append(";dodatki dla wypisz\n");
         gotowyKod.append("section .rodata\n");
@@ -60,9 +63,18 @@ public class SkladaczKoduAsemblera {
         gotowyKod.append("WYPISZ_ZNAK_FMT:   db    `znak:%c\\n`, 0  ;\n");
         gotowyKod.append(";koniec dodatków\n");
 
-        gotowyKod.append(Tablice.kod_globalny.zamienNaAssembler());
+        gotowyKod.append(Tablice.kod_globalny.zamienNaAssembler(true, true, true, true));
         for (Procedura p : Tablice.procedury) {
-            gotowyKod.append(p.zamienNaAssembler());
+            gotowyKod.append(p.zamienNaAssembler(true, true, true, true));
+        }
+        //deklaracje statycznych składowych ze struktur
+        for(Typ t : Tablice.typy)
+        {
+            if(t.struktura != null && t.atomiczny)
+            {
+                gotowyKod.append(t.struktura.zamienNaAssembler(true, true, false, true));
+            }
+
         }
         return gotowyKod;
     }

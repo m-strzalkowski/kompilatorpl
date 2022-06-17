@@ -38,6 +38,7 @@ public class Typ {
     public static final Typ Znak = new Typ("znak", 1, true, null);
     public static final Typ Ref = new Typ("ref", 4, true, null);
     public static final Typ Pkt = new Typ("pkt", 4, true, null);//punkt wejściowy
+    public static final Typ BRAK = new Typ("pusty", 0, true, null);//stoi za brak typu, np. zwracanego.
     public static Typ zTokena(Token token)
     {
         switch (token.getType())

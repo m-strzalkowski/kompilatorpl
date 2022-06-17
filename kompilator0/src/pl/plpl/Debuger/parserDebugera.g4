@@ -18,11 +18,12 @@ nastepny_krok: SREDNIK;
 nastepny_znacznik: PRZECINEK;
 komenda_ubicia_kompilatora : ZGIN;
 komenda_ubicia_debugera : DOKONCZ;
-przechodzenie: CD (cd_do_proc | cd_do_zakresu);
+przechodzenie: CD (cd_do_proc | cd_do_zakresu | cd_do_typu);
 
 /*komendy przechodzenia*/
 cd_do_proc: PROC NUM;
 cd_do_zakresu: ZAKR NUM;
+cd_do_typu: TYP ID;
 
 listowanie: (ogolne_listowanie)|( LS (listing_procedur | listing_zakresow ))
             | (LS?

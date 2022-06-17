@@ -10,6 +10,7 @@ WSZ  :   [ \t\n\r]+ -> skip ;
 
 mode KOMENDY;
 ZMKK : '>>' -> mode(DEFAULT_MODE);
+TYP: 'typ';
 PROC: 'procedura' | 'proc'('.')? | 'proced'('.')?;
 ZAKR: 'zakres' | 'zakr'('.'?) | 'zakresy';
 PUNKT: 'pkt'('.')?| 'punkt';
