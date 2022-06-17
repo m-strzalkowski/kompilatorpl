@@ -1,6 +1,7 @@
 package pl.plpl.generatory;
 
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import pl.plpl.Debuger.DebugerKompilatora;
 import pl.plpl.bledy.Błędnik;
 import pl.plpl.generatory.klasyDanych.*;
@@ -34,6 +35,11 @@ public class Tablice {
 
     public static int liczbaIfow = 0;
     public static int liczbaPetli = 0;
+
+    public static OpcjePLPL opcje = new OpcjePLPL();//opcje - atrybuty semantyczne drzewa składniowego
+
+    //Adnotacje na drzewie składniowym
+    public static ParseTreeProperty<Boolean> niedereferencja = new ParseTreeProperty<>();
 
     public static void dodajZakres(Zakres z)
     {

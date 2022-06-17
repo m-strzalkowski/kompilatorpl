@@ -268,6 +268,30 @@ public interface plplListener extends ParseTreeListener {
 	 */
 	void exitDeklaracja_parametru(plplParser.Deklaracja_parametruContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code wyrazeniePrzypisaniePoteg}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 */
+	void enterWyrazeniePrzypisaniePoteg(plplParser.WyrazeniePrzypisaniePotegContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code wyrazeniePrzypisaniePoteg}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 */
+	void exitWyrazeniePrzypisaniePoteg(plplParser.WyrazeniePrzypisaniePotegContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code wyrazeniePrzypisanieAddyt}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 */
+	void enterWyrazeniePrzypisanieAddyt(plplParser.WyrazeniePrzypisanieAddytContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code wyrazeniePrzypisanieAddyt}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 */
+	void exitWyrazeniePrzypisanieAddyt(plplParser.WyrazeniePrzypisanieAddytContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code wyrazenieNegacja}
 	 * labeled alternative in {@link plplParser#wyrazenie}.
 	 * @param ctx the parse tree
@@ -340,6 +364,18 @@ public interface plplListener extends ParseTreeListener {
 	 */
 	void exitWyrazenieLogicz(plplParser.WyrazenieLogiczContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code wyrazenieWywolanieNaiwne}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 */
+	void enterWyrazenieWywolanieNaiwne(plplParser.WyrazenieWywolanieNaiwneContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code wyrazenieWywolanieNaiwne}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 */
+	void exitWyrazenieWywolanieNaiwne(plplParser.WyrazenieWywolanieNaiwneContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code wyrazenieMult}
 	 * labeled alternative in {@link plplParser#wyrazenie}.
 	 * @param ctx the parse tree
@@ -352,17 +388,41 @@ public interface plplListener extends ParseTreeListener {
 	 */
 	void exitWyrazenieMult(plplParser.WyrazenieMultContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code wyrazeniePrzypisanie}
+	 * Enter a parse tree produced by the {@code wyrazeniePrzypisanieMult}
 	 * labeled alternative in {@link plplParser#wyrazenie}.
 	 * @param ctx the parse tree
 	 */
-	void enterWyrazeniePrzypisanie(plplParser.WyrazeniePrzypisanieContext ctx);
+	void enterWyrazeniePrzypisanieMult(plplParser.WyrazeniePrzypisanieMultContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code wyrazeniePrzypisanie}
+	 * Exit a parse tree produced by the {@code wyrazeniePrzypisanieMult}
 	 * labeled alternative in {@link plplParser#wyrazenie}.
 	 * @param ctx the parse tree
 	 */
-	void exitWyrazeniePrzypisanie(plplParser.WyrazeniePrzypisanieContext ctx);
+	void exitWyrazeniePrzypisanieMult(plplParser.WyrazeniePrzypisanieMultContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code wyrazenieAlokacja}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 */
+	void enterWyrazenieAlokacja(plplParser.WyrazenieAlokacjaContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code wyrazenieAlokacja}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 */
+	void exitWyrazenieAlokacja(plplParser.WyrazenieAlokacjaContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code wyrazenieDealokacja}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 */
+	void enterWyrazenieDealokacja(plplParser.WyrazenieDealokacjaContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code wyrazenieDealokacja}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 */
+	void exitWyrazenieDealokacja(plplParser.WyrazenieDealokacjaContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code wyrazenieAdres}
 	 * labeled alternative in {@link plplParser#wyrazenie}.
@@ -376,6 +436,18 @@ public interface plplListener extends ParseTreeListener {
 	 */
 	void exitWyrazenieAdres(plplParser.WyrazenieAdresContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code wyrazeniePrzypisanieZwykle}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 */
+	void enterWyrazeniePrzypisanieZwykle(plplParser.WyrazeniePrzypisanieZwykleContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code wyrazeniePrzypisanieZwykle}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 */
+	void exitWyrazeniePrzypisanieZwykle(plplParser.WyrazeniePrzypisanieZwykleContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code wyrazenieAddyt}
 	 * labeled alternative in {@link plplParser#wyrazenie}.
 	 * @param ctx the parse tree
@@ -387,6 +459,18 @@ public interface plplListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitWyrazenieAddyt(plplParser.WyrazenieAddytContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code wyrazenieSelekcjiSkladowej}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 */
+	void enterWyrazenieSelekcjiSkladowej(plplParser.WyrazenieSelekcjiSkladowejContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code wyrazenieSelekcjiSkladowej}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 */
+	void exitWyrazenieSelekcjiSkladowej(plplParser.WyrazenieSelekcjiSkladowejContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code wyrazenieWywolanie}
 	 * labeled alternative in {@link plplParser#wyrazenie}.
@@ -412,6 +496,18 @@ public interface plplListener extends ParseTreeListener {
 	 */
 	void exitWyrazenieStala(plplParser.WyrazenieStalaContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code wyrazenieSelekcjaTablicowa}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 */
+	void enterWyrazenieSelekcjaTablicowa(plplParser.WyrazenieSelekcjaTablicowaContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code wyrazenieSelekcjaTablicowa}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 */
+	void exitWyrazenieSelekcjaTablicowa(plplParser.WyrazenieSelekcjaTablicowaContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code wyrazenieZnak}
 	 * labeled alternative in {@link plplParser#wyrazenie}.
 	 * @param ctx the parse tree
@@ -423,6 +519,26 @@ public interface plplListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitWyrazenieZnak(plplParser.WyrazenieZnakContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link plplParser#alokacja}.
+	 * @param ctx the parse tree
+	 */
+	void enterAlokacja(plplParser.AlokacjaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link plplParser#alokacja}.
+	 * @param ctx the parse tree
+	 */
+	void exitAlokacja(plplParser.AlokacjaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link plplParser#dealokacja}.
+	 * @param ctx the parse tree
+	 */
+	void enterDealokacja(plplParser.DealokacjaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link plplParser#dealokacja}.
+	 * @param ctx the parse tree
+	 */
+	void exitDealokacja(plplParser.DealokacjaContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link plplParser#lwartosc}.
 	 * @param ctx the parse tree
@@ -454,54 +570,6 @@ public interface plplListener extends ParseTreeListener {
 	 */
 	void exitSelektor_typu_zlozonego(plplParser.Selektor_typu_zlozonegoContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code przypisanieZwykle}
-	 * labeled alternative in {@link plplParser#przypisanie}.
-	 * @param ctx the parse tree
-	 */
-	void enterPrzypisanieZwykle(plplParser.PrzypisanieZwykleContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code przypisanieZwykle}
-	 * labeled alternative in {@link plplParser#przypisanie}.
-	 * @param ctx the parse tree
-	 */
-	void exitPrzypisanieZwykle(plplParser.PrzypisanieZwykleContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code przypisaniePoteg}
-	 * labeled alternative in {@link plplParser#przypisanie}.
-	 * @param ctx the parse tree
-	 */
-	void enterPrzypisaniePoteg(plplParser.PrzypisaniePotegContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code przypisaniePoteg}
-	 * labeled alternative in {@link plplParser#przypisanie}.
-	 * @param ctx the parse tree
-	 */
-	void exitPrzypisaniePoteg(plplParser.PrzypisaniePotegContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code przypisanieMult}
-	 * labeled alternative in {@link plplParser#przypisanie}.
-	 * @param ctx the parse tree
-	 */
-	void enterPrzypisanieMult(plplParser.PrzypisanieMultContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code przypisanieMult}
-	 * labeled alternative in {@link plplParser#przypisanie}.
-	 * @param ctx the parse tree
-	 */
-	void exitPrzypisanieMult(plplParser.PrzypisanieMultContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code przypisanieAddyt}
-	 * labeled alternative in {@link plplParser#przypisanie}.
-	 * @param ctx the parse tree
-	 */
-	void enterPrzypisanieAddyt(plplParser.PrzypisanieAddytContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code przypisanieAddyt}
-	 * labeled alternative in {@link plplParser#przypisanie}.
-	 * @param ctx the parse tree
-	 */
-	void exitPrzypisanieAddyt(plplParser.PrzypisanieAddytContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link plplParser#wywolanie_funkcji}.
 	 * @param ctx the parse tree
 	 */
@@ -511,6 +579,16 @@ public interface plplListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitWywolanie_funkcji(plplParser.Wywolanie_funkcjiContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link plplParser#naiwne_wywolanie}.
+	 * @param ctx the parse tree
+	 */
+	void enterNaiwne_wywolanie(plplParser.Naiwne_wywolanieContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link plplParser#naiwne_wywolanie}.
+	 * @param ctx the parse tree
+	 */
+	void exitNaiwne_wywolanie(plplParser.Naiwne_wywolanieContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link plplParser#lista_parametrow_aktualnych}.
 	 * @param ctx the parse tree
@@ -552,6 +630,16 @@ public interface plplListener extends ParseTreeListener {
 	 */
 	void exitPelny_typ(plplParser.Pelny_typContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link plplParser#pelny_typ_dynamiczny}.
+	 * @param ctx the parse tree
+	 */
+	void enterPelny_typ_dynamiczny(plplParser.Pelny_typ_dynamicznyContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link plplParser#pelny_typ_dynamiczny}.
+	 * @param ctx the parse tree
+	 */
+	void exitPelny_typ_dynamiczny(plplParser.Pelny_typ_dynamicznyContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link plplParser#nieokreslony_deklarator_tablicowy}.
 	 * @param ctx the parse tree
 	 */
@@ -572,6 +660,16 @@ public interface plplListener extends ParseTreeListener {
 	 */
 	void exitOkreslony_deklarator_tablicowy(plplParser.Okreslony_deklarator_tablicowyContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link plplParser#obliczany_deklarator_tablicowy}.
+	 * @param ctx the parse tree
+	 */
+	void enterObliczany_deklarator_tablicowy(plplParser.Obliczany_deklarator_tablicowyContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link plplParser#obliczany_deklarator_tablicowy}.
+	 * @param ctx the parse tree
+	 */
+	void exitObliczany_deklarator_tablicowy(plplParser.Obliczany_deklarator_tablicowyContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link plplParser#przydomki}.
 	 * @param ctx the parse tree
 	 */
@@ -591,4 +689,14 @@ public interface plplListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitNazwa_typu_atom(plplParser.Nazwa_typu_atomContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link plplParser#nazwa_dynamicznie_alokowalnego_typu_atom}.
+	 * @param ctx the parse tree
+	 */
+	void enterNazwa_dynamicznie_alokowalnego_typu_atom(plplParser.Nazwa_dynamicznie_alokowalnego_typu_atomContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link plplParser#nazwa_dynamicznie_alokowalnego_typu_atom}.
+	 * @param ctx the parse tree
+	 */
+	void exitNazwa_dynamicznie_alokowalnego_typu_atom(plplParser.Nazwa_dynamicznie_alokowalnego_typu_atomContext ctx);
 }

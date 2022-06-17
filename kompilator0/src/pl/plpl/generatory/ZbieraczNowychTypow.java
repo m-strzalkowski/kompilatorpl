@@ -18,7 +18,8 @@ public class ZbieraczNowychTypow extends plplBaseListener {
     @Override public void enterDeklaracja_typu(plplParser.Deklaracja_typuContext ctx)
     { //System.out.println("\n"+i+ ctx.getText() + "\n"); i++;
         System.out.println( "NOWY TYP:"+ctx.ID().getText() +"\n");
-        typy.add(new Typ(ctx.ID().getText(), Typ.Ref.dlugosc_B, false, null));
+        //typy.add(new Typ(ctx.ID().getText(), Typ.Ref.dlugosc_B, false, null));
+        dodajTypZlozony(ctx.ID().getText(), null);
     }
     @Override public void exitProgram(plplParser.ProgramContext ctx) {
     }

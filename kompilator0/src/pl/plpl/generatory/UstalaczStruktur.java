@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 
 import static java.lang.System.exit;
+import static pl.plpl.generatory.Tablice.typPoNazwie;
 import static pl.plpl.generatory.Tablice.typy;
 
 /*
@@ -160,6 +161,35 @@ public class UstalaczStruktur extends plplBaseListener {
         }
         //System.err.println("\n\nw.nr:"+w.nr);
         return w;
+    }
+
+    /**Ustawia zmienną stanową, aktualnaStruktura, by składowe były wpisywane jako składniki typu złożonego. Ustawia aktualnyZakres na zakres tej struktury
+     */
+    @Override public void enterDeklaracja_typu(plplParser.Deklaracja_typuContext ctx)
+    {
+        Typ tp =  typPoNazwie(ctx.ID().getText());//sam typ zostaje dodany przez
+        Struktura s = new Struktura(ctx.getStart(), tp);
+        //Procedura p = new Procedura(ctx.getStart());
+
+        aktualnyZakres = new Zakres(aktualnyZakres, s, ctx.getStart());
+        Tablice.dodajZakres(aktualnyZakres);
+        s.najogolniejszy_zakres = aktualnyZakres;
+        tp.struktura = s;
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                "dodano strukturę "+tp.nazwa+" i zakres "+ aktualnyZakres.nr));
+
+        if(tp==null)Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                "Błąd wewnętrzny:natrafiono na deklarację typu o nazwie"+ctx.ID().getText()+" niezarejestrowanego w pierszym przebiegu"));
+        aktualnaStruktura = tp.struktura;
+    }
+
+    /**Czyści aktualnąStrukturę - obecnie struktury nie mogą być zagnieżdżone.
+     */
+    @Override public void exitDeklaracja_typu(plplParser.Deklaracja_typuContext ctx){
+        aktualnaStruktura.przeliczStruktury();
+        aktualnaStruktura = null;
+        skończ_deklarację();
+        aktualnyZakres=Tablice.zakres_globalny;
     }
 
     /**Robi to, co trzeba na początku każdej deklaracji symbolu,

@@ -167,6 +167,20 @@ public interface plplVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDeklaracja_parametru(plplParser.Deklaracja_parametruContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code wyrazeniePrzypisaniePoteg}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWyrazeniePrzypisaniePoteg(plplParser.WyrazeniePrzypisaniePotegContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code wyrazeniePrzypisanieAddyt}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWyrazeniePrzypisanieAddyt(plplParser.WyrazeniePrzypisanieAddytContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code wyrazenieNegacja}
 	 * labeled alternative in {@link plplParser#wyrazenie}.
 	 * @param ctx the parse tree
@@ -209,6 +223,13 @@ public interface plplVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitWyrazenieLogicz(plplParser.WyrazenieLogiczContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code wyrazenieWywolanieNaiwne}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWyrazenieWywolanieNaiwne(plplParser.WyrazenieWywolanieNaiwneContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code wyrazenieMult}
 	 * labeled alternative in {@link plplParser#wyrazenie}.
 	 * @param ctx the parse tree
@@ -216,12 +237,26 @@ public interface plplVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitWyrazenieMult(plplParser.WyrazenieMultContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code wyrazeniePrzypisanie}
+	 * Visit a parse tree produced by the {@code wyrazeniePrzypisanieMult}
 	 * labeled alternative in {@link plplParser#wyrazenie}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitWyrazeniePrzypisanie(plplParser.WyrazeniePrzypisanieContext ctx);
+	T visitWyrazeniePrzypisanieMult(plplParser.WyrazeniePrzypisanieMultContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code wyrazenieAlokacja}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWyrazenieAlokacja(plplParser.WyrazenieAlokacjaContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code wyrazenieDealokacja}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWyrazenieDealokacja(plplParser.WyrazenieDealokacjaContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code wyrazenieAdres}
 	 * labeled alternative in {@link plplParser#wyrazenie}.
@@ -230,12 +265,26 @@ public interface plplVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitWyrazenieAdres(plplParser.WyrazenieAdresContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code wyrazeniePrzypisanieZwykle}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWyrazeniePrzypisanieZwykle(plplParser.WyrazeniePrzypisanieZwykleContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code wyrazenieAddyt}
 	 * labeled alternative in {@link plplParser#wyrazenie}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitWyrazenieAddyt(plplParser.WyrazenieAddytContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code wyrazenieSelekcjiSkladowej}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWyrazenieSelekcjiSkladowej(plplParser.WyrazenieSelekcjiSkladowejContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code wyrazenieWywolanie}
 	 * labeled alternative in {@link plplParser#wyrazenie}.
@@ -251,12 +300,31 @@ public interface plplVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitWyrazenieStala(plplParser.WyrazenieStalaContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code wyrazenieSelekcjaTablicowa}
+	 * labeled alternative in {@link plplParser#wyrazenie}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWyrazenieSelekcjaTablicowa(plplParser.WyrazenieSelekcjaTablicowaContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code wyrazenieZnak}
 	 * labeled alternative in {@link plplParser#wyrazenie}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitWyrazenieZnak(plplParser.WyrazenieZnakContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link plplParser#alokacja}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAlokacja(plplParser.AlokacjaContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link plplParser#dealokacja}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDealokacja(plplParser.DealokacjaContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link plplParser#lwartosc}.
 	 * @param ctx the parse tree
@@ -276,39 +344,17 @@ public interface plplVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSelektor_typu_zlozonego(plplParser.Selektor_typu_zlozonegoContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code przypisanieZwykle}
-	 * labeled alternative in {@link plplParser#przypisanie}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitPrzypisanieZwykle(plplParser.PrzypisanieZwykleContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code przypisaniePoteg}
-	 * labeled alternative in {@link plplParser#przypisanie}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitPrzypisaniePoteg(plplParser.PrzypisaniePotegContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code przypisanieMult}
-	 * labeled alternative in {@link plplParser#przypisanie}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitPrzypisanieMult(plplParser.PrzypisanieMultContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code przypisanieAddyt}
-	 * labeled alternative in {@link plplParser#przypisanie}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitPrzypisanieAddyt(plplParser.PrzypisanieAddytContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link plplParser#wywolanie_funkcji}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitWywolanie_funkcji(plplParser.Wywolanie_funkcjiContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link plplParser#naiwne_wywolanie}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNaiwne_wywolanie(plplParser.Naiwne_wywolanieContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link plplParser#lista_parametrow_aktualnych}.
 	 * @param ctx the parse tree
@@ -334,6 +380,12 @@ public interface plplVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPelny_typ(plplParser.Pelny_typContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link plplParser#pelny_typ_dynamiczny}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPelny_typ_dynamiczny(plplParser.Pelny_typ_dynamicznyContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link plplParser#nieokreslony_deklarator_tablicowy}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -346,6 +398,12 @@ public interface plplVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitOkreslony_deklarator_tablicowy(plplParser.Okreslony_deklarator_tablicowyContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link plplParser#obliczany_deklarator_tablicowy}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitObliczany_deklarator_tablicowy(plplParser.Obliczany_deklarator_tablicowyContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link plplParser#przydomki}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -357,4 +415,10 @@ public interface plplVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitNazwa_typu_atom(plplParser.Nazwa_typu_atomContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link plplParser#nazwa_dynamicznie_alokowalnego_typu_atom}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNazwa_dynamicznie_alokowalnego_typu_atom(plplParser.Nazwa_dynamicznie_alokowalnego_typu_atomContext ctx);
 }

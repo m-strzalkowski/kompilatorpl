@@ -328,6 +328,30 @@ public class plplBaseListener implements plplListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterWyrazeniePrzypisaniePoteg(plplParser.WyrazeniePrzypisaniePotegContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWyrazeniePrzypisaniePoteg(plplParser.WyrazeniePrzypisaniePotegContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterWyrazeniePrzypisanieAddyt(plplParser.WyrazeniePrzypisanieAddytContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWyrazeniePrzypisanieAddyt(plplParser.WyrazeniePrzypisanieAddytContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterWyrazenieNegacja(plplParser.WyrazenieNegacjaContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -400,6 +424,18 @@ public class plplBaseListener implements plplListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterWyrazenieWywolanieNaiwne(plplParser.WyrazenieWywolanieNaiwneContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWyrazenieWywolanieNaiwne(plplParser.WyrazenieWywolanieNaiwneContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterWyrazenieMult(plplParser.WyrazenieMultContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -412,13 +448,37 @@ public class plplBaseListener implements plplListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterWyrazeniePrzypisanie(plplParser.WyrazeniePrzypisanieContext ctx) { }
+	@Override public void enterWyrazeniePrzypisanieMult(plplParser.WyrazeniePrzypisanieMultContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitWyrazeniePrzypisanie(plplParser.WyrazeniePrzypisanieContext ctx) { }
+	@Override public void exitWyrazeniePrzypisanieMult(plplParser.WyrazeniePrzypisanieMultContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterWyrazenieAlokacja(plplParser.WyrazenieAlokacjaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWyrazenieAlokacja(plplParser.WyrazenieAlokacjaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterWyrazenieDealokacja(plplParser.WyrazenieDealokacjaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWyrazenieDealokacja(plplParser.WyrazenieDealokacjaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -436,6 +496,18 @@ public class plplBaseListener implements plplListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterWyrazeniePrzypisanieZwykle(plplParser.WyrazeniePrzypisanieZwykleContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWyrazeniePrzypisanieZwykle(plplParser.WyrazeniePrzypisanieZwykleContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterWyrazenieAddyt(plplParser.WyrazenieAddytContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -443,6 +515,18 @@ public class plplBaseListener implements plplListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitWyrazenieAddyt(plplParser.WyrazenieAddytContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterWyrazenieSelekcjiSkladowej(plplParser.WyrazenieSelekcjiSkladowejContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWyrazenieSelekcjiSkladowej(plplParser.WyrazenieSelekcjiSkladowejContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -472,6 +556,18 @@ public class plplBaseListener implements plplListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterWyrazenieSelekcjaTablicowa(plplParser.WyrazenieSelekcjaTablicowaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWyrazenieSelekcjaTablicowa(plplParser.WyrazenieSelekcjaTablicowaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterWyrazenieZnak(plplParser.WyrazenieZnakContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -479,6 +575,30 @@ public class plplBaseListener implements plplListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitWyrazenieZnak(plplParser.WyrazenieZnakContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAlokacja(plplParser.AlokacjaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAlokacja(plplParser.AlokacjaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterDealokacja(plplParser.DealokacjaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDealokacja(plplParser.DealokacjaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -520,54 +640,6 @@ public class plplBaseListener implements plplListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPrzypisanieZwykle(plplParser.PrzypisanieZwykleContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitPrzypisanieZwykle(plplParser.PrzypisanieZwykleContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterPrzypisaniePoteg(plplParser.PrzypisaniePotegContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitPrzypisaniePoteg(plplParser.PrzypisaniePotegContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterPrzypisanieMult(plplParser.PrzypisanieMultContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitPrzypisanieMult(plplParser.PrzypisanieMultContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterPrzypisanieAddyt(plplParser.PrzypisanieAddytContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitPrzypisanieAddyt(plplParser.PrzypisanieAddytContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterWywolanie_funkcji(plplParser.Wywolanie_funkcjiContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -575,6 +647,18 @@ public class plplBaseListener implements plplListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitWywolanie_funkcji(plplParser.Wywolanie_funkcjiContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterNaiwne_wywolanie(plplParser.Naiwne_wywolanieContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNaiwne_wywolanie(plplParser.Naiwne_wywolanieContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -628,6 +712,18 @@ public class plplBaseListener implements plplListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterPelny_typ_dynamiczny(plplParser.Pelny_typ_dynamicznyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPelny_typ_dynamiczny(plplParser.Pelny_typ_dynamicznyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterNieokreslony_deklarator_tablicowy(plplParser.Nieokreslony_deklarator_tablicowyContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -652,6 +748,18 @@ public class plplBaseListener implements plplListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterObliczany_deklarator_tablicowy(plplParser.Obliczany_deklarator_tablicowyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitObliczany_deklarator_tablicowy(plplParser.Obliczany_deklarator_tablicowyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterPrzydomki(plplParser.PrzydomkiContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -671,6 +779,18 @@ public class plplBaseListener implements plplListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitNazwa_typu_atom(plplParser.Nazwa_typu_atomContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterNazwa_dynamicznie_alokowalnego_typu_atom(plplParser.Nazwa_dynamicznie_alokowalnego_typu_atomContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNazwa_dynamicznie_alokowalnego_typu_atom(plplParser.Nazwa_dynamicznie_alokowalnego_typu_atomContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

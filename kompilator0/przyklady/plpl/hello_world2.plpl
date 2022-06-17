@@ -1,5 +1,7 @@
 procedura
 {
+    b=33;
+    c=b;
     zacznij program();
     wypisz("Hello world!\n");
     wypisz("Witaj świecie!\n");
@@ -18,6 +20,6 @@ procedura
     wypisz(d);
     zwróć();
 }
-procedura{zacznij f(); zwróć();<SEM:,>}
-procedura{zacznij g(); zwróć();<SEM:dok.>}
-procedura{zacznij h(); zwróć();<SEM:cd proc 1>}
+procedura{zacznij f(); zwróć();<<SEM:,>>}
+procedura{zacznij g(); zwróć();<<SEM:dok.>>}
+procedura{zacznij h(); zwróć();<<SEM:cd proc 1>>}

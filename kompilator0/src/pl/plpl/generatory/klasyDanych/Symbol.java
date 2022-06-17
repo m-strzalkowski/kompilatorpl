@@ -57,13 +57,22 @@ public class Symbol {
         if(pktWe != null && pktWe.procedura.nieokreslona == false){return pktWe.etykieta();}
         //Dla zmiennych automatycznych
         //Normalizer.normalize(pelnyTyp.typ.nazwa, Normalizer.Form.NFD)NFKD
-        if(pelnyTyp.rodzaj_pamieci == PelnyTyp.RodzajPam.AUTOMATYCZNA){
-            var obp = (ObiektAutomatyczny)obiektPamieci;
-            String zn = (obp.offset<0)?(""):("+");
-            return "ebp"+zn+obp.offset;
+        if(pelnyTyp.rodzaj_pamieci == PelnyTyp.RodzajPam.AUTOMATYCZNA){//dla składowych struktury nie działa
+            if(this.zakres.procedura.getClass() == Procedura.class)
+            {
+                var obp = (ObiektAutomatyczny)obiektPamieci;
+                String zn = (obp.offset<0)?(""):("+");
+                return "ebp"+zn+obp.offset;
+            }
+            if(this.zakres.procedura.getClass() == Struktura.class)
+            {
+                var obp = (ObiektAutomatyczny)obiektPamieci;
+                String zn = (obp.offset<0)?(""):("+");
+                return "eax"+zn+obp.offset;
+            }
         }
         //Dla zmiennych statycznych
-        return "S"+Normalizer.normalize(pelnyTyp.typ.nazwa, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")+"_"+zakres.nr+"_"+nr;
+        return "S"+Normalizer.normalize(pelnyTyp.typ.nazwa, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")+"_"+zakres.nr+"_"+nr+"__"+this.zakres.procedura.etykieta();
     }
 
 }

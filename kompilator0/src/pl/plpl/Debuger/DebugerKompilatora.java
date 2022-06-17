@@ -15,6 +15,7 @@ import pl.plpl.generatory.UstalaczStruktur;
 import pl.plpl.generatory.ZbieraczNowychTypow;
 import pl.plpl.generatory.klasyDanych.Procedura;
 import pl.plpl.generatory.klasyDanych.PunktWejsciowy;
+import pl.plpl.generatory.klasyDanych.Typ;
 import pl.plpl.generatory.klasyDanych.Zakres;
 import pl.plpl.parser.*;
 
@@ -326,6 +327,23 @@ public class DebugerKompilatora extends parserDebugeraBaseVisitor  {
         }
         if(nr_zakr == 0){aktualny_zakres = Tablice.zakres_globalny;}
         if(aktualny_zakres.procedura != aktualna_procedura){aktualna_procedura = aktualny_zakres.procedura;}
+        return "";
+    }
+
+    @Override public String visitCd_do_typu(parserDebugera.Cd_do_typuContext ctx)
+    {
+        String nazwa = ctx.ID().getText();
+        Typ t = Tablice.typPoNazwie(nazwa);
+
+        if(t.struktura == null)
+        {
+            System.out.println("\nTYP "+t.nazwa+" NIE MA WEWNĘTRZNEJ STRUKTURY\n");
+            System.out.println(t+"\n");
+        }
+        else{
+            aktualna_procedura = t.struktura;
+            aktualny_zakres = aktualna_procedura.najogolniejszy_zakres;
+        }
         return "";
     }
 

@@ -1,0 +1,9 @@
+procedura{
+całk[][]z;
+z=nowy (całk[][2]);
+z[0] = nowy(całk[5]);
+z[1] = nowy(całk[6]);
+zapomnij(z[0]);
+zapomnij(z[1]);
+zapomnij(z);
+}

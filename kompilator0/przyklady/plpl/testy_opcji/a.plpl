@@ -1,0 +1,64 @@
+typ zespolona
+{
+całk r; całk u;
+}
+typ kot{
+znak[] imię;
+całk wiek;
+całk wredność;
+znak płeć;
+znak z;
+kot malzonek;
+statyczny całk ilość_kotów_na_świecie=0;
+}
+
+procedura{
+    zacznij program();
+    całk a;
+    a=2;
+    //rzeczyw b;
+    //2.1;
+    całk[] t;
+    kot k,m;
+    nowy(kot);
+    nowy(kot[][][][][]);//jeden błąd
+    nowy(kot[]);//drugi błąd
+    nowy(kot[a]);
+    nowy(całk);//trzeci błąd
+    nowy(całk[]);//czwarty
+    nowy(całk[a]);
+    nowy(znak[128]);
+    nowy(znak[256][]);
+    nowy(znak[][][]);//piąty
+    nowy(znak[345+a+f()][][][]);
+    k= nowy(kot); m=nowy(kot);
+    k[1] = 2;
+    k.wiek = 2;
+    k.malzonek=m;
+    m.malzonek=k;
+    k.dupa;
+    t = nowy(całk[10]);
+    t[1];
+    t[1] = 0;
+    t[1] = a;
+    t[a+3] = a*(a+2);
+    statyczna całkowita i=0;
+    całk j;
+    dopóki(i<10)
+    {
+        //C.printf("%d", i);
+        //C.scanf("%d", @j);
+        j = t[i];
+        wypisz(i);
+        wypisz("\t");
+        wypisz(j);
+        wypisz("\n");
+        i=i+1;
+    }
+
+    zapomnij(t);
+    zwróć();
+}
+procedura->całk{zacznij f();zwróć(0);}
+/*sb.append(";koniec przypisania"+ctx.stop.getLine()+":"+ctx.stop.getCharPositionInLine()+"\n");
+//sb.append(";przypisanie"+ctx.start.getLine()+":"+ctx.start.getCharPositionInLine()+"\n");*/

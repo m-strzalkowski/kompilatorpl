@@ -1,0 +1,75 @@
+PORADNIK DO GENERATORA SKŁADNIOWEGO (visitora)
+
+Stosy, stosy, stosy...
+
+Translując instrukcje i wyrażenia tym kompilatorem mamy do czynienia z kilkoma stosami:
+1.Stosem w pamięci głównej maszyny, podczas wykonania programu - stan jego zależy od wygenerowanego kodu
+2.Stosem rejestrów jednostki zmiennnoprzecinkowej, podczas wykonania programu - stan jego też zależy od wygenerowanego kodu
+
+3.Stosem typów kompilatora - przez który rodzic dowiaduje się o typach wyrażeń potomnych, których kod wygenerował wołając visit(dziecko)
+4.(czasem)Stosem opcjiWDół - przez który dzieci moga dowiedzieć się, jakiej modyfikacji ich 
+działania chce rodzic i mogą takie życzenie uwzględnić, lub nie. (vide dłuższy opis na końcu)
+
+(5. Właściwie to jeszcze z samym stosem wywołań funkcji Javy w visitorze)
+
+ZASADA OGÓLNA
+Generalnie logika nakazuje, żeby odwiedzając jakiś węzeł drzewa składniowego, na końcu metody 
+zostawić stosy w stanie, w jakim sie je zastało, chyba, że sytuacja faktycznie wymaga zostawienia 
+na stosie czegoś, a konwencja korzystania z konkretnego stosu na to pozwala. W takich wypadkach, 
+trzeba koniecznie zapewnić, że ZAWSZE coś 
+potem/poniżej/powyżej zdejmie rzecz pozostawioną, ponieważ inaczej stos sie rozleci, powodując zgon, 
+lub pójście w buraki czegoś, co z niego korzysta.
+(W wypadkach 1 i 2, trzeba martwić sie jeszcze działaniem samej maszyny, i środowiska języka C, 
+zawsze obecnego funkcjach bibliotecznych)
+
+KONKRETNE ZASADY KORZYSTANIA Z POSZCZEGÓLNYCH STOSÓW
+5. Stos wywołań funkcji (visitorów) w kompilatorze:
+Węzeł drzewa składniowego, potomny względem procedury, ma zwracać StringBulider, a w nim 
+wygenerowany kod. Nad nim coś dostanie ten kod i wplecie go we własny, razem z kodem otrzymanym 
+z innych dzieci, który zwróci wyżej. Najwyższym poziomem tego łańcuszka jest nieterminal procedury, 
+wraz z odpowiadajacym mu obiektem kompilatora, który  przechowuje poszczególne sekcje wygenerowanego 
+kodu. Do sekcji .text wklejony zostanie zwracany przez dzieci kod. Można teoretycznie, poprzez 
+aktualnyZakres wstawic coś do innych sekcji, ale należy to wyraźnie zaznaczyć, żeby potem nie 
+szukać, gdzie jest tajemniczy wypluwacz. Do sekcji text bezpośrednio nie piszemy, visitor procedury 
+ją sobie wyzeruje zaczynając składanie kodu.
+
+1. Stos w pamięci głównej maszyny docelowej
+Obowiązuje ŚCISŁY warunek, pozostawiania go na koniec visitCośtam, tak jak, był na początku, to 
+znaczy zwracany kod ma przeprowadzić maszyne docelową przez taką sekwencje stanów, że esp - rejestr 
+wierzchołka ramki stosu, oraz ebp będą tam, gdzie były na początku. Oczywiście, wyjątek robimy dla 
+wywołań oraz operacji, które faktycznie rezerwują nową pamięc na stosie, zakładając, że obiekty te 
+zostaną zapomniane przy powrocie z funkcji, w dodatku po prostu przez przestawienie pary ebp, esp, 
+więc nie należy się zajmować ich jawnym niszczeniem. (Tylko trzeba dopilnowac, żeby takiego adesu nie dało się 
+/wynieść/ do kodu wołającego funkcję, której ramki już nie ma, bo będzie SegmentationFault/pójście w buraki 
+(memory corruption), albo nic (vide:red zone) (to ostatnie najgorsze, bo błędy podczas wykonania mogą się 
+rozkładac probabilistycznie - raz zdechnie, raz nie))
+1.1 ZWRACANIE WYNIKÓW (POD)WYRAZEŃ
+Kod obliczający wyrażenie co do zasady ma zwracać wyniki w akumulatorze - eax (Przy dłuższych niż 
+32bity liczbach zmiennopozycyjnych, mozna zostawić eax i zwrócić tylko w akumulatorze 
+zmiennopozycyjnym).
+Inne rejestry ogólnego przeznaczenia są do dowolnego użytku, tylko przy wywołaniach wszelakich 
+nalezy trzymac się konwencji wywołań cdecl (vide: caller/calee saved registers)
+
+2.Stos rejestrów jednostki zmiennopozycyjnej maszyny docelowej.
+Ktos wymyślił sobie, że FPU (Floating Point Unit, albo układ x87) będzie miało osiem rejestrów, o 
+długości 80bitów, ułożonych w stos i niestety musimy sobie z tym jakoś radzić, bo technologia 
+SSE/SSE2 jest jeszcze gorsza, gdyż ma gazylion rozkazów i wymaga ułożenia pamięci. (Memory 
+alignment, jak cokolwiek nie działa nie wiadomo dlaczego, to może być to, bo rozkazy SSE wymagają adresów 
+podzielnych przez 16 bajtów, a mogą zostać wykonane przez cos zewnętrznego, zawołanego przez nas.)
+Rozkazy x87 nie mają natychmiastowych operandów - wszystko, łacznie ze stałymi trzeba załadowac z 
+pamięci głównej. Nie ma wydzielonego akumulatora - za /akumulator/ uznaje się ST(0) i tam można 
+zwracać wyniki wyrażeń.(Ale to nie jest takie proste, vide: hard-float / soft-float calling 
+conventions). W dodatku jakoś musimy sobie radzić, że ten /stos/ ma tylko 8 elementów i jak sie 
+skończy, trzeba cos z niego ściągnąć na zwykły stos(i potem wciągnąć z powrotem).
+
+3.Stos typów kompilatora:
+Jako, że operandem podwyrażenia może być inne podwyrażenie, nie możemy sobie przczytać za kazdym razem obiektu 
+PelnyTyp przypisanego do Symbolu, trzeba gdzieś zostawić wyp zwracany przez podwyrażenie. 
+Zasada w wyrażeniach jest trywialna i bez wyjątków: na koniec visitCośtam, ma zostac złożony na stos typów 
+obiekt klasy PelnyTyp, reprezentujący typ podwyrażenia, żeby wołający mógł go sobie ściągnąć i zobaczyć. Wołajacy
+visit(), ma posciągac wyniki, aby każde visit odkładało na stosie jeden obiekt.
+
+4.Stosem opcjiWDół
+Jest on przede wszystkim potrzebny, do struktur sterowania mających warunek logiczny w środku, bo instrukcja skoku
+warunkowego: jg/jl/jge/jle/jz/jnz zależy od tego, co się porównywało w warunku - wyrażenie i struktura sterujaca
+muszą móc sie porozumieć.

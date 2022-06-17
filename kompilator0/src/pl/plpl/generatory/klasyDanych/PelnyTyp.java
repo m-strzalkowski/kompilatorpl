@@ -1,10 +1,20 @@
 package pl.plpl.generatory.klasyDanych;
 
+import pl.plpl.bledy.SemanticOccurence;
+import pl.plpl.generatory.Tablice;
+
 import java.util.Objects;
 
 public class PelnyTyp implements Cloneable{
-    @Override
-    public String toString() {
+    public static boolean reprezentacje_typów_w_języku_źródłowym = true;
+    @Override  public String toString()
+    {
+        return (reprezentacje_typów_w_języku_źródłowym)?(toString_cannonical()):(toString_internal());
+    }
+
+    /** Kompletna reprezentacja javowego obiektu. (Więc nieczytelna dla postronnych)
+     */
+    public String toString_internal() {
         return "PelnyTyp{" +
                 "typ=" + ((typ==null)?("null"):(typ.toString())) +
                 ", rodzaj_pamieci=" + rodzaj_pamieci.toString() +
@@ -13,6 +23,29 @@ public class PelnyTyp implements Cloneable{
                 ", modyfikowalonosc=" + modyfikowalonosc.toString() +
                 ", krotnosc_tablicowa=" + krotnosc_tablicowa +
                 '}';
+    }
+
+    /** Tekstowa reprezentacja typu zgodna z gramatyką języka źródłowego
+     * pomija, czy zmienna jest zainicjalizowana
+     */
+    public String toString_cannonical() {
+        var sb = new StringBuilder();
+        if(this.parametr_formalny)
+        {
+            //sb.append("zacznij ?(..., ");
+            sb.append("/*parametr*/ ");
+        }
+        if(this.modyfikowalonosc == Mod.STALA){sb.append("stały ");}
+        if(this.modyfikowalonosc == Mod.ZMIENNA){sb.append("automatyczny ");}
+        sb.append(this.typ.nazwa);
+        sb.append(" ");
+        for(int i=this.krotnosc_tablicowa; i>0; i--){sb.append("[]");}
+        if(this.inicjalizowana){sb.append(" /*inicjalizowany*/ ");}
+        if(this.parametr_formalny)
+        {
+            //sb.append(" ?,...)");
+        }
+        return sb.toString();
     }
 
     //nie wszystkie pola będą zawsze ustawione/przydatne
@@ -34,6 +67,22 @@ public class PelnyTyp implements Cloneable{
                                 :(typ.dlugosc_B)
                 )
                 :(Typ.Ref.dlugosc_B);
+    }
+
+    /**
+     * @return Zwraca rozmiar obiektu na który wskazuje referencja, albo 0 gdy atomiczny
+     * Przydatne do malloca
+     */
+    public int rozmiar_B_wskazywanego()
+    {
+        if(czyAtomiczny()){return 0;}
+        else{
+            if(krotnosc_tablicowa == 1)
+            {
+                return this.typ.struktura.rozmiar_B_calej_pamieci_lokalnej();
+            }
+            else{return rozmiar_B();}
+        }
     }
     public boolean czyAtomiczny()
     {
@@ -76,5 +125,15 @@ public class PelnyTyp implements Cloneable{
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+    public static PelnyTyp dereferencja(PelnyTyp t)
+    {
+        var d = t.clone();
+        if(d.krotnosc_tablicowa < 1)
+        {
+            return null;
+        }
+        d.krotnosc_tablicowa--;
+        return d;
     }
 }

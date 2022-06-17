@@ -101,6 +101,13 @@ public class parserDebugeraBaseVisitor<T> extends AbstractParseTreeVisitor<T> im
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitCd_do_typu(parserDebugera.Cd_do_typuContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitListowanie(parserDebugera.ListowanieContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
