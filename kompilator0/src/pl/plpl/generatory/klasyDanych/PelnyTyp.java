@@ -64,7 +64,10 @@ public class PelnyTyp implements Cloneable{
                 (
                         (krotnosc_tablicowa<0)?
                                 (0)
-                                :(typ.dlugosc_B)
+                                :(
+                                        (krotnosc_tablicowa>0)?
+                                                (Typ.Ref.dlugosc_B):(typ.dlugosc_B)
+                                 )
                 )
                 :(Typ.Ref.dlugosc_B);
     }
@@ -105,9 +108,15 @@ public class PelnyTyp implements Cloneable{
     }
     //równość w sensie zgodności funkcjonalnej - daje się przypisać (Oprócz stałości, którą operator przypisania powinien sprawdzić sam, po odpowiedniej stronie)
     public boolean equalsFunctionally(Object o) {
+        PelnyTyp pelnyTyp;
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PelnyTyp pelnyTyp = (PelnyTyp) o;
+        if(o!=null &&o.getClass() == Typ.class)
+        {
+            pelnyTyp = new PelnyTyp(); pelnyTyp.typ=(Typ)o;
+        }
+        else {if (o == null || getClass() != o.getClass()){return false;}
+        pelnyTyp = (PelnyTyp) o;
+        }
         return  krotnosc_tablicowa == pelnyTyp.krotnosc_tablicowa && dlugosc_tablicy == pelnyTyp.dlugosc_tablicy && Objects.equals(typ, pelnyTyp.typ);
     }
 

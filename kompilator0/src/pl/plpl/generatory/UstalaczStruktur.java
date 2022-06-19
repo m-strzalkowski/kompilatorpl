@@ -119,6 +119,7 @@ public class UstalaczStruktur extends plplBaseListener {
                 ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
                 "Analizator semantyczny rozpoznał wyjście do wyższego zakresu, a jest już w globalnym"
         ));}
+        if(aktualnyZakres.procedura!=null){aktualnyZakres.procedura.zamknieta_zwroc=false;}
         aktualnyZakres = aktualnyZakres.nadrzedny;
     }
 
@@ -395,7 +396,7 @@ public class UstalaczStruktur extends plplBaseListener {
         Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
                 "Deklarator z przypisaniem:dodano symbol:"+sym.toString()));
         //Ściana kodu dla inicjalizacji typów podstawowych
-        if(aktualnyTyp.rodzaj_pamieci== PelnyTyp.RodzajPam.STATYCZNA)
+        if(aktualnyTyp.rodzaj_pamieci== PelnyTyp.RodzajPam.STATYCZNA && aktualnyTyp.krotnosc_tablicowa == 0)
         {
             sym.pelnyTyp.inicjalizowana = true;
             if(ctx.CALK()!=null)
@@ -417,7 +418,7 @@ public class UstalaczStruktur extends plplBaseListener {
                     aktualnyZakres.procedura.data.append(sym.etykieta()).append(":   dd    ").append(ctx.CALK().getText()).append(";").append(sym.identyfikator).append("\n");
                 }
 
-                System.out.println("INICJ CALKOWITA"+ctx.CALK().getText());
+                //System.out.println("INICJ CALKOWITA"+ctx.CALK().getText());
             }
             if(ctx.ZMIENN()!=null)
             {
@@ -449,13 +450,13 @@ public class UstalaczStruktur extends plplBaseListener {
                     //dodaj zainicjalizowaną liczbę całk. (int32)
                     aktualnyZakres.procedura.data.append(sym.etykieta()).append(":   db    ").append(ctx.ZNAK_DOSL().getText()).append(";").append(sym.identyfikator).append("\n");
                 }
-                System.out.println("INICJ ZNAK"+ctx.ZNAK_DOSL().getText());
+                //System.out.println("INICJ ZNAK"+ctx.ZNAK_DOSL().getText());
             }
 
         }
         else//zmienna automatyczna - generator potem powinien wygenerowac kod
         {
-            if(aktualnyTyp.typ != Typ.Znak)Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(
                     SemanticOccurence.Level.FATAL, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
                     "Deklaracje zmiennych automatycznych z przypisaniem jeszcze nie zaimplementowane..."
             ));
@@ -498,8 +499,14 @@ public class UstalaczStruktur extends plplBaseListener {
                 //@ASM
                 //dodaj zainicjalizowaną referencję
                 aktualnyZakres.procedura.data.append(sym.etykieta()).append(":   dd    ").append(literal.etykieta()).append(";").append(sym.identyfikator).append("\n");
+                return;
             }
         }
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(
+                SemanticOccurence.Level.FATAL, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                "Deklaracje zmiennych z przypisaniem jeszcze nie zaimplementowane... Użyj jawnego przypisania: "+nazwa+"=...;"
+                //Zostawiłem tu fatalny błąd, bo kod po prawej stronie = się nie generuje potem, co prowadzi do strasznie cięąkich do rozpoznania efektów przy wywołaniu.
+        ));
     }
     /*
         MASZYNA DEKLARACJI - ułomny proces deklaracyjny do dodawania typu zwracanego przez funkcję
@@ -623,7 +630,9 @@ public class UstalaczStruktur extends plplBaseListener {
         //rozpoznawanie początkowaej procedury....
         if(Objects.equals(nazwapkt, Tablice.WEJSCIE_PROG))
         {
-            System.out.println("Znaleziono punkt wejściowy programu");
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                    "Znaleziono punkt wejściowy programu"
+            ));
             if(Tablice.znaleziono_pkt_we_programu)//nie może być dwóch mainów!
             {
                 Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
@@ -696,6 +705,9 @@ public class UstalaczStruktur extends plplBaseListener {
     @Override public void enterInstrukcja_powrotu(plplParser.Instrukcja_powrotuContext ctx) {
         aktualnyZakres.procedura.zamknieta_zwroc=true;//TODO - nie będzie działać, bo co jak będzie inna instrukcja potem
     }
+    @Override public void enterInstrukcja_zakonczenia(plplParser.Instrukcja_zakonczeniaContext ctx) {
+        aktualnyZakres.procedura.zamknieta_zwroc=true;//TODO - nie będzie działać, bo co jak będzie inna instrukcja potem
+    }
 
     /** Stałe typu "string" {1,2,3}, na które będą wskazywać pary symbol-obiekt pamięci typu referenyjnego, muszą odpowiadać jakimś rzeczywistym obiektom, które trzeba zrobić...
      *
@@ -710,8 +722,8 @@ public class UstalaczStruktur extends plplBaseListener {
             t.inicjalizowana = true;
             t.parametr_formalny = false;
             t.rodzaj_pamieci = PelnyTyp.RodzajPam.STATYCZNA;
-            t.krotnosc_tablicowa = -1;//?? jako faktyczny obiekt??, nie referencja
-            t.modyfikowalonosc = PelnyTyp.Mod.ZMIENNA;//??
+            t.krotnosc_tablicowa = +1;//symbol jest referencją, z adresem na faktyczny obiekt
+            t.modyfikowalonosc = PelnyTyp.Mod.STALA;//??
             t.dlugosc_tablicy = ctx.NAPIS_DOSL().getText().length()-2+1;//cudzysłowy, null
             t.typ = Typ.Znak;
             //zawsze dodanie nowego tokena...
@@ -723,7 +735,11 @@ public class UstalaczStruktur extends plplBaseListener {
             String wartosc = ctx.NAPIS_DOSL().getText().replaceAll("^\"|\"$", "");//usuwamy cudzysłowy z końca i początku
             //@ASM
             //dodaj zainicjalizowany string, zamknięty w kopniętych apostrofach `` (obsługuje \n\t itd) i z nullem (zerem) na końcu
-            aktualnyZakres.procedura.data.append(sym.etykieta()).append(":   db    `").append(wartosc).append("`, 0  ;z linii ").append(ctx.NAPIS_DOSL().getSymbol().getLine()).append("\n");
+            String etykieta_wartosci = sym.etykieta();
+            aktualnyZakres.procedura.data.append(etykieta_wartosci+":   db    `"+wartosc+"`, 0  ;z linii "+ctx.NAPIS_DOSL().getSymbol().getLine()+"\n");
+
+
+            //aktualnyZakres.procedura.data.append(sym.etykieta()).append(":   db    `").append(wartosc).append("`, 0  ;z linii ").append(ctx.NAPIS_DOSL().getSymbol().getLine()).append("\n");
         }
     }
 

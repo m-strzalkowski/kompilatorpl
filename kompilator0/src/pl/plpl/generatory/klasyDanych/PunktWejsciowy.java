@@ -51,7 +51,7 @@ public class PunktWejsciowy {
                 parametryPoNazwie.put(p.identyfikator, p);
                 parametry.add(p);
                 numeryArgPkt.put(p, parametry.size()-1);
-                System.out.println(parametry.size()-1+"$$$$$\n");
+                //System.out.println(parametry.size()-1+"$$$$$\n");
                 //System.err.println("\nPRZYPIĘTO "+p.identyfikator+" do "+this.nazwa);
             }
         }

@@ -26,19 +26,23 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         zazwyczaj zasięgu/zakresie, czy procedurze, choć można by sobie wyobrazić generację przestrzeni nazw dla samego napisu identyfikatora/tokena w kodzie
          - będzie zawierać jedynie odpowiedni symbol, co właśnie jest realizowane przez poniższe funkcje.
      */
-    Symbol przestrzeń(String identyfikator)
+    Symbol przestrzeń(String identyfikator, ParserRuleContext ctx)
     {
         Symbol s = aktualnyZakres.poNazwie(identyfikator);//dodać jeszcze zawsze token - pozwoli sprawdzać użycie przed deklaracją i pisać gdzie dokładnie nie znaleziono nazwy
         if(s==null)
-        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, 0,-1 ,-1,
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.ERROR, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
                 "Nie znaleziono w przestrzeni nazw nic o identyfikatorze" +identyfikator));
+        else if(s.token != null && ctx.start.getStartIndex() < s.token.getStartIndex()){
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.ERROR, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                    "Użycie identyfikatora " +identyfikator+ "przed jego pierwszą deklaracją w linii "+s.token.getLine()+":"+s.token.getCharPositionInLine()));
+        }
         return s;
     }
-    Symbol przestrzeń(Token token)
+    Symbol przestrzeń(Token token, ParserRuleContext ctx)
     {
         Symbol s = aktualnyZakres.poTokenie(token);
         if(s==null)
-            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, 0,-1 ,-1,
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
                     "Nie znaleziono w przestrzeni nazw nic powiązanego z tokenem" +token));
         return s;
     }
@@ -64,7 +68,9 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         aktualnyZakres = Tablice.zakresPoPierwszymTokenie(ctx.getStart());
         if(aktualnyZakres==null){throw new RuntimeException("Zepsute połączenie między generatorem a analizatorem ssemantycznym");}
         Procedura proc = aktualnyZakres.procedura;//żeby krócej było
-        System.out.println("wizytacja procedury "+aktualnyZakres.procedura.nr);
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                "wizytacja procedury "+aktualnyZakres.procedura.nr));
+
 
         //Prolog procedury - otwarcie
         //@ASM
@@ -82,7 +88,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         {
             String zwr = visit(instr);
             mid.append(zwr);
-            System.out.println("instrukcja:"+instr.getText()+"|"+zwr);
+            //System.out.println("instrukcja:"+instr.getText()+"|"+zwr);
         }
         mid.append(";/mid\n");
         if(aktualnyZakres.procedura.zamknieta_zwroc == false)
@@ -124,8 +130,6 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
      */
     @Override public String visitInstrukcja_wyboru(plplParser.Instrukcja_wyboruContext ctx) {
 
-        System.out.println("wizytacja instrukcji warunkowej "+"0");
-
         StringBuilder returningAsm = new StringBuilder();
 
         String indeksInstrukcjiWarunkowejStr = String.valueOf(Tablice.dodajIfa());
@@ -163,8 +167,6 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
     /** Standardowy schemat kodu dla while.
      */
     @Override public String visitInstrukcja_petli(plplParser.Instrukcja_petliContext ctx) {
-
-        System.out.println("wizytacja pętli "+"0");
 
         StringBuilder returningAsm = new StringBuilder();
         Integer indeksPetli = Tablice.dodajPetle();
@@ -268,7 +270,8 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
     /** zacznij ID (typ ID, typ ID ... ) - oznaczenie punktu wejścia sterowania do procedury
      */
     @Override public String visitInstrukcja_wkroczenia(plplParser.Instrukcja_wkroczeniaContext ctx) {
-        Symbol s = przestrzeń(ctx.ID().getText());//aktualnyZakres.poNazwie(ctx.ID().getText());
+        Symbol s = przestrzeń(ctx.ID().getText(),ctx);//aktualnyZakres.poNazwie(ctx.ID().getText());
+        if(s==null){return "";}
         if(s.pktWe==null){throw new RuntimeException("Punkt wejściowy"+ctx.ID().getText()+"miał być zarejestrowany na etapie deklaracji!");}
         PunktWejsciowy pkt = s.pktWe;
         StringBuilder sb = new StringBuilder();
@@ -311,7 +314,8 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
     @Override public String visitWywolanie_funkcji(plplParser.Wywolanie_funkcjiContext ctx)
     {
         StringBuilder sb = new StringBuilder();
-        Symbol s = przestrzeń(ctx.ID().getText());
+        Symbol s = przestrzeń(ctx.ID().getText(),ctx);
+        if(s==null){return "";}//rezygnacja z generacji kodu, bo nie wiadomo dlaczego
         if(s.pktWe == null){
             Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
                     "Próba wywołania identyfikatora nie powiązanego z punktem wejściowym:" + s.identyfikator));
@@ -326,6 +330,46 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
                 sb.append( wywolanie_okreslonego(s, ctx.lista_parametrow_aktualnych().wyrazenie()) );
             }
         }
+        return sb.toString();
+    }
+
+    @Override public String visitNaiwne_wywolanie(plplParser.Naiwne_wywolanieContext ctx)
+    {
+        return  ";naiwne wywolanie w linii"+ctx.start.getLine()+":"+ctx.start.getCharPositionInLine()+"\n"+
+                wywolanie_naiwne_cdecl(ctx.ID().getText(), ctx.lista_parametrow_aktualnych().wyrazenie()) +
+                ";koniec naiwnego wywołania w linii"+ctx.stop.getLine()+":"+ctx.stop.getCharPositionInLine()+"\n"
+                ;
+    }
+
+    /**
+     * Zwraca kod, który naiwnie wywołuje procedurę o dosłownie podanej etykiecie, składając argumenty na stosie zgodnie z konwencją cdecl.
+     * @param wołany dosłowna wartość wołanej etykiety
+     * @param argumenty lista argumentów
+     * @return
+     */
+    private String wywolanie_naiwne_cdecl(String wołany, List<plplParser.WyrazenieContext> argumenty) {
+        StringBuilder sb = new StringBuilder();
+        //nie przejmujemy się składaniem caleer-save-registers na stos, bo... żadnych tak naprawdę nie używamy...
+        //dla każdego argumentu, idąc od tyłu oblicz go i składaj na tos
+        int rozm_złożonych=0;//Będziemy liczyć ile bajtów zostanie złożonych na stos.
+        for(int i= argumenty.size()-1; i>=0; i--)
+        {
+            var arg = argumenty.get(i);
+            //uzyskaj kod umieszczający w akumulatorze argument i jego typ
+            sb.append(";obliczenie argumentu nr "+i+"\n");
+            sb.append(visit(arg));
+            var typarg = stosTypów.pop();
+            sb.append(";koniec obliczenia argumentu nr "+i+", typu"+typarg.toString_cannonical()+"\n");
+            sb.append("                sub esp, "+typarg.rozmiar_B()+"\n");
+            sb.append("                mov [esp], "+akumulator(typarg.rozmiar_B())+"\n");
+            //sb.append("                push "+akumulator(typarg.rozmiar_B())+"\n");
+            sb.append(";zlozenie argumentu nr "+i+"na stos\n");
+            rozm_złożonych += typarg.rozmiar_B();
+        }
+        sb.append("                call "+wołany+";wolanie w ciemno etykiety podanej doslownie przez uzytkownika\n");
+        sb.append("              add esp, "+rozm_złożonych+";sprzątanie stosu po wywołaniu\n");
+        PelnyTyp nieznanytyp = new PelnyTyp(); nieznanytyp.typ=Ref;
+        stosTypów.push(nieznanytyp);//Nie wiemy, co dane wywołanie zwraca, zakładamy, że coś.
         return sb.toString();
     }
 
@@ -401,6 +445,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         StringBuilder sb = new StringBuilder();
         sb.append(visit(ctx.wyrazenie()));
         PelnyTyp t = stosTypów.pop();
+        sb.append(kod_zakonczenia_procesu());
         if(!t.equalsFunctionally(Całk))
         {
             Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.ERROR, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
@@ -409,7 +454,89 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         return sb.toString();
     }
 
+    public static int licznik_repr_typow=0;
+    public String wypiszWyrazenie(plplParser.WyrazenieContext ctx)
+    {
 
+        String akum = akumulator(Ref.dlugosc_B);
+        var sb = new StringBuilder();
+        sb.append(";wypisanie wyrazenia\n");
+        String kod_wyrazenia = visit(ctx);
+        PelnyTyp typWyrazenia = stosTypów.pop();
+
+        sb.append(";typ wyrazenia:"+typWyrazenia+"\n");
+        if(typWyrazenia.czyAtomiczny())
+        {
+            if(typWyrazenia.typ == Typ.Całk )
+            {
+
+                //@ASM
+                //wypisanie
+                //statyczny:etykieta -> do akumulatora i dopiero push
+                //adres -> do akumulatora i dopiero push/mov
+                //automatyczny: od razu można [ebp-?]?
+                //co z cholernymi bajtami?
+                sb.append(kod_wyrazenia);
+                sb.append("                sub esp, 4\n");
+                sb.append("                mov dword [esp], eax\n");
+                sb.append("                push dword WYPISZ_CALK_FMT\n");
+                sb.append("                call _printf\n");
+                sb.append("                add esp, byte 8\n");
+                sb.append(";koniec wypisania - całk\n");
+
+            }
+            else if(typWyrazenia.typ == Typ.Znak )
+            {
+
+                //@ASM
+                //wypisanie
+                sb.append(kod_wyrazenia);
+                //sb.append("                mov al ["+sym.etykieta()+"]\n");
+                //sb.append("                push byte ["+sym.etykieta()+"]\n");
+                sb.append("                sub esp, 1\n");
+                sb.append("                mov byte [esp], al\n");
+                sb.append("                push dword WYPISZ_ZNAK_FMT\n");
+                sb.append("                call _printf\n");
+                sb.append("                add esp, byte 5\n");
+                sb.append(";koniec wypisania - znak\n");
+
+            }
+        }
+        else{//wypisanie adresu
+
+            //ograniczone wypisanie napisu
+            if(typWyrazenia.typ == Znak && typWyrazenia.krotnosc_tablicowa == 1)// && typWyrazenia.modyfikowalonosc == PelnyTyp.Mod.STALA)
+            {
+                //dość brzydkie rozwiązanie problemu, że potrzebny jest tutaj adres tablicy, a nie jej wartość
+                Tablice.opcje.nidereferencja.ustaw(ctx, true);
+                kod_wyrazenia = visit(ctx);
+                stosTypów.pop();
+                sb.append(kod_wyrazenia);
+                sb.append("                push "+akum+";wartosc na stos\n");
+                //sb.append("                push dword WYPISZ_NAPIS_FMT\n");//ogranicza długość napisu do 64 znaków
+                sb.append("                push dword WYPISZ_NAPIS_FMT\n");//ogranicza długość napisu do 64 znaków
+                sb.append("                call _printf\n");
+                sb.append("                add esp, byte 8\n");
+                sb.append(";koniec wypisania wyrazenia - string ograniczony do 64 znaków\n");
+            }
+            //wypisanie referencji
+            else{
+                String etykieta_reprezentacji = "REPREZENTACJA_TYPU_"+(licznik_repr_typow++);
+                aktualnyZakres.procedura.rodata.append(etykieta_reprezentacji+":   db    `"+typWyrazenia.toString_cannonical()+"@`, 0  ;z linii"+ctx.start.getLine()+"\n");
+                sb.append("                push dword "+etykieta_reprezentacji+"\n");
+                sb.append("                call _printf\n");
+                //sb.append("                add esp, byte 4\n");//można po drugim wywołaniu dodać 12 zamiast 8...
+                sb.append(kod_wyrazenia);
+                sb.append("                push "+akum+";wypisanie referencji\n");
+                sb.append("                push dword WYPISZ_REF_FMT\n");
+                sb.append("                call _printf\n");
+                sb.append("                add esp, byte 12\n");
+                sb.append(";koniec wypisania wyyrazenia - referencja\n");
+
+            }
+        }
+        return sb.toString();
+    }
     /**
      * {@inheritDoc}
      *
@@ -417,70 +544,14 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override public String visitWypisanie(plplParser.WypisanieContext ctx) {
-        if(ctx.stala_tablicowa() != null)
-        {
-            Symbol sym = przestrzeń(ctx.stala_tablicowa().NAPIS_DOSL().getSymbol());
-            if(sym==null){throw new RuntimeException("Ten napis dosłowny miał zostac rozpoznany przy deklaracji, a podczas generacji go nie znaleziono w przestrzeni nazw!");}
-            System.out.println("Wypisanie"+sym.etykieta());
-            StringBuilder sb = new StringBuilder();
-            //@ASM
-            //wypisanie
-            sb.append(";wypisanie\n");
-            sb.append("                push dword "+sym.etykieta()+"\n");
-            sb.append("                call _printf\n");
-            sb.append("                add esp, byte 4\n");
-            sb.append(";koniec wypisania\n");
-            return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append(";wypisanie w linii"+ctx.start.getLine()+"\n");
+        for (var w:ctx.wyrazenie()) {
+            sb.append(wypiszWyrazenie(w));
         }
-        if(ctx.ID() != null)
-        {
-            Symbol sym = przestrzeń(ctx.ID().getText());
-            if(sym.pelnyTyp.typ == Typ.Całk && sym.pelnyTyp.krotnosc_tablicowa == 0)
-            {
-                StringBuilder sb = new StringBuilder();
-                //@ASM
-                //wypisanie
+        sb.append(";koniec wypisania w linii"+ctx.stop.getLine()+"\n");
 
-                //statyczny:etykieta -> do akumulatora i dopiero push
-                //adres -> do akumulatora i dopiero push/mov
-                //automatyczny: od razu można [ebp-?]?
-                //co z cholernymi bajtami?
-                sb.append(";wypisanie całk\n");
-                sb.append("                sub esp, 4\n");
-                sb.append("                mov dword eax, ["+sym.etykieta()+"]\n");
-                sb.append("                mov dword [esp], eax\n");
-                sb.append("                push dword WYPISZ_CALK_FMT\n");
-                sb.append("                call _printf\n");
-                sb.append("                add esp, byte 8\n");
-                sb.append(";koniec wypisania\n");
-                return sb.toString();
-            }
-            else if(sym.pelnyTyp.typ == Typ.Znak && sym.pelnyTyp.krotnosc_tablicowa == 0)
-            {
-                StringBuilder sb = new StringBuilder();
-                //@ASM
-                //wypisanie
-                sb.append(";wypisanie znak\n");
-                //sb.append("                mov al ["+sym.etykieta()+"]\n");
-                //sb.append("                push byte ["+sym.etykieta()+"]\n");
-                sb.append("                sub esp, 1\n");
-                sb.append("                mov byte al, ["+sym.etykieta()+"]\n");
-                sb.append("                mov byte [esp], al\n");
-                sb.append("                push dword WYPISZ_ZNAK_FMT\n");
-                sb.append("                call _printf\n");
-                sb.append("                add esp, byte 5\n");
-                sb.append(";koniec wypisania\n");
-                return sb.toString();
-            }
-            else {
-                Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                        "Nie wypisuję w ten sposób nic, poza dosłownymi napisami, liczbami całkowitymi i pojedynczymi znakami."
-                ));
-                return "";
-            }
-
-        }
-        return "";
+        return sb.toString();
     }
     /**
      * {@inheritDoc}
@@ -540,7 +611,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
             //stała całkowita
             sb.append(";stała znakowa\n");
             sb.append("                mov "+akumulator(DLUGOSC_SLOWA_B)+", 0\n");//tak dla pewności wyczyszczenie
-            sb.append("                mov al,`"+wartosc+"`\n");
+            sb.append("                mov eax, `"+wartosc+"`\n");
             sb.append(";koniec stałej znakowej\n");
         }
         if(ctx.stala_atomiczna().ZMIENN()!=null)
@@ -692,19 +763,31 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
     public String kod_indeksowania_tablicy(PelnyTyp typElem, String rejestr_z_indeksem, String rejestr_źródłowy, boolean dereferencja_na_końcu, int długość_nagłówka)
     {
         //@ASM - indeksowanie
-        String akum;
+        String akum;String s;
         int rozm_elem;
-        if((typElem.typ.atomiczny && typElem.krotnosc_tablicowa > 1) || !dereferencja_na_końcu)
+        if((typElem.typ.atomiczny && typElem.krotnosc_tablicowa > 1) || (!dereferencja_na_końcu && typElem.krotnosc_tablicowa > 1) )
         {
             //w tym wypadku zwracany obiekt będzie zawsze referencją
             rozm_elem = Ref.dlugosc_B;
+            s=";A"+rozm_elem+"kt="+typElem.krotnosc_tablicowa+"\n";
         }
         else{
             rozm_elem = typElem.rozmiar_B();
+            s=";B"+rozm_elem+"\n";
         }
-        akum = akumulator(rozm_elem);
-        String opkod = (dereferencja_na_końcu)?("mov"):("lea");
-        return "        "+opkod + " "+ akum + ", ["+rejestr_źródłowy+"+"+rejestr_z_indeksem+"*"+rozm_elem+"+"+długość_nagłówka+"];indeksowanie tablicy, typ elementu:"+typElem+" dereferencja_na_końcu:"+dereferencja_na_końcu+"\n";
+        String opkod;
+        if(dereferencja_na_końcu)
+        {
+            opkod = "mov";
+            akum = akumulator(rozm_elem);
+        }
+        else {
+            opkod = "lea";
+            akum = akumulator(Ref.dlugosc_B);
+        }
+        //akum = akumulator(rozm_elem);
+        //opkod = (dereferencja_na_końcu)?("mov"):("lea");
+        return s+"        "+opkod + " "+ akum + ", ["+rejestr_źródłowy+"+"+rejestr_z_indeksem+"*"+rozm_elem+"+"+długość_nagłówka+"];indeksowanie tablicy, typ elementu:"+typElem+" dereferencja_na_końcu:"+dereferencja_na_końcu+";"+typElem.typ.dlugosc_B+"\n";
     }
 
     /** Odpowiada za konstrukcje typu t[q].
@@ -848,13 +931,21 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         //Nota: PełnyTyp, jako koncept języka źródłowego, nie zawiera informacji o tym, czy w akumulatorze, podczas wykonania kodu znajdzie się adres czy wartość obiektu. Ta informacja przechowywana jest w atrybucie niedereferencja drzewa składniowego.
         return sb.toString();
     }
+    //sposób na uzyskanie adresu obiektu. (Tylko, że konstrukcja typu @a=2; będzie legalna, a nie powinna...)
+    @Override public String visitWyrazenieAdres(plplParser.WyrazenieAdresContext ctx){
+        //ustawia blokadę dereferencji na wyrażeniu potomnym. (i uruchamia logike jej propagacjiw dół i ewentualnych błędów - vide klasa Atrybut_Nidereferencja)
+        Tablice.opcje.nidereferencja.ustaw(ctx.wyrazenie(), true);
+        return  ";operator uzyskania adresu w linii "+ctx.start.getLine()+"\n"+
+                visit(ctx.wyrazenie())+
+                ";koniec operatora uzyskania adresu w linii "+ctx.stop.getLine()+"\n";
+    }
     @Override public String visitWyrazenieLwartosc(plplParser.WyrazenieLwartoscContext ctx) {if(czy_niederef(ctx)){niedereferencja.put(ctx.lwartosc(), true);} return visit(ctx.lwartosc()); }
     /*
     @Override public String visitLwartosc(plplParser.LwartoscContext ctx)
     {
         if(ctx.selektor_tablicowy().size() < 1 && ctx.selektor_typu_zlozonego().size() < 1)
         {
-            Symbol sym = przestrzeń(ctx.ID().getText());
+            Symbol sym = przestrzeń(ctx.ID().getText(),ctx);
             StringBuilder sb = new StringBuilder();
             if(sym.pelnyTyp.typ == Typ.Całk )
             {
@@ -897,21 +988,49 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
      */
     @Override public String visitLwartosc(plplParser.LwartoscContext ctx)
     {
-        Symbol sym = przestrzeń(ctx.ID().getText());
         StringBuilder sb = new StringBuilder();
+        sb.append(";załadowanie lwartości:"+ctx.start.getLine() +" niederef:"+niedereferencja.get(ctx)+" "+czy_niederef(ctx)+"\n");
+        //Przypadek szczególny - nic
+        if(ctx.NIC() != null)
+        {
+            if(czy_niederef(ctx)){Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.ERROR, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                    "Nic jest niebytem a on jest wszędzie i nigdzie; jak śmiesz żądać jego adresu człowiecze? (Podałem 0.)\n"));}
+            sb.append("                mov " + akumulator(Ref.dlugosc_B) + ", 0;nic\n");
+            PelnyTyp t = new PelnyTyp(); t.typ = Ref; t.modyfikowalonosc = PelnyTyp.Mod.STALA;
+            stosTypów.push(t);
+            sb.append(";koniec ładowania lwartosci - nic\n");
+            return sb.toString();
+        }
+        //Załadowanie odpowiedniego symbolu dla ID albo napisu dosłownego
+        Symbol sym=null;
+        if(ctx.ID()!=null){ sym = przestrzeń(ctx.ID().getText(),ctx);}
+        if(ctx.stala_tablicowa()!=null){ sym = przestrzeń(ctx.stala_tablicowa().NAPIS_DOSL().getSymbol(),ctx);}
+        if(sym == null){
+            if(czy_niederef(ctx)){Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.ERROR, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                    "Nie znaleziono symbolu dla"+ctx.getText()+"\n"));}
+            sb.append("mov eax,1");
+            sb.append(kod_zakonczenia_procesu());
+            var t=new PelnyTyp();t.typ=Ref;t.modyfikowalonosc= PelnyTyp.Mod.STALA;//żeby stos sie nie rozleciał
+            stosTypów.push(t);
+            return sb.toString();
+        }
+
         //@ASM
         //lwartosc
-        sb.append(";załadowanie lwartości:"+ctx.start.getLine() +" niederef:"+niedereferencja.get(ctx)+" "+czy_niederef(ctx)+"\n");
-        String akum = akumulator(sym.pelnyTyp.typ.dlugosc_B);
-        if(ctx.ID() != null || ctx.NAPIS_DOSL() != null)//czy dla napis_dosl zadziała?
+        sb.append(";symbol:"+sym+"\n");
+        //String akum = akumulator(sym.pelnyTyp.typ.dlugosc_B);
+        String wlk = "";//jawne określenie wielkości
+        String akum = akumulator(sym.pelnyTyp.rozmiar_B());
+        if(ctx.ID() != null || ctx.stala_tablicowa().NAPIS_DOSL() != null)//czy dla napis_dosl zadziała?
         {
-            if (sym.pelnyTyp.typ.dlugosc_B < DLUGOSC_SLOWA_B) {
+            if (sym.pelnyTyp.rozmiar_B()< DLUGOSC_SLOWA_B) {
                 sb.append("                mov " + akumulator(DLUGOSC_SLOWA_B) + ", 0\n");//tak dla pewności wyczyszczenie
+                if(sym.pelnyTyp.rozmiar_B() == 1){ wlk = "byte";}//próba rozwiązania problemu dla bajtów
             }
 
             if (sym.pelnyTyp.rodzaj_pamieci == PelnyTyp.RodzajPam.AUTOMATYCZNA) {
                 if(czy_niederef(ctx)) sb.append("                lea " + akum + ", [" + sym.etykieta() + "]\n");
-                else                         sb.append("                mov " + akum + ", [" + sym.etykieta() + "]\n");
+                else                         sb.append("                mov " + akum + ",  [" + sym.etykieta() + "]\n");
             } else {
                 char zn_drugiego_rej = 'd';
                 String drugirejestr = akumulator(DLUGOSC_SLOWA_B).replace('a', zn_drugiego_rej);//rejestr na adres - zawsze o długości słowa
@@ -919,17 +1038,12 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
                 if(czy_niederef(ctx)) sb.append("                lea " + akum + ", [" + sym.etykieta()  + "]\n");
                 else {
                     sb.append("                mov " + drugirejestr + ", " + sym.etykieta() + "\n");
-                    sb.append("                mov " + akum + ", [" + drugirejestr + "]\n");
+                    sb.append("                mov " + akum + ",  [" + drugirejestr + "]\n");
                 }
 
             }
         }
-        if(ctx.NIC() != null)
-        {
-            if(czy_niederef(ctx)){Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                    "Nic jest niebytem a on jest wszędzie i nigdzie; jak śmiesz żądać jego adresu człowiecze?\n"));}
-            sb.append("                mov " + akumulator(Ref.dlugosc_B) + ", 0;nic\n");
-        }
+
         sb.append(";koniec ładowania lwartosci\n");
 
         stosTypów.push(sym.pelnyTyp);
@@ -938,7 +1052,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
     /*
     @Override public String visitLwartosc(plplParser.LwartoscContext ctx)
     {
-        Symbol sym = przestrzeń(ctx.ID().getText());
+        Symbol sym = przestrzeń(ctx.ID().getText(),ctx);
         StringBuilder sb = new StringBuilder();
         //@ASM
         //lwartosc
@@ -986,7 +1100,9 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         //}
         PelnyTyp tlewe = stosTypów.pop();
         sb.append(lewe);
-        sb.append("                push "+akumulator(tlewe.rozmiar_B())+"\n");
+        //sb.append("                push "+akumulator(tlewe.rozmiar_B())+";lewa strona przypisania\n");
+        sb.append("                push "+akumulator(DLUGOSC_SLOWA_B)+";lewa strona przypisania\n");
+        //^ nielegalna jest instrukcja push al (dla znaków), więc lepiej już wykorzystac całe słow, zwłaszcza, że robi się potem pop edx...
         String prawe = visit(ctx.wyrazenie().get(1));
         PelnyTyp tprawe = stosTypów.peek();//zostaje
         sb.append(prawe);
@@ -1017,7 +1133,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         StringBuilder sb = new StringBuilder();
         String wyrazenie = visit(ctx.wyrazenie());
         PelnyTyp twyrazenie = stosTypów.pop();
-        Symbol sym = przestrzeń(ctx.lwartosc().ID().getText());
+        Symbol sym = przestrzeń(ctx.lwartosc().ID().getText(),ctx);
 
         if(ctx.lwartosc().selektor_tablicowy().size() < 1 && ctx.lwartosc().selektor_typu_zlozonego().size() < 1)//co znaczy, że to pojedyncz nazwa an nie np. a[3][5]
         {

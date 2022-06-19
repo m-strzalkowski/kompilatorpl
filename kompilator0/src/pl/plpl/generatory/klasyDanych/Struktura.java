@@ -65,7 +65,8 @@ public class Struktura extends Procedura{
 
     @Override
     public void przeliczStruktury() {
-        System.out.println("PRZELICZANIE STRUKTUR PROCEDURY"+nr);
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG,0,-1 ,-1,
+                "PRZELICZANIE STRUKTUR TYPU ZŁOŻONEGO (struktury) "+nr));
         ramka_stosu.clear();
         pelnaListaArgumentow.clear();
 
@@ -83,14 +84,14 @@ public class Struktura extends Procedura{
         {
             for(Symbol s: zakres.symbole)//dla wszystkich symboli w zakresach procedury...
             {
-                System.out.println(s);
+                //System.out.println(s);
                 if(s.pelnyTyp.rodzaj_pamieci == PelnyTyp.RodzajPam.AUTOMATYCZNA)//...które są automatyczne
                 {
                     ObiektAutomatyczny obp = (ObiektAutomatyczny) s.obiektPamieci;
                     if(s.pelnyTyp.parametr_formalny)//ebp+x
                     {
                         Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, this.najogolniejszy_zakres.startToken,this.najogolniejszy_zakres.startToken.getLine() ,this.najogolniejszy_zakres.startToken.getCharPositionInLine(),
-                                "Przeliczanie struktury typu złożonego: w zakresie procedury znajduje się symbol"+s+" będący parametrem formalnym. Interpretacja takiego stanu rzeczy jest niemożliwa."));
+                                "Przeliczanie struktury typu złożonego: w zakresie procedury znajduje się symbol"+s+" będący parametrem formalnym. Interpretacja takiej sytuacji jest niemożliwa."));
                         /*obp.offset = offset_w_górę;
                         offset_w_górę += obp.rozmiar_B;
                         ramka_stosu.addFirst(obp);
@@ -108,6 +109,7 @@ public class Struktura extends Procedura{
             }
         }
         //Collections.reverse(pelnaListaArgumentow);
-        System.out.println("KONIEC PRZELICZANIA STRUKTUR TYPU ZŁOŻONEGO"+nr);
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG,0,-1 ,-1,
+                "KONIEC PRZELICZANIA STRUKTUR TYPU ZŁOŻONEGO (struktury) "+nr));
     }
 }

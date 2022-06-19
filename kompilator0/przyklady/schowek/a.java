@@ -35,13 +35,14 @@ Jednak żeby to uzyskać, trzeba najpierw przetworzyć wszystkie deklaracje i po
     public Zakres getAktualnyZakres() {return aktualnyZakres;}
     public UstalaczStruktur(plplParser parser) {this.parser = parser;}
     @Override public void enterProgram(plplParser.ProgramContext ctx) {
-        System.out.println("USTALANIE STRUKTUR\n");
+
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(level, ctx.start, ctx.start.getLine(), ctx.start.getCharPositionInLine(),"USTALANIE STRUKTUR\n"));
         aktualnyZakres = Tablice.zakres_globalny;
     }
     @Override public void enterInstrukcja_zlozona(plplParser.Instrukcja_zlozonaContext ctx) {
         aktualnyZakres = new Zakres(aktualnyZakres, aktualnyZakres.procedura, ctx.getStart());
         Tablice.dodajZakres(aktualnyZakres);
-        System.out.println("dodano zakres"+aktualnyZakres.toString());
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(level, ctx.start, ctx.start.getLine(), ctx.start.getCharPositionInLine(),"dodano zakres"+aktualnyZakres.toString());
     }
     @Override public void exitInstrukcja_zlozona(plplParser.Instrukcja_zlozonaContext ctx) {
         System.out.println("wyjście z zakresu:"+aktualnyZakres.nr+"->"+aktualnyZakres.nadrzedny.nr);

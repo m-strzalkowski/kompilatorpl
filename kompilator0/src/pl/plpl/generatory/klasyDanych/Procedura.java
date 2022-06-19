@@ -2,6 +2,7 @@ package pl.plpl.generatory.klasyDanych;
 
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Pair;
+import pl.plpl.bledy.SemanticOccurence;
 import pl.plpl.generatory.Tablice;
 import pl.plpl.generatory.klasyDanych.pamiec.ObiektAutomatyczny;
 import pl.plpl.generatory.klasyDanych.pamiec.ObiektStatyczny;
@@ -80,7 +81,8 @@ public class Procedura {
     }
     */
     public void przeliczStruktury() {
-        System.out.println("PRZELICZANIE STRUKTUR PROCEDURY"+nr);
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG,0,-1 ,-1,
+                "PRZELICZANIE STRUKTUR PROCEDURY "+nr));
         ramka_stosu.clear();
         pelnaListaArgumentow.clear();
 
@@ -98,7 +100,7 @@ public class Procedura {
         {
             for(Symbol s: zakres.symbole)//dla wszystkich symboli w zakresach procedury...
             {
-                System.out.println(s);
+                //System.out.println(s);
                 if(s.pelnyTyp.rodzaj_pamieci == PelnyTyp.RodzajPam.AUTOMATYCZNA)//...które są automatyczne
                 {
                     ObiektAutomatyczny obp = (ObiektAutomatyczny) s.obiektPamieci;
@@ -120,7 +122,8 @@ public class Procedura {
             }
         }
     //Collections.reverse(pelnaListaArgumentow);
-        System.out.println("KONIEC PRZELICZANIA STRUKTUR PROCEDURY"+nr);
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG,0,-1 ,-1,
+                "KONIEC PRZELICZANIA STRUKTUR PROCEDURY "+nr));
     }
 
     //kod wynikowy

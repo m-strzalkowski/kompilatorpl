@@ -26,6 +26,7 @@ instrukcja   :   instrukcja_wyboru
              |   instrukcja_zlozona
              |   instrukcja_przerwania_petli
              |   instrukcja_kontynuacji_petli
+             |   wypisanie
              |   instrukcja_prosta
              |   instrukcja_wkroczenia
              |   instrukcja_powrotu
@@ -33,8 +34,8 @@ instrukcja   :   instrukcja_wyboru
              //|   deklaracja_atomiczna
              //|   deklaracja_referencji
              |   deklaracja_prosta
-             |   wstawka_asemblerowa
-             |   wypisanie;
+             |   wstawka_asemblerowa;
+
 instrukcja_zlozona  : '{'  lista_instrukcji?  '}';
 instrukcja_wyboru   : ('jeśli'|'jesli'|'gdy') '(' wyrazenie ')' instrukcja  ('inaczej'  instrukcja)?;
 instrukcja_petli   : 'dopóki' '(' wyrazenie ')' instrukcja;
@@ -43,7 +44,7 @@ instrukcja_wkroczenia   : 'zacznij'  ID '(' lista_parametrow_formalnych ')' EOS;
 instrukcja_zakonczenia : 'skończ' '(' wyrazenie ')' EOS;
 instrukcja_przerwania_petli   : PRZERWIJ EOS;
 instrukcja_kontynuacji_petli   : KONTYNUUJ EOS;
-wypisanie : 'wypisz' '(' (stala_tablicowa | ID)  ')'EOS;//dla celów testowych
+wypisanie : ('wy')?'pisz' '(' wyrazenie? (',' wyrazenie)*  ')'EOS;//wbudowane wypisywanie
 instrukcja_prosta  :   wyrazenie EOS;
 wstawka_asemblerowa : LINIA_ASEMBLERA;//przede wszystkim dla celów testowych, realnie wklejanie bezpośrednio kodu będzie mało przydatne.
 
@@ -67,18 +68,18 @@ wyrazenie
           | lwartosc                                    #wyrazenieLwartosc//
           | wyrazenie selektor_tablicowy                #wyrazenieSelekcjaTablicowa
           | wyrazenie selektor_typu_zlozonego           #wyrazenieSelekcjiSkladowej
-          | adr='@' lwartosc                            #wyrazenieAdres //funkcje rodem z C będą i tak potrzebować adresów....
+          | adr='@' wyrazenie                            #wyrazenieAdres //funkcje rodem z C będą i tak potrzebować adresów....
           | neg='!' wyrazenie                           #wyrazenieNegacja
           | znak=('-'| '+') wyrazenie                   #wyrazenieZnak
-          | <assoc=right> wyrazenie '^' wyrazenie       #wyrazeniePoteg
+          | <assoc=right> wyrazenie '^' wyrazenie {notifyErrorListeners("Operator potegowania jeszcze nie zaimplementowany...");}       #wyrazeniePoteg
           | wyrazenie mult=('*' | '/' |'%') wyrazenie   #wyrazenieMult
           | wyrazenie addyt=('+' | '-') wyrazenie       #wyrazenieAddyt
           | wyrazenie logicz=('&&' | '||')wyrazenie    #wyrazenieLogicz
           | wyrazenie porownanie=('==' | '!=' | '>' | '<' | '<=' | '>=')wyrazenie    #wyrazeniePorownanie
           | <assoc=right> wyrazenie '=' wyrazenie                      #wyrazeniePrzypisanieZwykle
-          | <assoc=right> wyrazenie '^=' wyrazenie                     #wyrazeniePrzypisaniePoteg
-          | <assoc=right> wyrazenie mult=('*=' | '/=' | '%=') wyrazenie#wyrazeniePrzypisanieMult
-          | <assoc=right> wyrazenie addyt=('+=' | '-=') wyrazenie      #wyrazeniePrzypisanieAddyt
+          | <assoc=right> wyrazenie '^=' wyrazenie {notifyErrorListeners("Operator potegowania jeszcze nie zaimplementowany...");}                     #wyrazeniePrzypisaniePoteg
+          | <assoc=right> wyrazenie mult=('*=' | '/=' | '%='){notifyErrorListeners("'*='  '/='  '%=' jeszcze nie zaimplementowane...");} wyrazenie#wyrazeniePrzypisanieMult
+          | <assoc=right> wyrazenie addyt=('+=' | '-=') {notifyErrorListeners("'+=' | '-=' jeszcze nie zaimplementowane...");}wyrazenie      #wyrazeniePrzypisanieAddyt
           | stala_atomiczna                             #wyrazenieStala
           //| ID                                          #wyrazenieId//wystarczy sama lwartość, której ID jest szczególnym przypadkiem
           //NAPIS_DOSL //??
@@ -87,7 +88,7 @@ wyrazenie
 alokacja: NOWY '('pelny_typ_dynamiczny')';//bez nawiasów robi sie niejednoznaczność
 dealokacja:'zapomnij' '('wyrazenie')';
 // lwartosc: ID (selektor_tablicowy)?(selektor_typu_zlozonego(selektor_tablicowy)*)*;//konstrukcje typu a.b[d+2][7][12+w]
- lwartosc: ID | NAPIS_DOSL | NIC;//  tablica_calk_dosl  | DOSLOWNA_LOSOWOSC;
+ lwartosc: ID | stala_tablicowa | NIC;//  tablica_calk_dosl  | DOSLOWNA_LOSOWOSC;
  //do wyrażeń:
  //|wyrazenie selektor_tablicowy #wyrazenieSelekcjaTablicowa
  //|wyrazenie selektor_typu_zlozonego #wyrazenieSelekcjiSkladowej

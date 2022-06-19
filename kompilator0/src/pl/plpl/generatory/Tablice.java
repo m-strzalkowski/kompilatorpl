@@ -38,6 +38,7 @@ public class Tablice {
 
     public static OpcjePLPL opcje = new OpcjePLPL();//opcje - atrybuty semantyczne drzewa składniowego
 
+
     //Adnotacje na drzewie składniowym
     public static ParseTreeProperty<Boolean> niedereferencja = new ParseTreeProperty<>();
 

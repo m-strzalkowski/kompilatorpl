@@ -1,0 +1,23 @@
+typ A{znak a; znak b;}
+procedura{
+    zacznij program();
+    znak[] z;
+    statyczny znak[] w;
+    całk[] c;
+    A a;
+    "%d";
+    z;
+    @z;
+    w;
+    @w;
+    c;
+    @c;
+    a;
+    @a;
+    a.a;
+    @(a.a);
+    //pisz("Ala ma kota ",3," lata\n");
+    //C._printf("%d",7);
+    skończ(0);
+    zwróć();
+}

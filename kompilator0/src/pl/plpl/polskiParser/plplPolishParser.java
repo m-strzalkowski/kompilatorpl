@@ -5,6 +5,10 @@ import org.antlr.v4.runtime.Vocabulary;
 import org.antlr.v4.runtime.VocabularyImpl;
 import pl.plpl.parser.plplParser;
 
+/**
+ * Antlr4 nie przewiduje lokalizacji komunikatów o błędach w parserze, a w tym wypadku, mając cały język oparty na polskim substracie, powinniśmy ją zapewnić, niezależnie od tego, jak szpetnie musi to wyglądać.
+ * Klasy w tym pakiecie nadpisują odpowiednie metody klas głównie w antlr.v4.runtime
+ */
 public class plplPolishParser extends plplParser {
     public plplPolishParser(TokenStream input) {
         super(input);

@@ -1,0 +1,7 @@
+procedura{
+całk i,j;
+całk t[][];
+zacznij program();
+
+zwróć();
+}

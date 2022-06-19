@@ -33,7 +33,7 @@ public class Opcja <T> {
     // Jednak nie można po prostu przechować gotowego obiektu zdarzenia, ponieważ zawiera ono numer linii, który powinien odpowiadać konkretnemu przypadkowi.
     //Trzeba przechować kod, który wygeneruje odpowiednie zdarzenie na podstawie kontekstu.
     Map<Class, Function<ParserRuleContext, SemanticOccurence>> kodPrzyRegule = new HashMap<Class, Function<ParserRuleContext, SemanticOccurence>>();
-    Function<ParserRuleContext, SemanticOccurence> kodPrzyReszcieReguł = null;
+    Function<ParserRuleContext, SemanticOccurence> kodPrzyReszcieReguł = generatorBrakówZdarzeń();
     //w jakich kierunkach rozchodzi się atrybut z węzła danego typu
     Map<Class, Propagacje> kierunkiNaWęzłach = new HashMap<>();
     Propagacje kierunkiNaInnychWęzłach = nigdzie;
@@ -192,6 +192,11 @@ public class Opcja <T> {
             return new SemanticOccurence(poziom, ctx.start, ctx.start.getLine(), ctx.start.getCharPositionInLine(), tekst);
         };
     }
+
+    /** Ustawienie nulla jako labmdę generującą zdarzenie, spowoduje wykonywanie akcji domyślnej dla reszty symboli. Dlatego, żeby nic sie nie działo, należy wstawić labde zwracającą null.
+     * @return zwraca lambdę, która zwraca null
+     */
+    public static Function<ParserRuleContext, SemanticOccurence> generatorBrakówZdarzeń(){return c -> null;}
 
 //METODY DO ZAZNACZANIA ATRYBUTU NA PODDRZEWIE, ORAZ ODCZYTYWANIU NA WĘŹLE
 

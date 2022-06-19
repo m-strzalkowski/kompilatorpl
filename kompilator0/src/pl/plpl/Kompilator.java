@@ -40,6 +40,10 @@ public class Kompilator {
         stopstate.setRequired(false);
         options.addOption(stopstate);
 
+        Option verbosity = new Option("v", "werbalnosc", true, "Powyżej jakiego poziomu włącznie wypisywać: debug/info/ostrzezenie/blad/fatalny, fatalny błąd domyślnie");
+        verbosity.setRequired(false);
+        options.addOption(verbosity);
+
         Option format = new Option("f", "format", true, "Format wynikowy: nasm-win32/nasm-linux32 - asembler na daną platformę, win32/elf32 - wygenerowania obrazu wykonywalnego");
         format.setRequired(false);
         options.addOption(format);
@@ -52,7 +56,7 @@ public class Kompilator {
         String footer = "\nRepozytorium projektu: https://gitlab.com/Strzalkowski/kompilatorpl";
         CommandLineParser optparser = new DefaultParser();
         HelpFormatter optformatter = new HelpFormatter();
-        CommandLine cmd = null;//not a good practice, it serves it purpose
+        CommandLine cmd = null;
 
         try {
             cmd = optparser.parse(options, args);
@@ -70,7 +74,7 @@ public class Kompilator {
         outputFilePath = cmd.getOptionValue("wy");
         System.out.println("Pierwszy (i zapewne jedyny) Kompilator języka PL/PL.");
         System.out.println("Plik wejściowy:"+inputFilePath);
-        System.out.println("Plik wynikowy:"+outputFilePath);
+        //System.out.println("Plik wynikowy:"+outputFilePath);
 
         //Inicjalizacja globalnych tablic kompilatora
         Tablice.inicjalizuj();
@@ -78,12 +82,16 @@ public class Kompilator {
         String stopst = cmd.getOptionValue(stopstate);
         if(stopst != null)
         {
-            Tablice.podsystem_bledow.setStop_at_severity(switch (cmd.getOptionValue(stopstate)) {
-                case "ostrzezenie" -> SemanticOccurence.Level.WARN;
-                case "blad" -> SemanticOccurence.Level.ERROR;
-                default -> SemanticOccurence.Level.FATAL;
-            });
+            Tablice.podsystem_bledow.setStop_at_severity(SemanticOccurence.Level.zNapisu(stopst, SemanticOccurence.Level.FATAL));
         }
+
+        //tolerancja błędów ostrzezenie/blad/fatalny
+        String verb = cmd.getOptionValue(verbosity);
+        if(verb != null)
+        {
+            Tablice.podsystem_bledow.setMute_threshold(SemanticOccurence.Level.zNapisu(verb, SemanticOccurence.Level.INFO));
+        }
+
         String fmt = cmd.getOptionValue(format);
         Tablice.SRODOWISKO=WIN32; Tablice.generacja_binarnego_obrazu = true;
         if(fmt != null)
@@ -111,10 +119,12 @@ public class Kompilator {
             System.exit(1);
         }
 
+        SyntaxErrorListener syntaxErrorListener = new SyntaxErrorListener();
         //1.analiza leksykalna
         plplPolishLexer lexer = new plplPolishLexer(input);
         lexer.removeErrorListener(ConsoleErrorListener.INSTANCE);
         lexer.addErrorListener(new PolishConsoleErrorListener());
+        lexer.addErrorListener(syntaxErrorListener);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         //czy włączyć debuger kompilatora
         if(cmd.hasOption(interactiveDebuger))
@@ -122,7 +132,7 @@ public class Kompilator {
 
         //2.analiza syntaktyczna
         plplPolishParser parser = new plplPolishParser(tokens);
-        SyntaxErrorListener syntaxErrorListener = new SyntaxErrorListener();
+
         parser.addErrorListener(syntaxErrorListener);
         parser.removeErrorListener(ConsoleErrorListener.INSTANCE);
         parser.addErrorListener(new PolishConsoleErrorListener());
@@ -132,12 +142,10 @@ public class Kompilator {
             System.err.println("WYSTĄPIŁY BŁĘDY SKŁADNIOWE, dokładnie "+syntaxErrorListener.getNumberOfErrors()+". Dalsza analiza i generacja nie nastąpi.\n");
             exit(1);
         }
-        System.out.println(tree.toStringTree(parser)); // print tree as text <label id="code.tour.main.7"/>
+        //System.out.println(tree.toStringTree(parser)); // print tree as text <label id="code.tour.main.7"/>
 
         //walker
         ParseTreeWalker walker = new ParseTreeWalker();
-        plplListener sprawdzacz = new Sprawdzacz(parser, tokens);
-        walker.walk(sprawdzacz, tree);
         //3.Zebranie nowych nazw typów
         plplListener zbieracz = new ZbieraczNowychTypow(parser);
         //if(debuger_kompilatora!=null){debuger_kompilatora.podmień(zbieracz, DebugerKompilatora.Przebieg.ZBIERANIE_TYPOW);}

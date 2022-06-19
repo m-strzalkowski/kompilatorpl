@@ -2,10 +2,8 @@ package pl.plpl.generatory;
 
 
 import pl.plpl.generatory.klasyDanych.Procedura;
-import pl.plpl.generatory.klasyDanych.Struktura;
 import pl.plpl.generatory.klasyDanych.Typ;
 
-import java.io.Writer;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.io.IOException;
@@ -15,8 +13,9 @@ import java.io.*;
 
 public class SkladaczKoduAsemblera {
 
-    private String nazwaPlikuAssemblera;
-    private String nazwaPlikuZRozszerzeniem;
+    private String nazwaPlikuWe;
+    private String nazwaPlikuWeObcięta;
+    private String nazwaPlikuZRozszerzeniemAsm;
     private Tablice.Srodowisko system;
 
 
@@ -25,8 +24,9 @@ public class SkladaczKoduAsemblera {
     }
 
     public SkladaczKoduAsemblera(String nazwaPliku) {
-        nazwaPlikuAssemblera = nazwaPliku;
-        nazwaPlikuZRozszerzeniem = nazwaPlikuAssemblera + ".asm";
+        nazwaPlikuWe = nazwaPliku;
+        nazwaPlikuWeObcięta = nazwaPlikuWe.replaceAll("\\.plpl$", "");
+        nazwaPlikuZRozszerzeniemAsm = nazwaPlikuWeObcięta + ".asm";
     }
 
     public SkladaczKoduAsemblera(Tablice.Srodowisko system) {
@@ -41,13 +41,13 @@ public class SkladaczKoduAsemblera {
 
     private void stworzPlikWynikowy() {
         try {
-            File kod = new File(nazwaPlikuZRozszerzeniem);
+            File kod = new File(nazwaPlikuZRozszerzeniemAsm);
             if (!kod.exists()) {
                 kod.createNewFile();
             }
 
         } catch (IOException e) {
-            System.out.println("Wystapil blad podczas tworzenia pliku assemblera.");
+            System.err.println("Wystapil blad podczas tworzenia pliku assemblera.");
             e.printStackTrace();
         }
     }
@@ -60,6 +60,8 @@ public class SkladaczKoduAsemblera {
         gotowyKod.append(";dodatki dla wypisz\n");
         gotowyKod.append("section .rodata\n");
         gotowyKod.append("WYPISZ_CALK_FMT:   db    `%d`, 0  ;\n");
+        gotowyKod.append("WYPISZ_REF_FMT:   db    `%p`, 0  ;\n");
+        gotowyKod.append("WYPISZ_NAPIS_FMT:   db    `%s`, 0  ;\n");//ograniczone do 99 znaków
         gotowyKod.append("WYPISZ_ZNAK_FMT:   db    `znak:%c\\n`, 0  ;\n");
         gotowyKod.append(";koniec dodatków\n");
 
@@ -81,7 +83,7 @@ public class SkladaczKoduAsemblera {
 
     public void zapiszKodAssembleraDoPliku() {
         stworzPlikWynikowy();
-        try (FileWriter fw = new FileWriter(new File(nazwaPlikuZRozszerzeniem), StandardCharsets.UTF_8);
+        try (FileWriter fw = new FileWriter(new File(nazwaPlikuZRozszerzeniemAsm), StandardCharsets.UTF_8);
              BufferedWriter writer = new BufferedWriter(fw)) {
 
             writer.append(generujAssembler());
@@ -110,10 +112,10 @@ public class SkladaczKoduAsemblera {
         {
             try {
                 //wydajKomendeCmd("nasm");
-                wydajKomendeCmd("nasm -f win32 " + nazwaPlikuZRozszerzeniem + " -o "+nazwaPlikuZRozszerzeniem+".obj");
-                System.out.println("uzycie NASM:"+"nasm -f win32 " + nazwaPlikuZRozszerzeniem + " -o "+nazwaPlikuZRozszerzeniem+".obj");
-                wydajKomendeCmd("gcc -o " + nazwaPlikuZRozszerzeniem + ".exe " + nazwaPlikuZRozszerzeniem+".obj");
-                System.out.println("uzycie linkera:"+"gcc -o " + nazwaPlikuZRozszerzeniem + ".exe " + nazwaPlikuZRozszerzeniem+".obj");
+                wydajKomendeCmd("nasm -f win32 " + nazwaPlikuZRozszerzeniemAsm + " -o "+ nazwaPlikuWeObcięta +".obj");
+                System.out.println("nasm -f win32 " + nazwaPlikuZRozszerzeniemAsm + " -o "+ nazwaPlikuWeObcięta +".obj");
+                wydajKomendeCmd("gcc -o " + nazwaPlikuWeObcięta + ".exe " + nazwaPlikuWeObcięta +".obj");
+                System.out.println("gcc -o " + nazwaPlikuWeObcięta + ".exe " + nazwaPlikuWeObcięta +".obj");
                 //wydajKomendeCmd(nazwaPlikuAssemblera);
             } catch (IOException e) {
                 e.printStackTrace();

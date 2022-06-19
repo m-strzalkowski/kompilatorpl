@@ -73,8 +73,8 @@ public class Zakres {
     }
     public String krotkoSymbole()
     {
-        StringBuilder sb = new StringBuilder("\nSymbole w zakresie "+nr+"\nidentyfikator, etykieta, token");
-        for(var s: symbole){sb.append("\n"+s.identyfikator+","+s.etykieta()+","+s.token);}
+        StringBuilder sb = new StringBuilder("\nSymbole w zakresie "+nr+"\nidentyfikator, etykieta, token, typ");
+        for(var s: symbole){sb.append("\n"+s.identyfikator+","+s.etykieta()+","+s.token+","+s.pelnyTyp);}
         //sb.append("\nPO NAZWIE:\n");
         //for(var s: sym_po_nazwie.values()){sb.append("\n"+s.briefToString());}
         //sb.append("\nPO TOKENIE:\n");

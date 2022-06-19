@@ -39,17 +39,17 @@ public class Atrybut_Niedereferencja extends Opcja<Boolean> {
         zdarzenieNaWęzłach(końcowe,c -> {
             ParserRuleContext ctx = ((ParserRuleContext) c);
             return new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
-                    ""+ctx.getClass()+"węzeł końcowy: "+ctx.getText()+" \n");
+                    ""+ctx.getClass()+"węzeł końcowy: "+ctx.getText());
         });
         zdarzenieNaWęzłach(new Class[]{plplParser.WyrazenieStalaContext.class},c -> {
             ParserRuleContext ctx = ((ParserRuleContext) c);
             return new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
-                    "Próba uzyskania adresu stałej atomicznej: "+ctx.getText()+" \n");
+                    "Próba uzyskania adresu stałej atomicznej: "+ctx.getText());
         });
         zdarzenieNaReszcieWęzłów(c -> {
             ParserRuleContext ctx = ((ParserRuleContext) c);
             return new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.start, ctx.start.getLine(), ctx.start.getCharPositionInLine(),
-                    "Próba uzyskania adresu obiektu, który poprawnego adresu nie posiada: " + ctx.getText() + "\n");
+                    "Próba uzyskania adresu obiektu, który poprawnego adresu nie posiada: " + ctx.getText());
         });
     }
 }

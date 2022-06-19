@@ -27,12 +27,23 @@ public class SemanticOccurence
         }
         public String nazwapolska(){
             return switch (severity) {
-                case -1 -> "INFO";
+                case -1 -> "DEBUG INFO";
                 case 0 -> "INFORMACJA";
                 case 1 -> "OSTRZEŻENIE";
                 case 2 -> "BŁĄD";
                 case 3 -> "FATALNY BŁĄD";
                 default -> "?";
+            };
+        }
+        public static Level zNapisu(String napis, Level domyślny)
+        {
+            return switch (napis) {
+                case "debug", "debug info" -> Level.DEBUG;
+                case "informacja", "info" -> Level.INFO;
+                case "ostrzezenie", "ostrzeżenie" -> Level.WARN;
+                case "blad", "błąd" -> Level.ERROR;
+                case "fatal", "fatalny błąd", "fatalny blad" -> Level.FATAL;
+                default -> domyślny;
             };
         }
     }

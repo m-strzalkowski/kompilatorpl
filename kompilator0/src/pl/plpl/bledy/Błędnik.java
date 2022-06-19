@@ -11,13 +11,14 @@ public class Błędnik {
     List<SemanticOccurence> zdarzenia = new ArrayList<>();
     SemanticOccurence.Level stop_at_severity = SemanticOccurence.Level.FATAL;//kiedy ma zatrzymać kompilator
     SemanticOccurence.Level stderr_threshold = SemanticOccurence.Level.INFO;//od jakiej ważności ma pisać na stderr, zamiast stdout
-    SemanticOccurence.Level mute_threshold = SemanticOccurence.Level.DEBUG;//poniżej jakiej ważności ma w ogóle pisać
+    SemanticOccurence.Level mute_threshold = SemanticOccurence.Level.INFO;//poniżej jakiej ważności ma w ogóle pisać
     public List<SemanticOccurence> getZdarzenia() {
         return zdarzenia;
     }
 
     public void zglosZdarzenie(SemanticOccurence z)
     {
+        if(z == null){return;}
         if(z.getSeverity().worseOrEqual(mute_threshold))
         {
             if(z.getSeverity().worseOrEqual(stderr_threshold))
@@ -36,5 +37,8 @@ public class Błędnik {
     }
     public void setStop_at_severity(SemanticOccurence.Level stop_at_severity) {
         this.stop_at_severity = stop_at_severity;
+    }
+    public void setMute_threshold(SemanticOccurence.Level mute_threshold) {
+        this.mute_threshold = mute_threshold;
     }
 }
