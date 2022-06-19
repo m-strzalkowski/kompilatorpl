@@ -63,7 +63,7 @@ public class PelnyTyp implements Cloneable{
         return (typ.atomiczny)?
                 (
                         (krotnosc_tablicowa<0)?
-                                (0)
+                                (0)//właściwie powinien być rozmiar ramki?
                                 :(
                                         (krotnosc_tablicowa>0)?
                                                 (Typ.Ref.dlugosc_B):(typ.dlugosc_B)

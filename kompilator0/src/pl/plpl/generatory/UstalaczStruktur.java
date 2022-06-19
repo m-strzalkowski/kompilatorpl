@@ -362,7 +362,7 @@ public class UstalaczStruktur extends plplBaseListener {
         {
             //@ASM
             //dodj niezainicjalizowane miejsce długie na ileś bajtów opatrzone etykietą
-            aktualnyZakres.procedura.bss.append(sym.etykieta()).append(":   resb    ").append(sym.pelnyTyp.typ.dlugosc_B).append(";").append(sym.identyfikator).append("\n");
+            aktualnyZakres.procedura.bss.append(sym.etykieta()).append(":   resb    ").append(sym.pelnyTyp.rozmiar_B()).append(";").append(sym.identyfikator).append("\n");
         }
         else {//automatyczna
             //nie następuje emisja żadnego kodu
@@ -499,7 +499,7 @@ public class UstalaczStruktur extends plplBaseListener {
                 //@ASM
                 //dodaj zainicjalizowaną referencję
                 aktualnyZakres.procedura.data.append(sym.etykieta()).append(":   dd    ").append(literal.etykieta()).append(";").append(sym.identyfikator).append("\n");
-                return;
+                //return;
             }
         }
         Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(
@@ -737,7 +737,10 @@ public class UstalaczStruktur extends plplBaseListener {
             //dodaj zainicjalizowany string, zamknięty w kopniętych apostrofach `` (obsługuje \n\t itd) i z nullem (zerem) na końcu
             String etykieta_wartosci = sym.etykieta();
             aktualnyZakres.procedura.data.append(etykieta_wartosci+":   db    `"+wartosc+"`, 0  ;z linii "+ctx.NAPIS_DOSL().getSymbol().getLine()+"\n");
-
+            sym.udawana_referencja = true;//symbol ma zwracać etykietę, pytany o wartość, a nie wartość pod tym adresem.
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                    "UDAWANA REFERENCJA:"+sym
+            ));
 
             //aktualnyZakres.procedura.data.append(sym.etykieta()).append(":   db    `").append(wartosc).append("`, 0  ;z linii ").append(ctx.NAPIS_DOSL().getSymbol().getLine()).append("\n");
         }

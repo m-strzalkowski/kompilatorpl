@@ -78,6 +78,8 @@ public class SkladaczKoduAsemblera {
             }
 
         }
+        gotowyKod.append("section .rodata\n");
+        gotowyKod.append("__COMPILER_NAME__:  db`kompilator PL/PL (plplk) 1.0 Spero, aut opera...`\n");
         return gotowyKod;
     }
 

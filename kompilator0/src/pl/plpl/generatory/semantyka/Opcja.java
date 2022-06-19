@@ -209,9 +209,11 @@ public class Opcja <T> {
     {
         licznik_odwiedzin_w_procesie_propagacji = 0;
         poziom_startowy = ctx.depth();
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                "Początek procesu propagacji atrybutu typu "+this.getClass()+" zainicjowanego na węźle "+ctx.getClass()+" o kodzie:"+ctx.getText()));
         odwiedź(ctx, wartość);
         Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
-                "Proces propagacji  z węzła nastąpi, odwiedzając"+licznik_odwiedzin_w_procesie_propagacji+"węzłów"));
+                "Proces propagacji  z węzła nastąpił, odwiedzając węzły w liczbie "+licznik_odwiedzin_w_procesie_propagacji+"."));
         licznik_odwiedzin_w_procesie_propagacji = Integer.MAX_VALUE;
         poziom_startowy = 0;
     }

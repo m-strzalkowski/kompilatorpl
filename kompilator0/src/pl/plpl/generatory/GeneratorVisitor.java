@@ -2,11 +2,9 @@ package pl.plpl.generatory;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.tree.ParseTree;
 import pl.plpl.bledy.SemanticOccurence;
 import pl.plpl.generatory.klasyDanych.*;
 import pl.plpl.generatory.klasyDanych.pamiec.ObiektAutomatyczny;
-import pl.plpl.generatory.klasyDanych.tablice.TablicaC;
 import pl.plpl.parser.plplBaseVisitor;
 import pl.plpl.parser.plplParser;
 
@@ -47,7 +45,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         return s;
     }
     //pomocnicza metoda opakowująca odwołanie się do atrybutu mówiącego, czy dany węzeł-podwyrażenie powinien zwrócić kod zwracający adres(true), czy wartość obiektu(false)
-    boolean czy_niederef(ParserRuleContext ctx){return Tablice.opcje.nidereferencja.daj(ctx) != null && Tablice.opcje.nidereferencja.daj(ctx) ;}
+    boolean czy_niederef(ParserRuleContext ctx){return Tablice.opcje.niedereferencja.daj(ctx) != null && Tablice.opcje.niedereferencja.daj(ctx) ;}
     //boolean czy_niederef(ParserRuleContext ctx){return niedereferencja.get(ctx) != null && niedereferencja.get(ctx);}
 
     @Override public String visitProgram(plplParser.ProgramContext ctx) {
@@ -61,7 +59,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
     //@Override public String visitByt_globalny(plplParser.Byt_globalnyContext ctx) { return ctx.getText(); }
 
     /** Znajduje się tu logika formujaca odpowiednio kod - sekcję .text procedury.
-     * @return wartość zwracana nie ma żadnego znaczenia, ponieważ kod węzłów potomnych przeczywywany jest w składowych procedury odpowiadających sekcjom i sa one używane do składania kodu dopiero przez SkladaczKoduAsemblera
+     * @return wartość zwracana nie ma żadnego znaczenia, ponieważ kod węzłów potomnych przechowywany jest w składowych procedury odpowiadających sekcjom i są one używane do składania kodu dopiero przez SkladaczKoduAsemblera
      */
     @Override public String visitProcedura(plplParser.ProceduraContext ctx)
     {
@@ -131,7 +129,6 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
     @Override public String visitInstrukcja_wyboru(plplParser.Instrukcja_wyboruContext ctx) {
 
         StringBuilder returningAsm = new StringBuilder();
-
         String indeksInstrukcjiWarunkowejStr = String.valueOf(Tablice.dodajIfa());
         String etykieta_warunek_niespelniony = "failed_condition_"+indeksInstrukcjiWarunkowejStr;
         String etykieta_po_else = "after_else_"+indeksInstrukcjiWarunkowejStr;
@@ -237,7 +234,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
 
             if(aktualnyZakres.procedura.typZwracany != null)
             {
-                if(ctx.wyrazenie() == null)
+                if(ctx.wyrazenie() == null)// || stosTypów.peek().equalsFunctionally(BRAK))
                 {
                     Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
                             "Zadeklarowano, że procedura zwraca typ" + aktualnyZakres.procedura.typZwracany.typ.nazwa+" a natrafiono na zwróć bez parametru"));
@@ -275,7 +272,6 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         if(s.pktWe==null){throw new RuntimeException("Punkt wejściowy"+ctx.ID().getText()+"miał być zarejestrowany na etapie deklaracji!");}
         PunktWejsciowy pkt = s.pktWe;
         StringBuilder sb = new StringBuilder();
-
 
         //@ASM
         //instrukcja wkroczenia
@@ -374,7 +370,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
     }
 
     /**
-     * Zwraca kod wywołujący procedurę i ułozywszy przedtem ramkę stosu
+     * Zwraca kod wywołujący procedurę i ułożywszy przedtem ramkę stosu
      * @param sympkt symbol odpowiadający punktowi wejściowemu
      * @param argumenty lista argumentów
      * @return
@@ -387,16 +383,18 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         Integer numer_dla_punktu=null;
         //System.err.println("\nSYMBOL WOLANY:"+sympkt);
         //System.err.println("\nPUNKT WOLANY:"+sympkt.pktWe);
-    if(sympkt.pktWe.dajParametry().size() != argumenty.size())
+        if(sympkt.pktWe.dajParametry().size() != argumenty.size())
         {
-            var ctx = argumenty.get(0);//TODO a co jak len==0??
+            var ctx =  (argumenty.size() >0)?(argumenty.get(0)):(new ParserRuleContext());//TODO DONE? a co jak len==0??
             Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
                     "Lista parametrów formalnych ma "+sympkt.pktWe.dajParametry().size()+ " pozycji, a  lista argumentów wywołania: "+argumenty.size()));
         }
+        //Przechodzi po ramce stosu procedury i dla każdego parametru formalnego uzyskuje jego symbol i numer wyrażenia na liście paramentrów.
+        //Wstawia kod obliczający to wyrażenie i składający na stos. W ten sposób wyrażenia na liście obliczane są nie po kolei, za to ramka stosu zacjowuje kolejność.
         for(var ob : proc.ramka_stosu)
         {
 
-            if(ob.offset <= DLUGOSC_SLOWA_B){break;}
+            if(ob.offset <= DLUGOSC_SLOWA_B){break;}//rzeczy poniżej ebp+4 włącznie nas nie interesują
             //System.err.println("\nOB:"+ob);
             Symbol parametr = ob.powiązanySymbol();
             if(parametr.pelnyTyp.parametr_formalny && (numer_dla_punktu = sympkt.pktWe.numerArgumentuPunktu(parametr)) != null)
@@ -457,7 +455,6 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
     public static int licznik_repr_typow=0;
     public String wypiszWyrazenie(plplParser.WyrazenieContext ctx)
     {
-
         String akum = akumulator(Ref.dlugosc_B);
         var sb = new StringBuilder();
         sb.append(";wypisanie wyrazenia\n");
@@ -508,9 +505,9 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
             if(typWyrazenia.typ == Znak && typWyrazenia.krotnosc_tablicowa == 1)// && typWyrazenia.modyfikowalonosc == PelnyTyp.Mod.STALA)
             {
                 //dość brzydkie rozwiązanie problemu, że potrzebny jest tutaj adres tablicy, a nie jej wartość
-                Tablice.opcje.nidereferencja.ustaw(ctx, true);
-                kod_wyrazenia = visit(ctx);
-                stosTypów.pop();
+                //Tablice.opcje.nidereferencja.ustaw(ctx, true);
+                //kod_wyrazenia = visit(ctx);
+                //stosTypów.pop();
                 sb.append(kod_wyrazenia);
                 sb.append("                push "+akum+";wartosc na stos\n");
                 //sb.append("                push dword WYPISZ_NAPIS_FMT\n");//ogranicza długość napisu do 64 znaków
@@ -553,11 +550,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
 
         return sb.toString();
     }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
+    /** Pośredni węzeł gramatyki tak naprawdę konkatenujący wyniki swych dzieci.
      */
     @Override public String visitInstrukcja_prosta(plplParser.Instrukcja_prostaContext ctx) {
         StringBuilder sb = new StringBuilder();
@@ -576,12 +569,8 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         stosTypów.clear();
         return sb.toString();
     }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
+    //deklaracje nic nie robią przy generacji kodu (choć właściwie powinny przy t a = x;), więc żeby nie śmieciły tekstowym "null" przy konkatenacji nulla ze stringiem, zwracają puste napisy.
     @Override public String visitDeklaracja_atomiczna(plplParser.Deklaracja_atomicznaContext ctx) { return ""; }
     @Override public String visitDeklaracja_referencji(plplParser.Deklaracja_referencjiContext ctx) { return ""; }
     @Override public String visitWyrazenieStala(plplParser.WyrazenieStalaContext ctx)
@@ -611,7 +600,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
             //stała całkowita
             sb.append(";stała znakowa\n");
             sb.append("                mov "+akumulator(DLUGOSC_SLOWA_B)+", 0\n");//tak dla pewności wyczyszczenie
-            sb.append("                mov eax, `"+wartosc+"`\n");
+            sb.append("                mov eax, `"+wartosc+"`\n");//nie działa jak jasny szlag
             sb.append(";koniec stałej znakowej\n");
         }
         if(ctx.stala_atomiczna().ZMIENN()!=null)
@@ -621,11 +610,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         stosTypów.push(t);
         return sb.toString();
     }
-    /**
-     * Visit a parse tree produced by the {@code wyrazenieAlokacja}
-     * labeled alternative in {link plplParser_wyrazenie}.
-     * @param ctx the parse tree
-     * @return the visitor result
+    /** Odpowiada za kod uzywający malloca i mam nadzieję, że pokrywa wszystkie przypadki, właściwe i błędne...
      */
     @Override public String visitWyrazenieAlokacja(plplParser.WyrazenieAlokacjaContext ctx)
     {
@@ -714,11 +699,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         sb.append(";koniec alokacji"+ctx.stop.getLine()+":"+ctx.stop.getCharPositionInLine()+"\n");
         return sb.toString();
     }
-    /**
-     * Visit a parse tree produced by the {@code wyrazenieDealokacja}
-     * labeled alternative in {link plplParser_wyrazenie}.
-     * @param ctx the parse tree
-     * @return the visitor result
+    /** Kod używający free.
      */
     @Override public String visitWyrazenieDealokacja(plplParser.WyrazenieDealokacjaContext ctx)
     {
@@ -748,10 +729,9 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         stosTypów.push(t);
         return sb.toString();
     }
-
-
-
+    /** To nic nie robi, poza zwróceniem wartości zwracanej przez to, co w środku. */
     @Override public String visitWyrazenieNawiasy(plplParser.WyrazenieNawiasyContext ctx) { return visit(ctx.wyrazenie()); }
+
     /**
      * @param typElem Typ elementu tablicy (można go uzyskać przez PelnyTyp.dereferencja(/typTablicy/))
      * @param rejestr_z_indeksem rejestr, w jakim umieszczono indeks (np. ecx)
@@ -882,7 +862,6 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
      */
     @Override public String visitWyrazenieSelekcjiSkladowej(plplParser.WyrazenieSelekcjiSkladowejContext ctx)
     {
-        //ctx.selektor_typu_zlozonego().ID()
         StringBuilder sb = new StringBuilder();
         sb.append(";początek uzyskiwania składowej w linii"+ctx.start.getLine()+":"+ctx.start.getCharPositionInLine()+"\n");
         //1. Adres struktury
@@ -910,7 +889,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
             Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.INFO, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
                     "Składowe obiektu typu "+typStruktury.typ.nazwa+":\n"+typStruktury.typ.struktura.czytelnaListaSkładowych()
             ));
-            return sb.toString();//też trzeba skończyć przetwarzanie węzła, ze wzgl. na skladowa.Pelny typ w nast. linijce (jeśli skladowa == null -> błąd javy)
+            return sb.toString();//Trzeba skończyć przetwarzanie węzła, ze wzgl. na skladowa.Pelny typ w nast. linijce (jeśli skladowa == null -> błąd javy)
         }
         stosTypów.pop();//ściągamy typ struktury
         PelnyTyp typElem = skladowa.pelnyTyp;
@@ -925,60 +904,26 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         //4. Obliczenie kodu zwracającego wartość/adres składowej struktury
         sb.append(kod_indeksowania_struktury(typStruktury, typElem, ((ObiektAutomatyczny)skladowa.obiektPamieci).offset, akumadr, !czy_niederef(ctx)));
         sb.append(";koniec uzyskiwania składowej w linii"+ctx.stop.getLine()+":"+ctx.stop.getCharPositionInLine()+"\n");
-        //8. Złożenie na stos typów typu elementu
+        //5. Złożenie na stos typów typu elementu
         stosTypów.push(typElem);
-        //System.err.println("@@@@@@@@@@@@@"+typElem);
         //Nota: PełnyTyp, jako koncept języka źródłowego, nie zawiera informacji o tym, czy w akumulatorze, podczas wykonania kodu znajdzie się adres czy wartość obiektu. Ta informacja przechowywana jest w atrybucie niedereferencja drzewa składniowego.
         return sb.toString();
     }
     //sposób na uzyskanie adresu obiektu. (Tylko, że konstrukcja typu @a=2; będzie legalna, a nie powinna...)
     @Override public String visitWyrazenieAdres(plplParser.WyrazenieAdresContext ctx){
         //ustawia blokadę dereferencji na wyrażeniu potomnym. (i uruchamia logike jej propagacjiw dół i ewentualnych błędów - vide klasa Atrybut_Nidereferencja)
-        Tablice.opcje.nidereferencja.ustaw(ctx.wyrazenie(), true);
+        if(czy_niederef(ctx))
+        {
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.WARN, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                    "Próba uzyskania adresu adresu, zostanie zignorowana:"));
+        }
+        Tablice.opcje.niedereferencja.ustaw(ctx.wyrazenie(), true);
         return  ";operator uzyskania adresu w linii "+ctx.start.getLine()+"\n"+
                 visit(ctx.wyrazenie())+
                 ";koniec operatora uzyskania adresu w linii "+ctx.stop.getLine()+"\n";
     }
     @Override public String visitWyrazenieLwartosc(plplParser.WyrazenieLwartoscContext ctx) {if(czy_niederef(ctx)){niedereferencja.put(ctx.lwartosc(), true);} return visit(ctx.lwartosc()); }
-    /*
-    @Override public String visitLwartosc(plplParser.LwartoscContext ctx)
-    {
-        if(ctx.selektor_tablicowy().size() < 1 && ctx.selektor_typu_zlozonego().size() < 1)
-        {
-            Symbol sym = przestrzeń(ctx.ID().getText(),ctx);
-            StringBuilder sb = new StringBuilder();
-            if(sym.pelnyTyp.typ == Typ.Całk )
-            {
 
-                //@ASM
-                //lwartosc
-                sb.append(";załadowanie ID z lwartości - typ całk\n");
-                sb.append("                mov dword eax, ["+sym.etykieta()+"]\n");
-                sb.append(";koniec ID z lwartosc\n");
-
-            }
-            else if(sym.pelnyTyp.typ == Typ.Znak && sym.pelnyTyp.krotnosc_tablicowa == 0)
-            {
-                //@ASM
-                //lwartosc
-                sb.append(";jeszcze nie ma!\n");
-
-                return sb.toString();
-            }
-            else {
-                Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                        "Jeszcze nie zaimplamentowane!."
-                ));
-                return "";
-            }
-            return sb.toString();
-        }
-        else{
-            throw new RuntimeException("Nie mamy jeszcze Pańskich typów złożonych i co nam Pan zrobi?");
-        }
-
-    }
-    */
     /**<b>lwartość</b>
      * Idąc mniej więcej tropem języka C - lwartość ma odnosić się do obiektu posiadającego adres.
      * Ale u nas może być albo wartością tego obiektu (ewentualnie referencji do obiektu) - normalnie,
@@ -1004,7 +949,8 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         //Załadowanie odpowiedniego symbolu dla ID albo napisu dosłownego
         Symbol sym=null;
         if(ctx.ID()!=null){ sym = przestrzeń(ctx.ID().getText(),ctx);}
-        if(ctx.stala_tablicowa()!=null){ sym = przestrzeń(ctx.stala_tablicowa().NAPIS_DOSL().getSymbol(),ctx);}
+        if(ctx.stala_tablicowa()!=null){sym = przestrzeń(ctx.stala_tablicowa().NAPIS_DOSL().getSymbol(),ctx);}
+
         if(sym == null){
             if(czy_niederef(ctx)){Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.ERROR, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
                     "Nie znaleziono symbolu dla"+ctx.getText()+"\n"));}
@@ -1014,7 +960,30 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
             stosTypów.push(t);
             return sb.toString();
         }
+        Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                "lwartosc:"+sym
+        ));
+        //mechanizm udawanej referencji (opisany w klasie symbol) - (do napisów dosłownych, patrz na deklaracje napisu dosl w Ustalaczu Struktur i opis pola w Symbolu)
+        if(sym.udawana_referencja)
+        {
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                    "UDAWANA REFERENCJA - lwartosc:"+sym+"\nczy niederef:"+czy_niederef(ctx)
+            ));
 
+            if(czy_niederef(ctx)){Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.ERROR, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                    "Nie da się uzyskać adresu adresu tablicy:"+ctx.getText()));
+                Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.WARN, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                        "Zostanie zwrócony tylko adres tablicy (jedno, a nie dwu/wielokrotny)."));
+            }
+
+            //wystarczy ustawić domyślne zwracanie adresu i poniższy, ogólny kod powinien zadziałać
+            Tablice.opcje.niedereferencja.ustaw(ctx,true);
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.DEBUG, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
+                    " lwartosc:"+sym+" czy niederef:"+czy_niederef(ctx)+" Ustawiono ze względu na udawaną referencję. etykieta:"+sym.etykieta()
+            ));
+        }
+
+        //KOD ŁADUJĄCY ADRES/WARTOŚĆ DANEGO SYMBOLU DO AKUMULATORA
         //@ASM
         //lwartosc
         sb.append(";symbol:"+sym+"\n");
@@ -1049,41 +1018,9 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         stosTypów.push(sym.pelnyTyp);
         return sb.toString();
     }
-    /*
-    @Override public String visitLwartosc(plplParser.LwartoscContext ctx)
-    {
-        Symbol sym = przestrzeń(ctx.ID().getText(),ctx);
-        StringBuilder sb = new StringBuilder();
-        //@ASM
-        //lwartosc
-        sb.append(";załadowanie lwartości:"+ctx.start.getLine() +"\n");
-        String akum = akumulator(sym.pelnyTyp.typ.dlugosc_B);
 
-        if(sym.pelnyTyp.typ.dlugosc_B < DLUGOSC_SLOWA_B)
-        {
-            sb.append("                mov "+akumulator(DLUGOSC_SLOWA_B)+", 0\n");//tak dla pewności wyczyszczenie
-        }
-
-        if(sym.pelnyTyp.rodzaj_pamieci == PelnyTyp.RodzajPam.AUTOMATYCZNA)
-        {
-            sb.append("                mov "+akum+", ["+sym.etykieta()+"]\n");
-        }
-        else
-        {
-            char zn_drugiego_rej = 'd';
-            String drugirejestr = akumulator(DLUGOSC_SLOWA_B).replace('a', zn_drugiego_rej);//rejestr na adres - zawsze o długości słowa
-            sb.append("                mov "+drugirejestr+", "+sym.etykieta()+"\n");
-            sb.append("                mov "+akum+", ["+drugirejestr+"]\n");
-
-        }
-        sb.append(";koniec ładowania lwartosc\n");
-        if(ctx.selektor_typu_zlozonego().size() >0 || ctx.selektor_tablicowy().size() > 0){throw new RuntimeException("Operatory [] i . jeszcze nie zaimplementowane dla lwartości");}
-        stosTypów.push(sym.pelnyTyp);
-        return sb.toString();
-    }
-*/
-
-
+    /** Kod przypisania. Jako, że to wyrazenie = wyrazenie, to próbuje oznaczyć lewe wyrażenie atrybutem niedereferencja - aby uzyskac adres do którego wpisać wartość obliczaną przez prawe wyrażenie.
+     */
     @Override public String visitWyrazeniePrzypisanieZwykle(plplParser.WyrazeniePrzypisanieZwykleContext ctx)
     {
         char zn_drugiego_rej = 'd';
@@ -1093,7 +1030,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         sb.append(";przypisanie"+ctx.start.getLine()+":"+ctx.start.getCharPositionInLine()+"\n");
         //oblicz adres, gdzie wpisać
         //niedereferencja.put(ctx.wyrazenie().get(0), true);//oznaczenie węzła, że przy generacji kodu, potrzebujemy adresu, a nie wartości
-        Tablice.opcje.nidereferencja.ustaw(ctx.wyrazenie().get(0), true);
+        Tablice.opcje.niedereferencja.ustaw(ctx.wyrazenie().get(0), true);
         String lewe = visit(ctx.wyrazenie().get(0));
         //for (var e:ctx.wyrazenie()) {
         //    System.err.println(e.getClass());
@@ -1123,55 +1060,12 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         sb.append(";koniec przypisania"+ctx.stop.getLine()+":"+ctx.stop.getCharPositionInLine()+"\n");
         return sb.toString();
     }
-    /*
-    @Override public String visitWyrazeniePrzypisanie(plplParser.WyrazeniePrzypisanieContext ctx)
-    {
-        return visit(ctx.przypisanie());
-    }
-    @Override public String visitPrzypisanieZwykle(plplParser.PrzypisanieZwykleContext ctx)
-    {
-        StringBuilder sb = new StringBuilder();
-        String wyrazenie = visit(ctx.wyrazenie());
-        PelnyTyp twyrazenie = stosTypów.pop();
-        Symbol sym = przestrzeń(ctx.lwartosc().ID().getText(),ctx);
 
-        if(ctx.lwartosc().selektor_tablicowy().size() < 1 && ctx.lwartosc().selektor_typu_zlozonego().size() < 1)//co znaczy, że to pojedyncz nazwa an nie np. a[3][5]
-        {
+    ////////////////////////////////////////////
+    //ZWYKŁE WYRAŻENIA ARYTMETYCZNE I LOGICZNE//
+    ////////////////////////////////////////////
 
-            if(!sym.pelnyTyp.equals(twyrazenie)){var level = ((sym.pelnyTyp.equalsFunctionally(twyrazenie))?(SemanticOccurence.Level.DEBUG):(SemanticOccurence.Level.WARN));
-                Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(level, ctx.stop,ctx.stop.getLine() ,ctx.stop.getCharPositionInLine(),
-                        "Typy w przypisaniu się nie zgadzają!\n"+sym.pelnyTyp+"\n"+twyrazenie));
-            }
-            //@ASM
-            sb.append(wyrazenie);
-            sb.append(";wpisywanie wyrażenia do jakiegoś ID:"+ctx.start.getLine() +"\n");
-            String akum = akumulator(twyrazenie.typ.dlugosc_B);
-            if(sym.pelnyTyp.rodzaj_pamieci == PelnyTyp.RodzajPam.AUTOMATYCZNA)
-            {
-                sb.append("                mov ["+sym.etykieta()+"], "+akum+"\n");
-            }
-            else
-            {
-                char zn_drugiego_rej = 'd';
-                String drugirejestr = akumulator(DLUGOSC_SLOWA_B).replace('a', zn_drugiego_rej);//rejestr na adres - zawsze o długości słowa
-
-                sb.append("                mov "+drugirejestr+", "+sym.etykieta()+"\n");
-                sb.append("                mov ["+drugirejestr+"], "+akum+"\n");
-
-            }
-            sb.append(";koniec wpisywanie wyrażenia do jakiegoś ID\n");
-
-        }
-        else {throw new RuntimeException("Operatory [] i . jeszcze nie zaimplementowane dla lewych stron przypisań");}
-        stosTypów.push(sym.pelnyTyp);
-        return sb.toString();
-    }
-     */
-
-    /**
-     * Zwykłe dodawanie/odejmowanie
-     * @param ctx
-     * @return
+    /** Zwykłe dodawanie/odejmowanie
      */
     @Override public String visitWyrazenieAddyt(plplParser.WyrazenieAddytContext ctx)
     {

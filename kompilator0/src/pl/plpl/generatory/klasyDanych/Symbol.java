@@ -18,7 +18,11 @@ public class Symbol {
     public Zakres zakres;
     public PelnyTyp pelnyTyp;
     public ObiektPamieci obiektPamieci;
-
+    public boolean udawana_referencja=false;//jeśli true, obiekt podczas generacji kodu powinien zwracać swój adres, gdy pytany o wartośc i błąd, jeśli pytany o adres (tak jakby był referencją do siebie, która rzeczywiście nie istnieje. Wykorzystywane przy dosłownych napisach, bo w kodzie istnieje tylko etykieta na początek danych, a nie ma osobnego obiektu referencji.)
+    //^ normalnie, jesli jest np. całk [] a;, to istnieje jako referencja - słowo maszynowe, którego wartość jest adesem początku obszaru pamięci tablicy.
+    //W przypadku "napisów", jest w sekcji statycznej generowany kod etykieta: db `napisów`.
+    //Lecz [etykieta] to nie adres bloku, tylko wartość jego zerowego elementu. Trzeba zamiast tego zwracać etykieta, symulując niestniejący obiekt referencji, którego wartość byłaby równa etykieta. uf.
+    //Implementacja mechanizmu powinna znajdowac się w visitorze reguły lwartosc.
     @Override
     public String toString() {
         return "Symbol{" +
@@ -72,7 +76,7 @@ public class Symbol {
             }
         }
         //Dla zmiennych statycznych
-        return "S"+Normalizer.normalize(pelnyTyp.typ.nazwa, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")+"_"+zakres.nr+"_"+nr+"__"+this.zakres.procedura.etykieta();
+        return "S"+Normalizer.normalize(pelnyTyp.typ.nazwa, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")+"_"+zakres.nr+"_"+nr+"__"+this.zakres.procedura.etykieta();//identyfikatora tu być nie może, bo może zawierać znaki unicode
     }
 
 }

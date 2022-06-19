@@ -1,7 +1,10 @@
 //Test tablic//
+typ wz{
+
+}
 procedura{
 całk i,j;
-całk[][] t;
+wz[][] t;
 zacznij program();
 t = nowy(całk[12][]);
 t[0] = nowy(całk[32]);

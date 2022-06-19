@@ -36,7 +36,7 @@ procedura{
     k.wiek = 2;
     k.malzonek=m;
     m.malzonek=k;
-    k.dupa;
+    k.zad;
     t = nowy(całk[10]);
     t[1];
     t[1] = 0;
@@ -49,10 +49,10 @@ procedura{
         //C.printf("%d", i);
         //C.scanf("%d", @j);
         j = t[i];
-        wypisz(i);
-        wypisz("\t");
-        wypisz(j);
-        wypisz("\n");
+        pisz(i);
+        pisz("\t");
+        pisz(j);
+        pisz("\n");
         i=i+1;
     }
 
