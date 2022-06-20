@@ -4,7 +4,11 @@ Kompilator niedużego języka ogólnego przeznaczenia.
 
 # Opis
 
-Plik opis.odt zawiera opis języka a w tym jak uruchomić i wymagania oraz składnię wraz z przykładowymi programami
+Plik opis.odt zawiera opis języka ze wszystkimi detalami i opisami jak co działa.
+
+# Jak używać kompilatora?
+
+Te informację wraz z wymaganiami są zawarte w podrecznik_uzytkownika.odt (są tam także przykładowe programy)
 
 # Link do zipa z skompilowanym kompilatorem
 
