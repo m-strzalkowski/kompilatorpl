@@ -18,7 +18,7 @@ Instrukcja używania zakłada pobranie całego folderu PLPL: [link do ścieżki 
 Cały projekt i kod projetku znajduje się tu: [folder zawierający kod kompilatora]( kompilator0/src/pl/plpl)
 
 ## Autorzy
-Mateusz Strzałkowski
-Michaela Klimek
-Dominik Kikla
+Mateusz Strzałkowski<br>
+Michaela Klimek<br>
+Dominik Kikla<br>
 
