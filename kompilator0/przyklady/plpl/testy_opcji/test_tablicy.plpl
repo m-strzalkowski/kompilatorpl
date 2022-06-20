@@ -1,0 +1,37 @@
+typ zespolona
+{
+całk r; całk u;
+}
+typ kot{
+znak[] imię;
+całk wiek;
+całk wredność;
+znak płeć;
+znak z;
+kot malzonek;
+statyczny całk ilość_kotów_na_świecie=0;
+}
+
+procedura{
+    zacznij program();
+    całk a;
+    a=2;
+    całk[][] t;
+    t = nowy(całk[2][]);
+    t[0] = nowy(całk[3]);
+    t[1] = nowy(całk[2]);
+    t[0][0] = 1;
+    statyczna całkowita i=0;
+    całk j;
+    dopóki(i<2)
+    {
+        a = t[i][0];
+        wypisz(a); wypisz("\n"); wypisz(i); wypisz("\n");
+        i=i+1;
+    }
+
+    zapomnij(t[0]);
+    zapomnij(t[1]);
+    zwróć();
+}
+procedura->całk{zacznij f();zwróć(0);}
