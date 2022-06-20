@@ -1,0 +1,7 @@
+procedura{
+zacznij program();
+znak[] buf;buf = nowy(znak[1025]);
+C._scanf("%1025s",buf);
+pisz("\nPrzeczytałem napis:\n", buf, "\ni nie wiem co z nim zrobić. Zatem ginę.");
+skończ(-2);
+}

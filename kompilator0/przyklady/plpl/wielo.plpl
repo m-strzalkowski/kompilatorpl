@@ -13,6 +13,7 @@ procedura
     zacznij g(całk a, całk b);
     zacznij h(całk b, całk a);
     zacznij f(całk a, całk b, całk c);
-    wypisz("a:");wypisz(a);wypisz(", b:");wypisz(b);wypisz(", c:");wypisz(c);wypisz("\n");
+    pisz("a:",a,", b:",b,", c:",c,"\n");
     zwróć();
 }
+

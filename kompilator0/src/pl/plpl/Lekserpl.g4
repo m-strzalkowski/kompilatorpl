@@ -10,6 +10,7 @@ TZNAK: 'znak';
 TREF: 'ref';
 
 NOWY: 'now'[yea];
+WYPISZ: ('wy')? 'pisz';
 
 PRZERWIJ : 'przerwij';
 KONTYNUUJ:'kontynuuj'|'nazad';

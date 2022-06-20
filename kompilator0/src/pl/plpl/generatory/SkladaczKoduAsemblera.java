@@ -8,11 +8,14 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.io.IOException;
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 // NIE TESTOWANE!
 
 public class SkladaczKoduAsemblera {
 
+    private  Externator externator = null;
     private String nazwaPlikuWe;
     private String nazwaPlikuWeObcięta;
     private String nazwaPlikuZRozszerzeniemAsm;
@@ -20,22 +23,23 @@ public class SkladaczKoduAsemblera {
 
 
     public SkladaczKoduAsemblera() {
-        this("out");
+        this("out", Tablice.externy);
     }
 
-    public SkladaczKoduAsemblera(String nazwaPliku) {
+    public SkladaczKoduAsemblera(String nazwaPliku, Externator externator) {
+        this.externator = externator;
         nazwaPlikuWe = nazwaPliku;
         nazwaPlikuWeObcięta = nazwaPlikuWe.replaceAll("\\.plpl$", "");
         nazwaPlikuZRozszerzeniemAsm = nazwaPlikuWeObcięta + ".asm";
     }
 
-    public SkladaczKoduAsemblera(Tablice.Srodowisko system) {
-        this("out");
+    public SkladaczKoduAsemblera(Tablice.Srodowisko system, Externator externy) {
+        this("out", externy);
         this.system = system;
     }
 
-    public SkladaczKoduAsemblera(String nazwaPliku, Tablice.Srodowisko system) {
-        this(nazwaPliku);
+    public SkladaczKoduAsemblera(String nazwaPliku, Tablice.Srodowisko system, Externator externy) {
+        this(nazwaPliku, externy);
         this.system = system;
     }
 
@@ -55,7 +59,14 @@ public class SkladaczKoduAsemblera {
     private StringBuilder generujAssembler() {
         StringBuilder gotowyKod = new StringBuilder();
 
-        gotowyKod.append("global _main\nextern _printf\nextern _pow\nextern _malloc\nextern _free\nextern _exit\n\n");
+        //gotowyKod.append("global _main\nextern _printf\nextern _pow\nextern _malloc\nextern _free\nextern _exit\n\n");
+        externator.użyj_extern("_printf");
+        externator.użyj_extern("_pow");
+        externator.użyj_extern("_malloc");
+        externator.użyj_extern("_free");
+        externator.użyj_extern("_exit");//powinny byc wplenione w odpowiednie nieterminale w visitorze...
+        gotowyKod.append(externator.generuj_externy());
+        gotowyKod.append("global _main\n\n");
 
         gotowyKod.append(";dodatki dla wypisz\n");
         gotowyKod.append("section .rodata\n");
@@ -80,6 +91,14 @@ public class SkladaczKoduAsemblera {
         }
         gotowyKod.append("section .rodata\n");
         gotowyKod.append("__COMPILER_NAME__:  db`kompilator PL/PL (plplk) 1.0 Spero, aut opera...`\n");
+        gotowyKod.append(Tablice.etykieta_komunikatu_o_dereferencji_nica+ ":  db`PRÓBA DEREFERENCJI REFERENCJI O WARTOŚCI NIC, CZYLI ZERO (w linii kodu źródłowego:%d)\\n`\n");
+        if(Tablice.śmiecenie_po_wyjściu){
+            gotowyKod.append(Tablice.etykieta_formatu_śmiecenia+ ":  db`\\n<<WYKONANO %d:%d - %d:%d >>\\n`\n");
+            gotowyKod.append(Tablice.etykieta__file_name_rdbg+ ":  db `"+nazwaPlikuWeObcięta+".rdbg.txt`\n");
+            gotowyKod.append(Tablice.etykieta__file_mode_rdbg+ ":  db `w`\n");
+            gotowyKod.append("section .data\n");
+            gotowyKod.append(Tablice.etykieta_wsk_file_rdbg+":  dd 0\n");
+        }
         return gotowyKod;
     }
 

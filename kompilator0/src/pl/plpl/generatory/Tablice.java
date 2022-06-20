@@ -12,13 +12,14 @@ import java.util.List;
 import java.util.Map;
 
 public class Tablice {
+
     public enum Srodowisko{WIN32, LINUX32};
     public static Srodowisko SRODOWISKO;
     public static boolean generacja_binarnego_obrazu = false;//czy generować asm, czy próbować uruchomić nasm i potem gcc/ld
     public static String inputFilePath;
     public static String outputFilePath;
     public static long inputLength=0;
-    public static DebugerKompilatora debuger_kompilatora=null;
+    public static Externator externy;//przechowuje listę zewnętrznych symboli do zadeklarowania w asemblerze
 
     public static Błędnik podsystem_bledow = new Błędnik();
 
@@ -38,6 +39,13 @@ public class Tablice {
 
     public static OpcjePLPL opcje = new OpcjePLPL();//opcje - atrybuty semantyczne drzewa składniowego
 
+    public static DebugerKompilatora debuger_kompilatora=null;
+    public static boolean śmiecenie_po_wyjściu=false;//true- podczas wykonania pisze linię każdej wykonanej instrukcji
+    public static String etykieta_formatu_śmiecenia = "__RDBG_FMT__";
+    public static String etykieta_wsk_file_rdbg = "__RDBG_FILESTRUCT__";
+    public static String etykieta__file_name_rdbg = "__RDBG_FILENAME__";
+    public static String etykieta__file_mode_rdbg = "__RDBG_STREAM_MODE__";
+    public static String etykieta_komunikatu_o_dereferencji_nica = "__NULL_DEREFERENCE_FMT__";
 
     //Adnotacje na drzewie składniowym
     public static ParseTreeProperty<Boolean> niedereferencja = new ParseTreeProperty<>();
@@ -61,6 +69,8 @@ public class Tablice {
         kod_globalny = new Procedura(null);
         zakres_globalny = new Zakres(null, kod_globalny, null);
         kod_globalny.najogolniejszy_zakres = zakres_globalny;
+
+        externy = new Externator();
     }
 
     //przechowywanie typów i dostęp do nich

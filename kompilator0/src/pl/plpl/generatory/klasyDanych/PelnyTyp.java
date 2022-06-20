@@ -36,7 +36,8 @@ public class PelnyTyp implements Cloneable{
             sb.append("/*parametr*/ ");
         }
         if(this.modyfikowalonosc == Mod.STALA){sb.append("stały ");}
-        if(this.modyfikowalonosc == Mod.ZMIENNA){sb.append("automatyczny ");}
+        if(this.rodzaj_pamieci == RodzajPam.AUTOMATYCZNA){sb.append("automatyczny ");}
+        if(this.rodzaj_pamieci == RodzajPam.STATYCZNA){sb.append("statyczny ");}
         sb.append(this.typ.nazwa);
         sb.append(" ");
         for(int i=this.krotnosc_tablicowa; i>0; i--){sb.append("[]");}

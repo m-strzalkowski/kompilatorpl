@@ -1,16 +1,24 @@
 //Test tablic//
 typ wz{
-
+    całk a;
 }
 procedura{
 całk i,j;
-wz[][] t;
+całk [][] t;
 zacznij program();
+znak a;
+ a='a';
+ i=a;
+ pisz('#',a,"\n",i,"\n",a=i,"\n");
 t = nowy(całk[12][]);
+pisz(t,"\n");
+t = nowy(całk[120][]);
+pisz(t,"\n");
 t[0] = nowy(całk[32]);
 i=0; dopóki(i<32){t[0][i]=i*i; i=i+1;}
 i=0; dopóki(i<32){pisz("i=",i,"t[0][i]=",t[0][i], "\n"); i=i+1;}
 zapomnij(t[0]);
 zapomnij(t);
+
 zwróć();
 }

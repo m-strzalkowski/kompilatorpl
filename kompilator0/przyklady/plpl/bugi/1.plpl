@@ -1,0 +1,58 @@
+typ zespolona
+{
+całk r; całk u;
+}
+
+procedura{
+    zacznij program();
+    pisz(0,"\n");
+
+    całk SZEROKOSC, WYSOKOSC;
+    SZEROKOSC = 10;
+    WYSOKOSC = 10;
+    całk i,j;
+
+    zespolona[][] tab_fib;
+    tab_fib = nowy(zespolona[WYSOKOSC][]);
+    pisz(1,"\n");
+
+    i = 0;
+    dopóki(i < WYSOKOSC)
+    {
+        tab_fib[i] = nowy(zespolona[SZEROKOSC]);
+        //j=0; dopóki(j<SZEROKOSC){tab_fib[i][j]=nic;//nowa(zespolona);
+        //j=j+1;}
+        i = i+1;
+    }
+    pisz(2,"\n");
+    //skończ(12);
+    i = 0;
+    całk w; w=SZEROKOSC-1;
+    pisz("w:",w,"\n");
+    dopóki(i<SZEROKOSC)
+    {
+        pisz(i); pisz(" ");
+        pisz(tab_fib[0][0].r);
+         pisz(" ");
+         //pisz(tab_fib[0][i].u); pisz(" ");
+        i=i+1;
+    }
+
+
+    i = 0;
+    dopóki(i < 10)
+        {
+            zapomnij(tab_fib[i]);
+            i = i+1;
+        }
+    zapomnij(tab_fib);
+    zwróć();
+}
+procedura->całk{zacznij f();zwróć(0);}
+
+procedura
+{
+    zacznij pisz_tablice(całk[][] t);
+    pisz('a');
+    zwróć();
+}

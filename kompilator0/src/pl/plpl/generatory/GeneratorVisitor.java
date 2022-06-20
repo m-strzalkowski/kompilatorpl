@@ -30,9 +30,9 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         if(s==null)
         Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.ERROR, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
                 "Nie znaleziono w przestrzeni nazw nic o identyfikatorze" +identyfikator));
-        else if(s.token != null && ctx.start.getStartIndex() < s.token.getStartIndex()){
-            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.ERROR, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
-                    "Użycie identyfikatora " +identyfikator+ "przed jego pierwszą deklaracją w linii "+s.token.getLine()+":"+s.token.getCharPositionInLine()));
+        else if(s.token != null && ctx.start.getStartIndex() < s.token.getStartIndex() && s.pelnyTyp.parametr_formalny){
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.WARN, ctx.start,ctx.start.getLine() ,ctx.start.getCharPositionInLine(),
+                    "Użycie identyfikatora " +identyfikator+ " przed jego pierwszą deklaracją w linii "+s.token.getLine()+":"+s.token.getCharPositionInLine()));
         }
         return s;
     }
@@ -290,6 +290,17 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         sb.append(";^robienie ramki stosu\n");
         sb.append("              call "+aktualnyZakres.procedura.etykieta()+Procedura.PRZYROSTEK_ETYKIETY_PROLOGU +"\n");
         sb.append("              ;tu coś może być\n");
+        if(Objects.equals(pkt.nazwa, Tablice.WEJSCIE_PROG) && Tablice.śmiecenie_po_wyjściu) {//inicjalizacja śmiecienia
+
+            Tablice.externy.użyj_extern("_fopen");
+            sb.append(";RDBG init\n");
+            sb.append("                push dword "+Tablice.etykieta__file_mode_rdbg+";\n");
+            sb.append("                push dword "+Tablice.etykieta__file_name_rdbg+";\n");
+            sb.append("                call _fopen\n");
+            sb.append("                add esp, byte 8;2*4=8\n");
+            sb.append("                mov dword ["+Tablice.etykieta_wsk_file_rdbg+"], eax;\n");
+            sb.append(";koniec RDBG init\n");
+        }
         sb.append("              "+Procedura.PRZEDROSTEK_ETYKIETY_PO_PUNKCIE +pkt.etykieta()+":\n");
 
         return sb.toString();
@@ -366,6 +377,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         sb.append("              add esp, "+rozm_złożonych+";sprzątanie stosu po wywołaniu\n");
         PelnyTyp nieznanytyp = new PelnyTyp(); nieznanytyp.typ=Ref;
         stosTypów.push(nieznanytyp);//Nie wiemy, co dane wywołanie zwraca, zakładamy, że coś.
+        Tablice.externy.użyj_extern(wołany);//Tablice.externy przechowuje wszystkie użyte zewnętrzne symbole, by można było dołaczyć ich deklaracje do kodu wynikowego, gdyż podwójna deklaracja tego samego symbolu extern jest uznawana przez nasm za błąd
         return sb.toString();
     }
 
@@ -462,7 +474,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         PelnyTyp typWyrazenia = stosTypów.pop();
 
         sb.append(";typ wyrazenia:"+typWyrazenia+"\n");
-        if(typWyrazenia.czyAtomiczny())
+        if(typWyrazenia.czyAtomiczny() && typWyrazenia.typ!=Ref)
         {
             if(typWyrazenia.typ == Typ.Całk )
             {
@@ -565,6 +577,25 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
                     "Po przetwarzaniu wyrażenia w instrukcji prostej, na wewnętrznym stosie kompilatora został więcej jak 1 element("+stosTypów.size()+").\n Prawdopodobnie w jakiejś regule generacji ktoś zapomniał gdzieś ściągnąć elementu z tegoż stosu. To wewnętrzny błąd kompilatora."
             ));
         }
+        if(Tablice.śmiecenie_po_wyjściu)
+        {
+            //Tablice.externy.użyj_extern("stdout");
+            Tablice.externy.użyj_extern("_fflush");
+            Tablice.externy.użyj_extern("_fprintf");
+            sb.append(";RDBG\n");
+            sb.append("                push dword "+ctx.stop.getCharPositionInLine()+";\n");
+            sb.append("                push dword "+ctx.stop.getLine()+";\n");
+            sb.append("                push dword "+ctx.start.getCharPositionInLine()+";\n");
+            sb.append("                push dword "+ctx.start.getLine()+";\n");
+            sb.append("                push dword "+Tablice.etykieta_formatu_śmiecenia+"\n");
+            sb.append("                push dword "+Tablice.etykieta_wsk_file_rdbg+"\n");
+            sb.append("                call _fprintf\n");
+            sb.append("                add esp, byte 24;6*4=24\n");
+            sb.append("                push dword "+Tablice.etykieta_wsk_file_rdbg+";\n");
+            sb.append("                call _fflush\n");
+            sb.append("                add esp, byte 4;\n");
+            sb.append(";koniec RDBG\n");
+        }
         //trzeba zapewnić, że stos typów będzie pusty przed następnym wyrażeniem
         stosTypów.clear();
         return sb.toString();
@@ -600,7 +631,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
             //stała całkowita
             sb.append(";stała znakowa\n");
             sb.append("                mov "+akumulator(DLUGOSC_SLOWA_B)+", 0\n");//tak dla pewności wyczyszczenie
-            sb.append("                mov eax, `"+wartosc+"`\n");//nie działa jak jasny szlag
+            sb.append("                mov byte al, `"+wartosc+"`\n");//nie działa jak jasny szlag
             sb.append(";koniec stałej znakowej\n");
         }
         if(ctx.stala_atomiczna().ZMIENN()!=null)
@@ -690,10 +721,17 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         //if(t.krotnosc_tablicowa == 1){dl_elementu = t.typ.dlugosc_B;}
         //if(t.krotnosc_tablicowa > 1){dl_elementu = Ref.dlugosc_B;}
         //sb.append(";kt="+t.krotnosc_tablicowa+"\n");
-        sb.append("                imul "+akum+","+dl_elementu+"\n");
-        sb.append("                push "+akum+"\n");
+        Tablice.externy.użyj_extern("_malloc");
+        Tablice.externy.użyj_extern("_memset");
+        //void * memset ( void * ptr, int value, size_t num );
+        //void* malloc (                         size_t size);
+        sb.append("                imul "+akum+","+dl_elementu+"\n");//potrzeba pomnożyć ilość elem. przez długość
+        sb.append("                push "+akum+"\n");//na stos - długość w bajtach
         sb.append("                call _malloc\n");
-        sb.append("                add esp, "+DLUGOSC_SLOWA_B+"\n");
+        sb.append("                push dword 0\n");//wypełniamy nullami
+        sb.append("                push eax\n");
+        sb.append("                call _memset\n");//wypełniamy jeszcze zerami alokowany obszar, żeby użytkownikom się nie myliło
+        sb.append("                add esp, "+3*DLUGOSC_SLOWA_B+"\n");//trzy argumenty złożyliśmy, to podnosimy
         // adres w eax
         stosTypów.push(t);
         sb.append(";koniec alokacji"+ctx.stop.getLine()+":"+ctx.stop.getCharPositionInLine()+"\n");
@@ -818,16 +856,39 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
             stosTypów.push(złytyp);//żeby nie popsuć stosu.
             return sb.toString();//dlatego, że typElem == null spowodowałby błąd przy wywołaniu kod_indeksowania_tablicy później
         }
-        //4.5 dodanie kodu - adres tablicy
+        //6 dodanie kodu - adres tablicy
         sb.append(tablica);
-        //6. Zebranie licznika ze stosu do rejestru licznika (ecx)
+        //7.Sprawdzenie, czy nie popełnia się dereferencji nulla (nica).
+        sb.append(sprawdzanie_dereferencji_nica(ctx));
+        //8. Zebranie licznika ze stosu do rejestru licznika (ecx)
         sb.append("                pop "+rej_licznika+";indeks tablicy\n");//zczytanie indeksu złozonego wcześniej na stos
-        //7. Obliczenie kodu zwracającego wartość/adres elementu tablicy o danym indeksie.
+        //9. Obliczenie kodu zwracającego wartość/adres elementu tablicy o danym indeksie.
         sb.append(kod_indeksowania_tablicy(typElem, rej_licznika, akumadr, !czy_niederef(ctx), 0));
         sb.append(";koniec elementu tablicy z linii"+ctx.stop.getLine()+":"+ctx.stop.getCharPositionInLine()+"\n");
-        //8. Złożenie na stos typów typu elementu
+        //10. Złożenie na stos typów typu elementu
         stosTypów.push(typElem);
         //Nota: PełnyTyp, jako koncept języka źródłowego, nie zawiera informacji o tym, czy w akumulatorze, podczas wykonania kodu znajdzie się adres czy wartość obiektu. Ta informacja przechowywana jest w atrybucie niedereferencja drzewa składniowego.
+        return sb.toString();
+    }
+
+    /** Sprawdza, czy akumulator nie jest zerem, a jeśli jest, krzyczy.
+     * Wykorzystywane prze operatory kropki i nawiasów kwadratowych do sprawdzenia, czy nie robi się dereferencji zerowego adresu.
+     */
+    private static int liczniknieniców=0;
+    private String sprawdzanie_dereferencji_nica(ParserRuleContext ctx) {
+        var sb = new StringBuilder();
+        Tablice.externy.użyj_extern("_exit");
+        Tablice.externy.użyj_extern("_printf");
+        sb.append("                cmp eax,0;\n");
+        sb.append("                jne .nienic"+liczniknieniców+";\n");
+        sb.append("                push dword "+ctx.start.getLine()+";\n");
+        sb.append("                push dword "+Tablice.etykieta_komunikatu_o_dereferencji_nica+"\n");
+        sb.append("                call _printf\n");
+        sb.append("                add esp, byte 8;6*4=24\n");
+        sb.append("                push dword 1;\n");
+        sb.append("                call _exit;\n");
+        sb.append(".nienic"+liczniknieniców+":        ;\n");
+        liczniknieniców++;
         return sb.toString();
     }
 
@@ -855,7 +916,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         }
         akum = akumulator(rozm_elem);
         String opkod = (dereferencja_na_końcu)?("mov"):("lea");
-        return "        "+opkod + " "+ akum + ", ["+rejestr_źródłowy+"+"+offset_składowej+"];typ:"+typStrukt.typ.nazwa+"."+typSkladowej.typ.nazwa+"(kt:"+typSkladowej.krotnosc_tablicowa+")\n";
+        return  "        "+opkod + " "+ akum + ", ["+rejestr_źródłowy+"+"+offset_składowej+"];typ:"+typStrukt.typ.nazwa+"."+typSkladowej.typ.nazwa+"(kt:"+typSkladowej.krotnosc_tablicowa+")\n";
     }
 
     /** Zwraca adres/wartość składowej obiektu złożonego. Konceptualnie to jakby indeksowanie tablicy, wedle stałych przesunięć określanych przez ułożenie składowych w strukturze.
@@ -899,12 +960,14 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
                     "BŁĄD WEWNĘTRZNY KOMPILATORA:GeneratorVisitor:typElem == null\nskladowa.pelnyTyp:"+skladowa.pelnyTyp+"\nskladowa:"+skladowa));
         }
         String akumadr = akumulator(typStruktury.rozmiar_B());
-        //(wklej kod uzyskujący adr. struktury)
+        //4.(wklej kod uzyskujący adr. struktury)
         sb.append(struktura);
-        //4. Obliczenie kodu zwracającego wartość/adres składowej struktury
+        //5.Sprawdzenie, czy nie popełnia się dereferencji nulla (nica).
+        sb.append(sprawdzanie_dereferencji_nica(ctx));
+        //6. Obliczenie kodu zwracającego wartość/adres składowej struktury
         sb.append(kod_indeksowania_struktury(typStruktury, typElem, ((ObiektAutomatyczny)skladowa.obiektPamieci).offset, akumadr, !czy_niederef(ctx)));
         sb.append(";koniec uzyskiwania składowej w linii"+ctx.stop.getLine()+":"+ctx.stop.getCharPositionInLine()+"\n");
-        //5. Złożenie na stos typów typu elementu
+        //7. Złożenie na stos typów typu elementu
         stosTypów.push(typElem);
         //Nota: PełnyTyp, jako koncept języka źródłowego, nie zawiera informacji o tym, czy w akumulatorze, podczas wykonania kodu znajdzie się adres czy wartość obiektu. Ta informacja przechowywana jest w atrybucie niedereferencja drzewa składniowego.
         return sb.toString();
@@ -998,16 +1061,16 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
             }
 
             if (sym.pelnyTyp.rodzaj_pamieci == PelnyTyp.RodzajPam.AUTOMATYCZNA) {
-                if(czy_niederef(ctx)) sb.append("                lea " + akum + ", [" + sym.etykieta() + "]\n");
-                else                         sb.append("                mov " + akum + ",  [" + sym.etykieta() + "]\n");
+                if(czy_niederef(ctx)) sb.append("                lea " + akumulator(Ref.dlugosc_B) + ", [" + sym.etykieta() + "];@A\n");
+                else                         sb.append("                mov " + akum + ",  [" + sym.etykieta() + "];@B\n");
             } else {
                 char zn_drugiego_rej = 'd';
                 String drugirejestr = akumulator(DLUGOSC_SLOWA_B).replace('a', zn_drugiego_rej);//rejestr na adres - zawsze o długości słowa
 
-                if(czy_niederef(ctx)) sb.append("                lea " + akum + ", [" + sym.etykieta()  + "]\n");
+                if(czy_niederef(ctx)) sb.append("                lea " + akumulator(Ref.dlugosc_B) + ", [" + sym.etykieta()  + "];@C\n");
                 else {
                     sb.append("                mov " + drugirejestr + ", " + sym.etykieta() + "\n");
-                    sb.append("                mov " + akum + ",  [" + drugirejestr + "]\n");
+                    sb.append("                mov " + akum + ",  [" + drugirejestr + "];@D\n");
                 }
 
             }
@@ -1041,7 +1104,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         sb.append("                push "+akumulator(DLUGOSC_SLOWA_B)+";lewa strona przypisania\n");
         //^ nielegalna jest instrukcja push al (dla znaków), więc lepiej już wykorzystac całe słow, zwłaszcza, że robi się potem pop edx...
         String prawe = visit(ctx.wyrazenie().get(1));
-        PelnyTyp tprawe = stosTypów.peek();//zostaje
+        PelnyTyp tprawe = stosTypów.pop();
         sb.append(prawe);
         sb.append("                pop "+drugirejestr+ "\n");
 
@@ -1058,6 +1121,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         //@ASM
         sb.append("                mov ["+drugirejestr+"], "+akumulator(tlewe.rozmiar_B())+"\n");
         sb.append(";koniec przypisania"+ctx.stop.getLine()+":"+ctx.stop.getCharPositionInLine()+"\n");
+        stosTypów.push(tlewe);//zezwalamy na niejawne rzutowanie we wszystkich wypadkiach
         return sb.toString();
     }
 

@@ -52,6 +52,10 @@ public class Kompilator {
         interactiveDebuger.setRequired(false);
         options.addOption(interactiveDebuger);
 
+        Option rdbg = new Option("D", "pseudodebugowanie", false, "Śmieci na standardowym wyjściu, po wykonaniu każde instrukcji.");
+        rdbg.setRequired(false);
+        options.addOption(rdbg);
+
         String header = "Kompilator języka PL/PL\n\n";
         String footer = "\nRepozytorium projektu: https://gitlab.com/Strzalkowski/kompilatorpl";
         CommandLineParser optparser = new DefaultParser();
@@ -78,6 +82,8 @@ public class Kompilator {
 
         //Inicjalizacja globalnych tablic kompilatora
         Tablice.inicjalizuj();
+        //pseudodebugowanie podczas wykonania
+        if(cmd.hasOption(rdbg)){Tablice.śmiecenie_po_wyjściu=true;}
         //tolerancja błędów ostrzezenie/blad/fatalny
         String stopst = cmd.getOptionValue(stopstate);
         if(stopst != null)
@@ -160,7 +166,7 @@ public class Kompilator {
         if(debuger_kompilatora!=null){generator =  (plplVisitor) debuger_kompilatora.zmień(generator, DebugerKompilatora.Przebieg.ZBIERANIE_TYPOW); }
         generator.visit(tree);
         //6.Składanie kodu?
-        SkladaczKoduAsemblera skladacz = new SkladaczKoduAsemblera(inputFilePath, Tablice.SRODOWISKO);
+        SkladaczKoduAsemblera skladacz = new SkladaczKoduAsemblera(inputFilePath, Tablice.SRODOWISKO, Tablice.externy);
         skladacz.zapiszKodAssembleraDoPliku();
         if(Tablice.generacja_binarnego_obrazu)
         {

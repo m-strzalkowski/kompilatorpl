@@ -44,7 +44,7 @@ instrukcja_wkroczenia   : 'zacznij'  ID '(' lista_parametrow_formalnych ')' EOS;
 instrukcja_zakonczenia : 'skończ' '(' wyrazenie ')' EOS;
 instrukcja_przerwania_petli   : PRZERWIJ EOS;
 instrukcja_kontynuacji_petli   : KONTYNUUJ EOS;
-wypisanie : ('wy')?'pisz' '(' wyrazenie? (',' wyrazenie)*  ')'EOS;//wbudowane wypisywanie
+wypisanie : WYPISZ '(' wyrazenie? (',' wyrazenie)*  ')'EOS;//wbudowane wypisywanie
 instrukcja_prosta  :   wyrazenie EOS;
 wstawka_asemblerowa : LINIA_ASEMBLERA;//przede wszystkim dla celów testowych, realnie wklejanie bezpośrednio kodu będzie mało przydatne.
 

@@ -145,6 +145,13 @@ public class Procedura {
     {
         //Normalizer.normalize(pelnyTyp.typ.nazwa, Normalizer.Form.NFD)NFKD
         //if(poczatkowa) {return }
+        if(this.najogolniejszy_zakres.nadrzedny == null){return "P"+nr;}
+        if(this.wejscia.size() < 1)
+        {
+            Tablice.podsystem_bledow.zglosZdarzenie(new SemanticOccurence(SemanticOccurence.Level.FATAL, this.najogolniejszy_zakres.startToken, this.najogolniejszy_zakres.startToken.getLine(),this.najogolniejszy_zakres.startToken.getCharPositionInLine(),
+                    "Ta procedura powinna mieć już zadeklarowany jakiś punkt wejściowy."
+            ));
+        }
         return "P"+ ((this.najogolniejszy_zakres.nadrzedny == null)?(nr):(wejscia.get(0).etykieta()));
     }
 

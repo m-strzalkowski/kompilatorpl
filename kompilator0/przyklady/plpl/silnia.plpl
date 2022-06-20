@@ -18,8 +18,7 @@ procedura{
     całk i,wr,wi; i=0;
     dopóki(i<10)
     {
-        wr = rek(i); wi = iter(i);
-        wypisz("\n");wypisz(i); wypisz(":"); wypisz(wr); wypisz(" : "); wypisz(wi);
+        pisz("\n",i,":",rek(i)," : ",iter(i));
         i=i+1;
     }
     zwróć();

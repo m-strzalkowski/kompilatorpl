@@ -1,0 +1,14 @@
+
+
+procedura
+{
+    zacznij program();
+    całk wiek;
+    całk t;
+    ref r;r = nic;
+    pisz(t=C._time(nic));
+    pisz("Ile masz lat?\n>");
+    //C._scanf("%d",@wiek);
+    //pisz(wiek);
+    zwróć();
+}
