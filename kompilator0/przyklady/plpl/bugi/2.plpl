@@ -1,0 +1,126 @@
+typ zespolona
+{
+całk r; całk u;
+}
+
+procedura -> całk{
+    zacznij silnia_rek(całk n);
+    jeśli(n<=1){zwróć(1);}
+    zwróć(silnia_rek(n-1)*n);
+
+    zacznij silnia_iter(całk n);
+    całk wynik; wynik=1;
+    dopóki(n > 0)
+    {
+        wynik = wynik * n;
+        n = n - 1;
+    }
+    zwróć(wynik);
+}
+
+procedura->całk
+{
+    zacznij warunek(całk a);
+    zwróć(a%3==0);
+}
+
+procedura->całk
+{
+    zacznij wyszukiwanie_binarne(całk[] aa, całk[] t, całk pocz, całk kon, całk szukana, znak z);
+    jeśli(pocz > kon) { zwróć(-1); }
+
+    całk srodek;
+    srodek = (kon + pocz) / 2;
+    <<S>>
+    jeśli(t[srodek] == szukana) { zwróć(srodek); }
+    inaczej
+    {
+        jeśli(t[srodek] > szukana)
+        {
+            zwróć(wyszukiwanie_binarne(t, pocz, srodek-1, szukana));
+        }
+        inaczej
+        {
+            zwróć(wyszukiwanie_binarne(t, srodek+1, kon, szukana));
+        }
+    }
+}
+
+procedura{
+    zacznij program();
+
+    całk SZEROKOSC, WYSOKOSC;
+    SZEROKOSC = 10;
+    WYSOKOSC = 10;
+    całk i;
+
+    całk[][] tab_fib;
+    tab_fib = nowy(całk[WYSOKOSC][]);
+
+    i = 0;
+    dopóki(i < WYSOKOSC)
+    {
+        tab_fib[i] = nowy(całk[SZEROKOSC]);
+        i = i+1;
+    }
+
+    i = 0;
+    całk j;
+    j=0;
+    dopóki(j<WYSOKOSC)
+    {
+        i=0;
+        dopóki(i<SZEROKOSC)
+        {
+            jeśli(warunek(j))
+            {
+                tab_fib[j][i] = silnia_iter(i);
+            }
+            inaczej
+            {
+                jeśli(j%3==1)
+                {
+                    tab_fib[j][i] = silnia_rek(SZEROKOSC - i);
+                }
+                inaczej
+                {
+                    jeśli(i < 2)
+                    {
+                        tab_fib[j][i] = 1;
+                    }
+                    inaczej
+                    {
+                        tab_fib[j][i] = tab_fib[j][i-1] + tab_fib[j][i-2];
+                    }
+                }
+
+            }
+
+            pisz(tab_fib[j][i]); pisz(" ");
+            i=i+1;
+        }
+        pisz("\n");
+        j=j+1;
+    }
+
+    całk szukana;
+    i=0;
+    pisz("Wyniki wyszukiwania binarnego\n");
+    dopóki(i<4)
+    {
+        pisz("szukana w wierszu 0: "); pisz(i*100); pisz(" jest na pozycji: ");
+        pisz(wyszukiwanie_binarne(tab_fib[0], 0, SZEROKOSC, i*100)); pisz("\n");
+        i=i+1;
+    }
+
+
+    i = 0;
+    dopóki(i < WYSOKOSC)
+        {
+            zapomnij(tab_fib[i]);
+            i = i+1;
+        }
+    zapomnij(tab_fib);
+    zwróć();
+}
+procedura->całk{zacznij f();zwróć(0);}

@@ -524,6 +524,11 @@ public class UstalaczStruktur extends plplBaseListener {
         skończ_deklarację();
     }
 
+    @Override public void exitDeklaracja_parametru(plplParser.Deklaracja_parametruContext ctx)
+    {
+        aktualnyTyp.krotnosc_tablicowa=0;//naprawienie buga, który powodował, że krotność tablicowa wyciekała do kolenych paramterów na liście *jeśli były atomiczne)
+    }
+
     /*
         MASZYNA DEKLARACJI - różne inne rzeczy
      */
