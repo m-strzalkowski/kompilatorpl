@@ -91,7 +91,7 @@ public class SkladaczKoduAsemblera {
         }
         gotowyKod.append("section .rodata\n");
         gotowyKod.append("__COMPILER_NAME__:  db`kompilator PL/PL (plplk) 1.0 Spero, aut opera...`\n");
-        gotowyKod.append(Tablice.etykieta_komunikatu_o_dereferencji_nica+ ":  db`PRÓBA DEREFERENCJI REFERENCJI O WARTOŚCI NIC, CZYLI ZERO (w linii kodu źródłowego:%d)\\n`\n");
+        gotowyKod.append(Tablice.etykieta_komunikatu_o_dereferencji_nica+ ":  db`\\nPRÓBA DEREFERENCJI REFERENCJI O WARTOŚCI NIC, CZYLI ZERO (w linii kodu źródłowego:%d)\\n`\n");
         if(Tablice.śmiecenie_po_wyjściu){
             gotowyKod.append(Tablice.etykieta_formatu_śmiecenia+ ":  db`\\n<<WYKONANO %d:%d - %d:%d >>\\n`\n");
             gotowyKod.append(Tablice.etykieta__file_name_rdbg+ ":  db `"+nazwaPlikuWeObcięta+".rdbg.txt`\n");

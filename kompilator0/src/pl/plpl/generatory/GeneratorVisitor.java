@@ -890,6 +890,7 @@ public class GeneratorVisitor extends plplBaseVisitor<String> {
         sb.append(".nienic"+liczniknieniców+":        ;\n");
         liczniknieniców++;
         return sb.toString();
+        //return "";
     }
 
     public String kod_indeksowania_struktury(PelnyTyp typStrukt, PelnyTyp typSkladowej, int offset_składowej, String rejestr_źródłowy, boolean dereferencja_na_końcu)

@@ -20,21 +20,19 @@ procedura{
     dopóki(i < WYSOKOSC)
     {
         tab_fib[i] = nowy(zespolona[SZEROKOSC]);
-        //j=0; dopóki(j<SZEROKOSC){tab_fib[i][j]=nic;//nowa(zespolona);
-        //j=j+1;}
+        j=0; dopóki(j<SZEROKOSC){tab_fib[i][j]=nowa(zespolona);j=j+1;}
         i = i+1;
     }
     pisz(2,"\n");
     //skończ(12);
     i = 0;
-    całk w; w=SZEROKOSC-1;
-    pisz("w:",w,"\n");
     dopóki(i<SZEROKOSC)
     {
         pisz(i); pisz(" ");
-        pisz(tab_fib[0][0].r);
-         pisz(" ");
-         //pisz(tab_fib[0][i].u); pisz(" ");
+        pisz(tab_fib[0][i], " ");
+        pisz(tab_fib[0][i].r);
+        pisz(" ");
+        pisz(tab_fib[0][i].u); pisz(" ");
         i=i+1;
     }
 
@@ -42,8 +40,9 @@ procedura{
     i = 0;
     dopóki(i < 10)
         {
+            j=0; dopóki(j<SZEROKOSC){/*pisz("\nzapominanie ",tab_fib[i][j]);*/   zapomnij(tab_fib[i][j]);j = j+1;}
             zapomnij(tab_fib[i]);
-            i = i+1;
+            i=i+1;
         }
     zapomnij(tab_fib);
     zwróć();
