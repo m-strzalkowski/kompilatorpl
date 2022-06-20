@@ -1,0 +1,80 @@
+typ zespolona
+{
+    całk real;
+    całk imag;
+}
+
+typ ciało
+{
+    całk[3] pozycja;
+    całk[3] prędkość;
+    całk[3] przyspieszenie;
+    całk promień;
+    całk masa;
+}
+
+procedura -> zespolona
+{
+    zacznij dodajZespolone(zespolona n1, zespolona n2);
+    zespolona tmp;
+    tmp = nowy(zespolona);
+    tmp.real = n1.real + n2.real;
+    tmp.imag = n1.imag + n2.imag;
+    zwróć(tmp);
+}
+
+procedura
+{
+    zacznij program();
+
+    zespolona n1, n2, result;
+    n1 = nowy(zespolona);
+    n2 = nowy(zespolona);
+    n1.real = 2;
+    n1.imag = 5;
+    n2.real = 7;
+    n2.imag = 9;
+
+    result = dodajZespolone(n1, n2);
+    pisz("część realna: ", result.real, " część urojona: ", result.imag, "\n");
+
+    całk a;
+    a = 0;
+    całk b;
+    ciało[10] tablica;
+    tablica = nowy(ciało[10]);
+    dopóki(a < 10)
+    {
+        b = 0;
+        tablica[a] = nowy(ciało);
+        tablica[a].pozycja = nowy(całk[3]);
+        tablica[a].prędkość = nowy(całk[3]);
+        tablica[a].przyspieszenie = nowy(całk[3]);
+        dopóki(b<3)
+        {
+            tablica[a].pozycja[b] = a*b;
+            tablica[a].prędkość[b] = a*b;
+            tablica[a].przyspieszenie[b] = a*b;
+            b = b+1;
+        }
+        tablica[a].masa = a*10;
+        tablica[a].promień = a;
+
+        pisz("pozycja: ", tablica[a].pozycja[0], tablica[a].pozycja[1], tablica[a].pozycja[2],
+        " prędkość: ", tablica[a].prędkość[0], tablica[a].prędkość[1], tablica[a].prędkość[2],
+         " przyspieszenie ", tablica[a].przyspieszenie[0], tablica[a].przyspieszenie[1], tablica[a].przyspieszenie[2],
+          " masa ", tablica[a].masa, " promień ", tablica[a].promień, "\n");
+
+        a = a+1;
+    }
+    a = 0;
+    dopóki(a<10)
+    {
+        zapomnij(tablica[a].pozycja);
+        zapomnij(tablica[a].prędkość);
+        zapomnij(tablica[a].przyspieszenie);
+        a = a+1;
+    }
+    zapomnij(tablica);
+    zwróć();
+}
