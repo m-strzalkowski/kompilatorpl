@@ -2,8 +2,9 @@ extern _free
 extern _scanf
 extern _pow
 extern _exit
-extern _printf
 extern _malloc
+extern _memset
+extern _printf
 global _main
 
 ;dodatki dla wypisz
@@ -56,7 +57,10 @@ _main:
                 imul eax,4
                 push eax
                 call _malloc
-                add esp, 4
+                push dword 0
+                push eax
+                call _memset
+                add esp, 12
 ;koniec alokacji3:32
                 pop edx
                 mov [edx], eax
@@ -133,3 +137,4 @@ P_main_epilog:
 ret
 section .rodata
 __COMPILER_NAME__:  db`kompilator PL/PL (plplk) 1.0 Spero, aut opera...`
+__NULL_DEREFERENCE_FMT__:  db`\nPRÓBA DEREFERENCJI REFERENCJI O WARTOŚCI NIC, CZYLI ZERO (w linii kodu źródłowego:%d)\n`
