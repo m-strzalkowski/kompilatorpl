@@ -11,7 +11,7 @@ Plik opis.odt zawiera opis języka ze wszystkimi detalami i opisami jak co dzia�
 Te informację wraz z wymaganiami są zawarte w podrecznik_uzytkownika.odt (są tam także przykładowe programy)
 
 # Link do zipa z skompilowanym kompilatorem
-[a relative link](kompilatorpl/kompilator0/wydania/PLPL)
+[link do folderu ze skompilowanym kompilatorem wraz z przydatną zawartością](kompilator0/wydania/PLPL)
 
 ## Autorzy
 Mateusz Strzałkowski
