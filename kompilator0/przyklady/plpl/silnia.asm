@@ -512,3 +512,4 @@ Psilnia_it_epilog:
 ret
 section .rodata
 __COMPILER_NAME__:  db`kompilator PL/PL (plplk) 1.0 Spero, aut opera...`
+__NULL_DEREFERENCE_FMT__:  db`\nPRÓBA DEREFERENCJI REFERENCJI O WARTOŚCI NIC, CZYLI ZERO (w linii kodu źródłowego:%d)\n`

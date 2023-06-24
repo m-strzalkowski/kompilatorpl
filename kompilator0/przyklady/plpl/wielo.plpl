@@ -15,5 +15,6 @@ procedura
     zacznij f(całk a, całk b, całk c);
     pisz("a:",a,", b:",b,", c:",c,"\n");
     zwróć();
+    <<G>>
 }
 

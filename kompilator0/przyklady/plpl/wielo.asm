@@ -1,9 +1,9 @@
-global _main
-extern _printf
-extern _pow
-extern _malloc
 extern _free
+extern _pow
 extern _exit
+extern _printf
+extern _malloc
+global _main
 
 ;dodatki dla wypisz
 section .rodata
@@ -16,8 +16,8 @@ section .text
 ;PROCEDURA Z LINII 2 - 7
 ;RAMKA STOSU (i parametry) PROCEDURYP_main
 ;
-;{ebp+4, 4B, sym:Symbol{nr=1, identyfikator='adres powrotny', zakres=1, stały ref pktWe=null}}
-;{ebp+0, 4B, sym:Symbol{nr=2, identyfikator='poprzedni ebp', zakres=1, stały ref pktWe=null}}
+;{ebp+4, 4B, sym:Symbol{nr=1, identyfikator='adres powrotny', zakres=1, stały automatyczny ref pktWe=null}}
+;{ebp+0, 4B, sym:Symbol{nr=2, identyfikator='poprzedni ebp', zakres=1, stały automatyczny ref pktWe=null}}
 ;rozmiar_B_calej_pamieci_lokalnej:8
 ;rozmiar_B_zmiennych_automatycznych:0
 ;rozmiar_B_parametrow:0
@@ -112,14 +112,14 @@ Sznak_2_11__Pg:   db    `, b:`, 0  ;z linii 16
 Sznak_2_12__Pg:   db    `, c:`, 0  ;z linii 16
 Sznak_2_13__Pg:   db    `\n`, 0  ;z linii 16
 section .text
-;PROCEDURA Z LINII 9 - 18
+;PROCEDURA Z LINII 9 - 19
 ;RAMKA STOSU (i parametry) PROCEDURYPg
 ;
 ;{ebp+16, 4B, sym:Symbol{nr=7, identyfikator='b', zakres=2, /*parametr*/ automatyczny całk pktWe=null}}
 ;{ebp+12, 4B, sym:Symbol{nr=6, identyfikator='a', zakres=2, /*parametr*/ automatyczny całk pktWe=null}}
 ;{ebp+8, 4B, sym:Symbol{nr=3, identyfikator='c', zakres=2, /*parametr*/ automatyczny całk pktWe=null}}
-;{ebp+4, 4B, sym:Symbol{nr=14, identyfikator='adres powrotny', zakres=2, stały ref pktWe=null}}
-;{ebp+0, 4B, sym:Symbol{nr=15, identyfikator='poprzedni ebp', zakres=2, stały ref pktWe=null}}
+;{ebp+4, 4B, sym:Symbol{nr=14, identyfikator='adres powrotny', zakres=2, stały automatyczny ref pktWe=null}}
+;{ebp+0, 4B, sym:Symbol{nr=15, identyfikator='poprzedni ebp', zakres=2, stały automatyczny ref pktWe=null}}
 ;{ebp-4, 4B, sym:Symbol{nr=4, identyfikator='d', zakres=2, automatyczny całk pktWe=null}}
 ;rozmiar_B_calej_pamieci_lokalnej:24
 ;rozmiar_B_zmiennych_automatycznych:4
@@ -182,9 +182,9 @@ f:
               after_f:
 ;wypisanie w linii16
 ;wypisanie wyrazenia
-;typ wyrazenia:stały znak [] /*inicjalizowany*/ 
+;typ wyrazenia:stały statyczny znak [] /*inicjalizowany*/ 
 ;załadowanie lwartości:16 niederef:null false
-;symbol:Symbol{nr=10, identyfikator='null', zakres=2, stały znak [] /*inicjalizowany*/ pktWe=null}
+;symbol:Symbol{nr=10, identyfikator='null', zakres=2, stały statyczny znak [] /*inicjalizowany*/ pktWe=null}
                 lea eax, [Sznak_2_10__Pg];@C
 ;koniec ładowania lwartosci
                 push eax;wartosc na stos
@@ -205,9 +205,9 @@ f:
                 add esp, byte 8
 ;koniec wypisania - całk
 ;wypisanie wyrazenia
-;typ wyrazenia:stały znak [] /*inicjalizowany*/ 
+;typ wyrazenia:stały statyczny znak [] /*inicjalizowany*/ 
 ;załadowanie lwartości:16 niederef:null false
-;symbol:Symbol{nr=11, identyfikator='null', zakres=2, stały znak [] /*inicjalizowany*/ pktWe=null}
+;symbol:Symbol{nr=11, identyfikator='null', zakres=2, stały statyczny znak [] /*inicjalizowany*/ pktWe=null}
                 lea eax, [Sznak_2_11__Pg];@C
 ;koniec ładowania lwartosci
                 push eax;wartosc na stos
@@ -228,9 +228,9 @@ f:
                 add esp, byte 8
 ;koniec wypisania - całk
 ;wypisanie wyrazenia
-;typ wyrazenia:stały znak [] /*inicjalizowany*/ 
+;typ wyrazenia:stały statyczny znak [] /*inicjalizowany*/ 
 ;załadowanie lwartości:16 niederef:null false
-;symbol:Symbol{nr=12, identyfikator='null', zakres=2, stały znak [] /*inicjalizowany*/ pktWe=null}
+;symbol:Symbol{nr=12, identyfikator='null', zakres=2, stały statyczny znak [] /*inicjalizowany*/ pktWe=null}
                 lea eax, [Sznak_2_12__Pg];@C
 ;koniec ładowania lwartosci
                 push eax;wartosc na stos
@@ -251,9 +251,9 @@ f:
                 add esp, byte 8
 ;koniec wypisania - całk
 ;wypisanie wyrazenia
-;typ wyrazenia:stały znak [] /*inicjalizowany*/ 
+;typ wyrazenia:stały statyczny znak [] /*inicjalizowany*/ 
 ;załadowanie lwartości:16 niederef:null false
-;symbol:Symbol{nr=13, identyfikator='null', zakres=2, stały znak [] /*inicjalizowany*/ pktWe=null}
+;symbol:Symbol{nr=13, identyfikator='null', zakres=2, stały statyczny znak [] /*inicjalizowany*/ pktWe=null}
                 lea eax, [Sznak_2_13__Pg];@C
 ;koniec ładowania lwartosci
                 push eax;wartosc na stos
@@ -275,3 +275,4 @@ Pg_epilog:
 ret
 section .rodata
 __COMPILER_NAME__:  db`kompilator PL/PL (plplk) 1.0 Spero, aut opera...`
+__NULL_DEREFERENCE_FMT__:  db`\nPRÓBA DEREFERENCJI REFERENCJI O WARTOŚCI NIC, CZYLI ZERO (w linii kodu źródłowego:%d)\n`

@@ -1,0 +1,75 @@
+dołącz "Zespolone.plpl";
+dołącz "mat.h";
+przestrzeń Zespolone{
+    Arytmetyczna procedura -> Zespolona | Arytmetyczna
+    {
+        zacznij konwertuj(rzeczyw x);
+        zwróć Zespoloną(x,0);//automatyczne generowanie konstruktorów
+        zacznij dodaj(Zespolona l, Zespolona r);
+        Zespolona wynik =+;
+        wynik.rz = l.rz + r.rz;
+        wynik.ur = l.ur + r.ur;
+        zwróć wynik;
+    }
+    operator Zespolona "+" Zespolona: Zespolone.dodaj;
+}
+operator Zespolona "+" Zespolona: Zespolone.dodaj;
+
+przestrzeń Kotoprzestrzeń, DźwięczącaRzecz{
+    //dołącz przestrzeń Temporalne;
+    z przestrzeni Temporalne dołącz: Data, Czas, Godzina, operatory, konwersje;
+    Wyliczenie Płeć{m,ż};
+    Kotowata procedura -> cokolwiek
+    {
+        Data początek_egzystencji;
+        Umaszczenie{czarne,białe,bure,wkropki} kolor;
+        całk życia=9;
+        napis imię;
+        reg nacosięwabi;
+
+        zacznij wiek(){zwróć(teraz() - początek_egzystencji);}
+
+        zacznij tworzenie(napis imię, całk życia,Płeć płeć){/*Wpisze samo*/ }
+            początek_egzystencji = teraz();
+            nacosięwabi = "$imię|cholero";
+        zdaj się;
+
+        zacznij tworzenie(napis imię)
+            tworzenie(imię,9,losuj(Płeć.ile)) się;
+            //się tworzenie(imię,9,losuj(Płeć.ile));//???
+        zdaj się;
+
+        początek spotkaj(Kotowata druga);
+            zabij() drugą;
+            zabij() się;
+        zdaj się;
+
+        początek zabij();//przykład iteratora
+            jeśli(życia<2) zwróć nic;
+            inaczej życia -=1;
+        zdaj się;
+
+        zacznij miaucz();
+            pisz('miau!');
+        zdaj się;
+
+        zacznij zadźwięcz(){miaucz();zdaj się;}
+    }
+    operator Kotowata + Kotowata: spotkaj;
+    operator Kotowata * Kotowata: rozmnóż;
+}
+procedura{
+        początek spotkaj(Kotowata pierwsza, Kotowata druga);
+            zabij(druga);
+            zabij(pierwsza);
+        zdaj się;
+}
+procedura{
+    zacznij program();
+    Kotowata pierwsza|ej = stwórz('pierwsza',9), druga|ej = stwórz('druga',9);
+    pierwszą zabij() miaucz() zabij() miaucz() zabij();
+    programistę zabij_za_okrucieństwo();
+    pierwsza + druga;
+    Kotowata trzecia = pierwsza * druga;
+    zwróć();
+}
